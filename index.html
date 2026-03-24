@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chat | TikDate</title>
     <style>
-        :root { --primary: #fe2c55; --bg-gradient: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%); }
+        :root { --primary: #fe2c55; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { background: #000; overflow: hidden; }
 
-        /* Фон видео */
         .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         .video-bg video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.4); }
 
@@ -25,17 +24,15 @@
             box-shadow: 0 25px 50px rgba(0,0,0,0.6); overflow: hidden; position: relative;
         }
 
-        /* Header */
         .header { padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; background: #fff; z-index: 10; }
         .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid var(--primary); }
         .u-name { font-weight: 700; font-size: 17px; color: #161823; }
         .u-status { font-size: 12px; color: #8a8b91; transition: 0.5s; }
         .u-status.online { color: #4caf50; font-weight: 700; }
 
-        /* Сочный цветастый фон чата */
         .msg-area { 
             flex: 1; padding: 15px; overflow-y: auto; 
-            background: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%); /* Цветастый градиент */
+            background: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%);
             display: flex; flex-direction: column; gap: 12px; 
         }
 
@@ -46,7 +43,6 @@
         .received { background: rgba(255, 255, 255, 0.95); color: #000; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .sent { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(254, 44, 85, 0.2); }
 
-        /* Анимация печатания внутри пузырька */
         .typing-bubble { display: flex; align-items: center; gap: 4px; padding: 15px !important; }
         .dot { width: 6px; height: 6px; background: #adb5bd; border-radius: 50%; animation: blink 1.4s infinite both; }
         .dot:nth-child(2) { animation-delay: 0.2s; }
@@ -55,22 +51,17 @@
         @keyframes blink { 0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1.1); } }
         @keyframes pop { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Инструкция и Кнопки */
         .action-zone { padding: 15px; background: #fff; border-top: 1px solid #eee; text-align: center; }
         .instruction { font-size: 13px; color: #8a8b91; margin-bottom: 12px; font-weight: 500; }
         .quick-replies { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
         .btn-reply { 
             background: #f1f1f2; border: none; padding: 12px 18px; border-radius: 25px; 
             font-size: 14px; font-weight: 600; cursor: pointer; color: #161823; 
-            transition: 0.3s;
         }
-        .btn-reply:active { transform: scale(0.95); background: var(--primary); color: #fff; }
 
-        /* Фейк ввод */
         .input-bar { padding: 15px; background: #fff; border-top: 1px solid #eee; display: none; align-items: center; gap: 10px; cursor: pointer; }
         .fake-input { flex: 1; background: #f1f1f2; padding: 10px 15px; border-radius: 20px; font-size: 14px; color: #8a8b91; }
 
-        /* Окно регистрации */
         .lock-overlay {
             position: absolute; bottom: 0; left: 0; width: 100%; background: #fff;
             padding: 30px 20px; border-top-left-radius: 30px; border-top-right-radius: 30px;
@@ -99,35 +90,28 @@
             <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=150" class="avatar">
             <div>
                 <div class="u-name" id="ui-name">Maria</div>
-                <div class="u-status" id="ui-status">Was online 15m ago</div>
+                <div class="u-status" id="ui-status">...</div>
             </div>
         </div>
 
-        <div class="msg-area" id="box">
-            <!-- Сообщения появятся здесь -->
-        </div>
+        <div class="msg-area" id="box"></div>
 
-        <!-- Зона первого шага -->
         <div class="action-zone" id="ui-actions">
-            <div class="instruction" id="ui-instr">Выберите приветствие, чтобы начать чат:</div>
-            <div class="quick-replies">
-                <button class="btn-reply" onclick="startSequence(this)">Привет! 👋</button>
-                <button class="btn-reply" onclick="startSequence(this)">Ты очень красивая! 😍</button>
-                <button class="btn-reply" onclick="startSequence(this)">Познакомимся? 😊</button>
+            <div class="instruction" id="ui-instr">...</div>
+            <div class="quick-replies" id="replies-container">
+                <!-- Кнопки вставятся через JS -->
             </div>
         </div>
 
-        <!-- Поле ввода (появится после переписки) -->
         <div class="input-bar" id="ui-input" onclick="showLock()">
-            <div class="fake-input" id="ui-input-text">Write a message...</div>
+            <div class="fake-input" id="ui-input-text">...</div>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="#fe2c55"/></svg>
         </div>
 
-        <!-- Окно регистрации -->
         <div class="lock-overlay" id="lock-block">
-            <div class="lock-title" id="ui-lock-title">Security Check</div>
-            <div class="lock-text" id="ui-lock-desc">To protect our community from spam, please create a profile to continue the conversation.</div>
-            <a href="ТВОЯ_ССЫЛКА_ТУТ" class="btn-reg" id="ui-btn">CONTINUE & CHAT</a>
+            <div class="lock-title" id="ui-lock-title">...</div>
+            <div class="lock-text" id="ui-lock-desc">...</div>
+            <a href="ТВОЯ_ССЫЛКА_ТУТ" class="btn-reg" id="ui-btn">...</a>
         </div>
     </div>
 </div>
@@ -135,26 +119,53 @@
 <script>
     const translations = {
         uk: { name: "Марія", lastSeen: "Була в мережі 15 хв. тому", online: "В мережі", instr: "Оберіть вітання, щоб почати чат:",
+              replies: ["Привіт! 👋", "Ти дуже красива! 😍", "Познайомимося? 😊"],
               m1: "Приємно познайомитись! 👋 Я теж із <b>{city}</b>!", 
-              m2: "Я тут шукаю серйозну людину для спілкування... Можеш надіслати своє фото? Я відкрию свої у відповідь 😊",
+              m2: "Я тут шукаю серйозного чоловіка... Можеш надіслати своє фото? Я відкрию свої у відповідь 😊",
               input: "Написати повідомлення...",
               lt: "Безпека спільноти", ld: "Для захисту користувачів від спаму, чат доступний лише після швидкої реєстрації.", lb: "ПРОДОВЖИТИ ТА ВІДПОВІСТИ" },
         ru: { name: "Мария", lastSeen: "Была в сети 15 мин. назад", online: "В сети", instr: "Выберите приветствие, чтобы начать чат:",
+              replies: ["Привет! 👋", "Ты очень красивая! 😍", "Познакомимся? 😊"],
               m1: "Приятно познакомиться! 👋 Я тоже из <b>{city}</b>!", 
               m2: "Я тут ищу серьезного мужчину... Можешь прислать свое фото? Я открою свои в ответ 😊",
               input: "Написать сообщение...",
               lt: "Безопасность сообщества", ld: "Для защиты пользователей чат доступен только после бесплатной регистрации.", lb: "ПРОДОЛЖИТЬ И ОТВЕТИТЬ" },
-        en: { name: "Maria", lastSeen: "Was online 15m ago", online: "Online", instr: "Choose a greeting to start chat:",
+        en: { name: "Maria", lastSeen: "Was online 15m ago", online: "Online", instr: "Choose a greeting to start:",
+              replies: ["Hey there! 👋", "You are gorgeous! 😍", "Let's chat! 😊"],
               m1: "Nice to meet you! 👋 I'm also from <b>{city}</b>!", 
               m2: "I'm looking for a serious man here... Can you send your photo? I'll unlock mine too 😊",
               input: "Type a message...",
-              lt: "Security Policy", ld: "To protect our members from spam, please register to unlock the full chat.", lb: "REGISTER & REPLY" }
+              lt: "Security Policy", ld: "To protect our members from spam, please register to unlock the full chat.", lb: "REGISTER & REPLY" },
+        de: { name: "Maria", lastSeen: "Zuletzt online vor 15 Min.", online: "Online", instr: "Wähle eine Begrüßung:",
+              replies: ["Hallo! 👋", "Du bist wunderschön! 😍", "Lass uns chatten! 😊"],
+              m1: "Schön dich kennenzulernen! 👋 Ich komme auch aus <b>{city}</b>!", 
+              m2: "Ich suche hier einen ernsthaften Mann... Kannst du mir ein Foto schicken? Ich zeige dir meine dann auch 😊",
+              input: "Nachricht schreiben...",
+              lt: "Sicherheitshinweis", ld: "Zum Schutz unserer Mitglieder ist der Chat erst nach einer kurzen Registrierung verfügbar.", lb: "REGISTRIEREN & ANTWORTEN" },
+        pl: { name: "Maria", lastSeen: "Była online 15 min temu", online: "Dostępna", instr: "Wybierz powitanie:",
+              replies: ["Cześć! 👋", "Jesteś bardzo piękna! 😍", "Poznamy się? 😊"],
+              m1: "Miło Cię poznać! 👋 Ja też jestem z <b>{city}</b>!", 
+              m2: "Szukam tutaj kogoś poważnego... Czy możesz wysłać swoje zdjęcie? Ja odblokuję swoje w zamian 😊",
+              input: "Napisz wiadomość...",
+              lt: "Bezpieczeństwo", ld: "Aby chronić użytkowników przed spamem, czat jest dostępny po szybkiej rejestracji.", lb: "ZAREJESTRUJ SIĘ" },
+        kk: { name: "Мария", lastSeen: "15 мин бұрын болды", online: "Желіде", instr: "Чатты бастау үшін сәлемдемені таңдаңыз:",
+              replies: ["Сәлем! 👋", "Сен өте әдемісің! 😍", "Танысайық па? 😊"],
+              m1: "Танысқаныма қуаныштымын! 👋 Мен де <b>{city}</b> тұрамын!", 
+              m2: "Мен мұнда байсалды ер адам іздеп жүрмін... Суретіңді жібере аласың ба? Мен де жауап ретінде жіберемін 😊",
+              input: "Хабарлама жазу...",
+              lt: "Қауіпсіздік", ld: "Пайдаланушыларды спамнан қорғау үшін чат тіркелгеннен кейін ғана ашылады.", lb: "ТІРКЕЛУ ЖӘНЕ ЖАУАП БЕРУ" }
     };
 
-    const userLang = navigator.language.split('-')[0] || 'en';
-    const lang = translations[userLang] || translations.en;
+    // Определение языка (нативно и надежно)
+    const getLang = () => {
+        const navLang = navigator.language.split('-')[0];
+        return translations[navLang] ? navLang : 'en';
+    };
 
-    // Инициализация
+    const currentLang = getLang();
+    const lang = translations[currentLang];
+
+    // Заполнение интерфейса
     document.getElementById('ui-name').innerText = lang.name;
     document.getElementById('ui-status').innerText = lang.lastSeen;
     document.getElementById('ui-instr').innerText = lang.instr;
@@ -162,6 +173,16 @@
     document.getElementById('ui-lock-title').innerText = lang.lt;
     document.getElementById('ui-lock-desc').innerText = lang.ld;
     document.getElementById('ui-btn').innerText = lang.lb;
+
+    // Генерация кнопок приветствия
+    const repliesContainer = document.getElementById('replies-container');
+    lang.replies.forEach(text => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-reply';
+        btn.innerText = text;
+        btn.onclick = () => startSequence(text);
+        repliesContainer.appendChild(btn);
+    });
 
     let city = "your city";
     fetch('https://ipapi.co/json/').then(r => r.json()).then(data => { if(data.city) city = data.city; });
@@ -190,36 +211,29 @@
         if(t) t.remove();
     }
 
-    async function startSequence(btn) {
-        const text = btn.innerText;
-        document.getElementById('ui-actions').style.display = 'none'; // Убираем кнопки приветствия
-        addMessage(text, 'sent');
+    async function startSequence(userText) {
+        document.getElementById('ui-actions').style.display = 'none'; 
+        addMessage(userText, 'sent');
 
-        // Пауза перед тем как она "зайдет"
-        await new Promise(r => setTimeout(r, 1500));
+        await new Promise(r => setTimeout(r, 1200));
         
-        // Меняем статус на Онлайн
         const status = document.getElementById('ui-status');
         status.innerText = lang.online;
         status.classList.add('online');
 
-        // Печатает первое сообщение
         await new Promise(r => setTimeout(r, 800));
         showTyping();
         await new Promise(r => setTimeout(r, 2000));
         hideTyping();
         addMessage(lang.m1, 'received');
 
-        // Пауза между сообщениями 2-3 сек
         await new Promise(r => setTimeout(r, 2500));
         
-        // Печатает второе сообщение
         showTyping();
         await new Promise(r => setTimeout(r, 3000));
         hideTyping();
         addMessage(lang.m2, 'received');
 
-        // Показываем строку ввода
         document.getElementById('ui-input').style.display = 'flex';
     }
 
