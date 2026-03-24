@@ -1,241 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TikDate | Chat</title>
-  <style>
-    :root {
-      --primary-color: #fe2c55;
-      --tiktok-black: #121212;
-      --bg-blur: rgba(255, 255, 255, 0.9);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TikTok | Chat</title>
+    <style>
+        :root { --primary: #fe2c55; --bg: #f8f8f9; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background: #000; overflow: hidden; }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'ProximaNova', sans-serif, Arial; background: #000; overflow: hidden; }
+        /* Background Video UI */
+        .video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .video-container video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
 
-    /* TikTok UI Elements */
-    .video-background {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
-    }
-    .video-background video { width: 100%; height: 100%; object-fit: cover; }
+        /* Overlay */
+        #chat-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
 
-    .side-buttons {
-      position: fixed; right: 10px; bottom: 150px; z-index: 2;
-      display: flex; flex-direction: column; gap: 20px; align-items: center;
-    }
-    .side-icon { width: 40px; height: 40px; opacity: 0.9; }
+        .chat-card {
+            width: 92%; max-width: 380px; height: 85vh;
+            background: #fff; border-radius: 24px; display: flex; flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden;
+        }
 
-    /* Chat Overlay */
-    #chat-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px); z-index: 10000;
-      display: flex; align-items: center; justify-content: center;
-    }
+        /* Header */
+        .header { padding: 16px; border-bottom: 1px solid #f1f1f2; display: flex; align-items: center; }
+        .avatar-ring { position: relative; width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--primary); padding: 2px; margin-right: 12px; }
+        .avatar-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .online-dot { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; background: #4caf50; border: 2px solid #fff; border-radius: 50%; }
+        .user-name { font-weight: 700; font-size: 17px; color: #161823; }
+        .user-status { font-size: 13px; color: #4caf50; font-weight: 500; }
 
-    .chat-window {
-      width: 90%; max-width: 380px; height: 80vh;
-      background: #fff; border-radius: 24px;
-      display: flex; flex-direction: column; overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    }
+        /* Messages */
+        .messages-area { flex: 1; padding: 15px; overflow-y: auto; background: #f8f8f9; display: flex; flex-direction: column; gap: 12px; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.4; animation: pop 0.3s ease; }
+        .msg.bot { background: #fff; color: #161823; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-    .chat-header {
-      padding: 15px 20px; border-bottom: 1px solid #eee;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .user-info { display: flex; align-items: center; }
-    .chat-avatar {
-      width: 44px; height: 44px; border-radius: 50%;
-      border: 2px solid var(--primary-color); padding: 2px; margin-right: 12px;
-    }
-    .chat-name { font-weight: 700; font-size: 16px; color: #000; }
-    .status { font-size: 12px; color: #4caf50; display: flex; align-items: center; }
-    .status::before { content: ''; width: 8px; height: 8px; background: #4caf50; border-radius: 50%; margin-right: 5px; }
+        /* Voice Message Bubble */
+        .voice-msg { display: flex; align-items: center; gap: 10px; background: #e8e8e8 !important; cursor: pointer; }
+        .play-icon { width: 24px; height: 24px; fill: var(--primary); }
+        .wave-img { height: 20px; flex: 1; opacity: 0.6; }
 
-    .chat-messages {
-      flex: 1; padding: 20px; overflow-y: auto;
-      background: #fcfcfc; display: flex; flex-direction: column; gap: 12px;
-    }
+        .typing { font-size: 13px; color: var(--primary); font-weight: 600; display: none; padding-left: 5px; }
 
-    .msg {
-      max-width: 85%; padding: 12px 16px; border-radius: 18px;
-      font-size: 15px; line-height: 1.4; animation: slideUp 0.3s ease;
-    }
-    .msg.received { background: #f1f1f2; color: #161823; align-self: flex-start; border-bottom-left-radius: 4px; }
-    
-    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Lock Block */
+        .lock-box { padding: 20px; text-align: center; border-top: 1px solid #f1f1f2; display: none; background: #fff; }
+        .lock-icon { width: 40px; margin-bottom: 10px; opacity: 0.8; }
+        .lock-title { font-weight: 800; font-size: 18px; margin-bottom: 8px; color: #161823; }
+        .lock-desc { font-size: 13px; color: #5e6066; margin-bottom: 15px; line-height: 1.4; }
+        .btn-main {
+            background: var(--primary); color: #fff; text-decoration: none; display: block;
+            padding: 16px; border-radius: 12px; font-weight: 700; font-size: 15px;
+            box-shadow: 0 8px 20px rgba(254, 44, 85, 0.3); animation: heartbeat 1.5s infinite;
+        }
 
-    /* Typing Indicator */
-    .typing { font-size: 12px; color: #8a8b91; margin-left: 5px; display: none; }
-
-    /* Lock Section */
-    .lock-block {
-      padding: 25px; text-align: center; background: #fff;
-      border-top: 1px solid #eee; display: none;
-    }
-    .lock-icon { width: 50px; margin-bottom: 15px; }
-    .lock-title { font-weight: 800; font-size: 18px; margin-bottom: 10px; }
-    .lock-text { font-size: 14px; color: #616161; margin-bottom: 20px; }
-
-    .verify-btn {
-      background: var(--primary-color); color: #fff; text-decoration: none;
-      display: block; padding: 16px; border-radius: 12px;
-      font-weight: 700; font-size: 16px; text-transform: uppercase;
-      box-shadow: 0 4px 15px rgba(254, 44, 85, 0.3);
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
-  </style>
+        @keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+    </style>
 </head>
 <body>
 
-  <div class="video-background">
+<div class="video-container">
     <video src="./assets/files/video.mp4" loop playsinline autoplay muted></video>
-    <div class="side-buttons">
-        <img src="https://cdn-icons-png.flaticon.com/512/1077/1077035.png" class="side-icon" style="filter: invert(1);">
-        <img src="https://cdn-icons-png.flaticon.com/512/2462/2462719.png" class="side-icon" style="filter: invert(1);">
-        <img src="https://cdn-icons-png.flaticon.com/512/1358/1358023.png" class="side-icon" style="filter: invert(1);">
-    </div>
-  </div>
+</div>
 
-  <div id="chat-overlay">
-    <div class="chat-window">
-      <div class="chat-header">
-        <div class="user-info">
-          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" class="chat-avatar">
-          <div>
-            <div class="chat-name" id="name-label">Maria</div>
-            <div class="status" id="status-label">Online</div>
-          </div>
+<div id="chat-overlay">
+    <div class="chat-card">
+        <div class="header">
+            <div class="avatar-ring">
+                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80" alt="Avatar">
+                <div class="online-dot"></div>
+            </div>
+            <div>
+                <div class="user-name" id="ui-name">Maria</div>
+                <div class="user-status" id="ui-online">Online</div>
+            </div>
         </div>
-      </div>
 
-      <div class="chat-messages" id="chat-box">
-        <!-- Messages appear here -->
-      </div>
-      
-      <div class="typing" id="typing-ui">...печатает</div>
+        <div class="messages-area" id="chat-box"></div>
+        <div class="typing" id="ui-typing">...</div>
 
-      <div id="lock-container" class="lock-block">
-        <img src="https://cdn-icons-png.flaticon.com/512/709/709612.png" class="lock-icon">
-        <div class="lock-title" id="lock-title">Verification Required</div>
-        <div class="lock-text" id="lock-text">To prevent spam, please confirm you are a real user to send messages.</div>
-        <a href="ТВОЯ_ССЫЛКА_ТУТ" class="verify-btn" id="btn-text">VERIFY & REPLY</a>
-      </div>
+        <div class="lock-box" id="lock-ui">
+            <img src="https://cdn-icons-png.flaticon.com/512/2553/2553313.png" class="lock-icon">
+            <div class="lock-title" id="ui-lock-title">Security Check</div>
+            <div class="lock-desc" id="ui-lock-desc">To protect her from bots, please verify your profile to hear the voice message and reply.</div>
+            <a href="ТВОЯ_ССЫЛКА_ТУТ" class="btn-main" id="ui-btn">VERIFY & UNLOCK CHAT</a>
+        </div>
     </div>
-  </div>
+</div>
 
-  <script>
-    // 1. Система переводов
+<script>
     const translations = {
-      ru: {
-        name: "Мария",
-        status: "В сети",
-        typing: "Мария печатает...",
-        city_fallback: "твоего города",
-        msg1: "Привет! 👋 Ты тоже из <b>{city}</b>?",
-        msg2: "Я тут совсем недавно, ищу с кем пообщаться... Свободен сегодня? 😊",
-        lockTitle: "Проверка безопасности",
-        lockText: "Чтобы ответить Марии и увидеть её скрытые фото, подтвердите, что вы реальный человек.",
-        btn: "ПОДТВЕРДИТЬ И ОТВЕТИТЬ"
-      },
-      en: {
-        name: "Maria",
-        status: "Online",
-        typing: "Maria is typing...",
-        city_fallback: "your city",
-        msg1: "Hey! 👋 Are you also from <b>{city}</b>?",
-        msg2: "I'm new here, looking for someone to talk to... Are you free tonight? 😊",
-        lockTitle: "Safety Verification",
-        lockText: "To reply to Maria and see her private photos, please verify that you are a real person.",
-        btn: "VERIFY & REPLY"
-      },
-      de: {
-        name: "Maria",
-        status: "Online",
-        typing: "Maria schreibt...",
-        city_fallback: "deiner Stadt",
-        msg1: "Hey! 👋 Kommst du auch aus <b>{city}</b>?",
-        msg2: "Ich bin neu hier und suche jemanden zum Reden... Hast du heute Zeit? 😊",
-        lockTitle: "Sicherheitsprüfung",
-        lockText: "Um Maria zu antworten und ihre privaten Fotos zu sehen, bestätige bitte, dass du eine echte Person bist.",
-        btn: "BESTÄTIGEN & ANTWORTEN"
-      },
-      es: {
-        name: "María",
-        status: "En línea",
-        typing: "María está escribiendo...",
-        city_fallback: "tu ciudad",
-        msg1: "¡Hola! 👋 ¿Tú también eres de <b>{city}</b>?",
-        msg2: "Soy nueva aquí, busco a alguien con quien hablar... ¿Estás libre hoy? 😊",
-        lockTitle: "Verificación de seguridad",
-        lockText: "Para responder a María y ver sus fotos privadas, confirma que eres una persona real.",
-        btn: "CONFIRMAR Y RESPONDER"
-      }
+        uk: { name: "Марія", online: "В мережі", typing: "Марія пише...", city: "твого міста", 
+              m1: "Привіт! 👋 Побачила твій профіль, ти теж із <b>{city}</b>?", 
+              m2: "Я тут шукаю серйозну людину для спілкування, може навіть більше... 😊",
+              v: "Голосове повідомлення (0:12)",
+              lt: "Перевірка профілю", ld: "Щоб прослухати повідомлення та відповісти Марії, підтвердьте, що ви реальна людина.", lb: "ПІДТВЕРДИТИ ТА ВІДПОВІСТИ" },
+        ru: { name: "Мария", online: "В сети", typing: "Мария печатает...", city: "твоего города", 
+              m1: "Привет! 👋 Увидела твой профиль, ты тоже из <b>{city}</b>?", 
+              m2: "Я тут ищу серьезного мужчину для общения, может даже для семьи... 😊",
+              v: "Голосовое сообщение (0:12)",
+              lt: "Проверка безопасности", ld: "Чтобы прослушать голос и ответить Марии, подтвердите, что вы реальный человек.", lb: "ПОДТВЕРДИТЬ И ОТВЕТИТЬ" },
+        kz: { name: "Мария", online: "Желіде", typing: "Мария жазуда...", city: "сенің қалаңнан", 
+              m1: "Сәлем! 👋 Профиліңді көрдім, сен де <b>{city}</b> тұрасың ба?", 
+              m2: "Мен мұнда сөйлесуге, мүмкін отбасын құруға болатын байсалды адам іздеймін... 😊",
+              v: "Дыбыстық хабарлама (0:12)",
+              lt: "Қауіпсіздік тексерісі", ld: "Марияға жауап беру үшін нақты адам екеніңізді растаңыз.", lb: "РАСТАУ ЖӘНЕ ЖАУАП БЕРУ" },
+        en: { name: "Maria", online: "Online", typing: "Maria is typing...", city: "your city", 
+              m1: "Hey! 👋 Just saw your profile, are you also from <b>{city}</b>?", 
+              m2: "I'm looking for a serious man for chatting or maybe more... 😊",
+              v: "Voice Message (0:12)",
+              lt: "Profile Protection", ld: "To listen to her voice and reply, please confirm you are a real person.", lb: "VERIFY & REPLY" },
+        de: { name: "Maria", online: "Online", typing: "Maria schreibt...", city: "deiner Stadt", 
+              m1: "Hey! 👋 Habe dein Profil gesehen, kommst du auch aus <b>{city}</b>?", 
+              m2: "Ich suche einen ernsthaften Mann für Gespräche, vielleicht sogar für eine Familie... 😊",
+              v: "Sprachnachricht (0:12)",
+              lt: "Sicherheitscheck", ld: "Um ihre Nachricht zu hören, bestätigen Sie bitte, dass Sie eine echte Person sind.", lb: "BESTÄTIGEN & ANTWORTEN" },
+        pl: { name: "Maria", online: "Dostępna", typing: "Maria pisze...", city: "twojego miasta", 
+              m1: "Cześć! 👋 Widziałam Twój profil, czy też jesteś z <b>{city}</b>?", 
+              m2: "Szukam poważnego mężczyzny do rozmowy, a może czegoś więcej... 😊",
+              v: "Wiadomość głosowa (0:12)",
+              lt: "Weryfikacja profilu", ld: "Aby odsłuchać wiadomość i odpowiedzieć Marii, potwierdź, że jesteś prawdziwą osobą.", lb: "POTWIERDŹ I ODPOWIEDZ" }
     };
 
-    // 2. Определение языка
     const userLang = navigator.language.split('-')[0] || 'en';
     const lang = translations[userLang] || translations.en;
 
-    // Заполнение статики
-    document.getElementById('name-label').innerText = lang.name;
-    document.getElementById('status-label').innerText = lang.status;
-    document.getElementById('typing-ui').innerText = lang.typing;
-    document.getElementById('lock-title').innerText = lang.lockTitle;
-    document.getElementById('lock-text').innerText = lang.lockText;
-    document.getElementById('btn-text').innerText = lang.btn;
+    // Set UI
+    document.getElementById('ui-name').innerText = lang.name;
+    document.getElementById('ui-online').innerText = lang.online;
+    document.getElementById('ui-typing').innerText = lang.typing;
+    document.getElementById('ui-lock-title').innerText = lang.lt;
+    document.getElementById('ui-lock-desc').innerText = lang.ld;
+    document.getElementById('ui-btn').innerText = lang.lb;
 
-    async function startChat() {
-      const chatBox = document.getElementById('chat-box');
-      const typingUi = document.getElementById('typing-ui');
-      const lock = document.getElementById('lock-container');
-      
-      let city = lang.city_fallback;
-      
-      // Гео-определение
-      try {
-        const res = await fetch('https://ipapi.co/json/');
-        const data = await res.json();
-        if(data.city) city = data.city;
-      } catch(e) { console.log("Geo error"); }
+    async function initChat() {
+        const box = document.getElementById('chat-box');
+        const typing = document.getElementById('ui-typing');
+        let city = lang.city;
 
-      const addMessage = (text, delay) => {
-        return new Promise(resolve => {
-          typingUi.style.display = 'block';
-          chatBox.scrollTop = chatBox.scrollHeight;
-          
-          setTimeout(() => {
-            typingUi.style.display = 'none';
-            const div = document.createElement('div');
-            div.className = 'msg received';
-            div.innerHTML = text.replace('{city}', city);
-            chatBox.appendChild(div);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            resolve();
-          }, delay);
-        });
-      };
+        try {
+            const res = await fetch('https://ipapi.co/json/');
+            const data = await res.json();
+            if(data.city) city = data.city;
+        } catch(e){}
 
-      // Сценарий чата
-      await new Promise(r => setTimeout(r, 1000));
-      await addMessage(lang.msg1, 2000);
-      await new Promise(r => setTimeout(r, 1000));
-      await addMessage(lang.msg2, 2500);
+        const addMsg = (html, delay, isVoice = false) => {
+            return new Promise(res => {
+                typing.style.display = 'block';
+                box.scrollTop = box.scrollHeight;
+                setTimeout(() => {
+                    typing.style.display = 'none';
+                    const d = document.createElement('div');
+                    d.className = 'msg bot' + (isVoice ? ' voice-msg' : '');
+                    if(isVoice) {
+                        d.innerHTML = `<svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> <span>${html}</span>`;
+                        d.onclick = () => { window.location.href = document.getElementById('ui-btn').href; };
+                    } else {
+                        d.innerHTML = html.replace('{city}', city);
+                    }
+                    box.appendChild(d);
+                    box.scrollTop = box.scrollHeight;
+                    res();
+                }, delay);
+            });
+        };
 
-      // Показ блокировки
-      setTimeout(() => {
-        lock.style.display = 'block';
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }, 1000);
+        await new Promise(r => setTimeout(r, 1000));
+        await addMsg(lang.m1, 1500);
+        await addMsg(lang.m2, 2200);
+        await addMsg(lang.v, 1800, true);
+
+        setTimeout(() => {
+            document.getElementById('lock-ui').style.display = 'block';
+            box.scrollTop = box.scrollHeight;
+        }, 1000);
     }
 
-    window.addEventListener('load', () => {
-      setTimeout(startChat, 1500);
-    });
-  </script>
+    window.onload = () => setTimeout(initChat, 1000);
+</script>
 </body>
 </html>
