@@ -1,268 +1,269 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="stylesheet" href="./assets/css/config.css">
-  <link rel="stylesheet" href="./assets/css/reset.css">  
-  <link rel="stylesheet" href="./assets/css/style.css">
-  <title>TikDate | Чат</title>
-  <style>
-    :root {
-      --primary-color: #fe2c55;
-      --bg-blur: rgba(255, 255, 255, 0.8);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Messenger</title>
+    <style>
+        :root {
+            --tg-theme-bg: #f0f2f5;
+            --main-accent: #ff4d6d; /* Мягкий розово-красный */
+            --chat-bg: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+        }
 
-    #chat-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 10000;
-      display: none;
-      align-items: center; justify-content: center;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-    .chat-window {
-      width: 92%; max-width: 360px;
-      max-height: 85vh;
-      background: #ffffff;
-      border-radius: 28px;
-      display: flex; flex-direction: column;
-      overflow: hidden;
-      position: relative;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    }
+        body, html { 
+            height: 100%; width: 100%; 
+            overflow: hidden; 
+            background: #000;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
-    .chat-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #f1f1f2;
-      display: flex; align-items: center;
-      background: #fff;
-    }
+        /* Полноэкранный мессенджер */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            background: var(--chat-bg);
+            position: relative;
+        }
 
-    .chat-avatar-wrapper {
-      position: relative;
-      margin-right: 12px;
-    }
+        /* Шапка чата */
+        .chat-header {
+            padding: env(safe-area-inset-top, 20px) 16px 12px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            z-index: 100;
+        }
 
-    .chat-avatar {
-      width: 48px; height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #fff;
-      box-shadow: 0 0 0 2px var(--primary-color);
-    }
+        .avatar {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
 
-    .online-badge {
-      position: absolute;
-      bottom: 2px; right: 2px;
-      width: 12px; height: 12px;
-      background: #4caf50;
-      border: 2px solid #fff;
-      border-radius: 50%;
-    }
+        .user-info .name { font-weight: 700; font-size: 16px; color: #1c1e21; }
+        .user-info .status { font-size: 13px; color: #4caf50; font-weight: 500; }
 
-    .chat-name {
-      font-weight: 700; font-size: 17px;
-      color: #161823; margin-bottom: 2px;
-    }
+        /* Область сообщений */
+        .chat-body {
+            flex: 1;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            gap: 12px;
+        }
 
-    .chat-status-text {
-      font-size: 13px; color: #4caf50; font-weight: 500;
-    }
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.4;
+            position: relative;
+            animation: messageAppear 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) both;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
 
-    .chat-messages {
-      flex: 1; padding: 20px;
-      overflow-y: auto;
-      background: #f8f8f9;
-      display: flex; flex-direction: column;
-    }
+        .msg-in {
+            background: #ffffff;
+            color: #1c1e21;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
 
-    .msg {
-      background: #fff;
-      padding: 12px 16px;
-      border-radius: 20px;
-      border-bottom-left-radius: 4px;
-      margin-bottom: 14px;
-      max-width: 85%;
-      font-size: 15px;
-      line-height: 1.5;
-      color: #161823;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-      align-self: flex-start;
-      animation: fadeIn 0.3s ease-out;
-    }
+        @keyframes messageAppear {
+            from { opacity: 0; transform: translateY(20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .typing {
+            font-size: 13px;
+            color: var(--main-accent);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: none;
+        }
 
-    .typing-indicator {
-      font-size: 13px; color: var(--primary-color);
-      font-weight: 600; margin-bottom: 15px;
-      display: none; align-items: center;
-    }
+        /* Нижняя панель */
+        .chat-footer {
+            padding: 12px 16px calc(env(safe-area-inset-bottom, 12px) + 10px);
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .dot-flashing {
-      position: relative; width: 6px; height: 6px;
-      border-radius: 50%; background-color: var(--primary-color);
-      margin-left: 10px;
-      animation: dot-flashing 1s infinite linear alternate;
-    }
+        .input-mock {
+            flex: 1;
+            background: #f0f2f5;
+            padding: 10px 18px;
+            border-radius: 24px;
+            color: #8e9196;
+            font-size: 15px;
+        }
 
-    @keyframes dot-flashing { from { opacity: 1; } to { opacity: 0.2; } }
+        /* Оверлей блокировки (Мягкий) */
+        .lock-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(4px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 30px 20px calc(env(safe-area-inset-bottom, 20px) + 40px);
+            z-index: 200;
+            text-align: center;
+        }
 
-    .lock-block {
-      background: #fff;
-      padding: 24px 20px;
-      text-align: center;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      border-top: 1px solid #f1f1f2;
-    }
+        .lock-card {
+            background: #fff;
+            width: 100%;
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+            animation: slideUp 0.5s ease;
+        }
 
-    .lock-icon-img { width: 44px; margin-bottom: 12px; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-    .lock-title {
-      font-weight: 800; font-size: 19px;
-      margin-bottom: 8px; color: #161823;
-    }
+        .lock-card img { width: 50px; margin-bottom: 15px; }
+        .lock-card h2 { font-size: 20px; font-weight: 800; margin-bottom: 10px; color: #1c1e21; }
+        .lock-card p { font-size: 14px; color: #606770; margin-bottom: 24px; line-height: 1.5; }
 
-    .lock-text {
-      font-size: 14px; color: #5e6066;
-      margin-bottom: 20px; line-height: 1.5;
-    }
-
-    .verify-btn {
-      background: var(--primary-color);
-      color: #fff; width: 100%;
-      padding: 16px;
-      text-decoration: none;
-      border-radius: 14px;
-      font-weight: 700; font-size: 16px;
-      display: block;
-      transition: transform 0.2s;
-      box-shadow: 0 8px 20px rgba(254, 44, 85, 0.3);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-      100% { transform: scale(1); }
-    }
-
-    /* Скрываем старый контент когда чат активен */
-    .chat-active main, .chat-active aside, .chat-active footer {
-      filter: blur(4px);
-    }
-  </style>
+        .btn-verify {
+            background: var(--main-accent);
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+        }
+    </style>
 </head>
-<body class="overlay">
+<body>
 
-  <div class="preloader active" id="preloader">
-    <div class="preloader__wrapper">
-      <img src="./assets/images/preloader/emoji.png" alt="Emoji" class="emoji">
-      <p class="preloader__text">Загрузка профиля...</p>
+<div class="app-container">
+    <header class="chat-header">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" class="avatar" alt="User">
+        <div class="user-info">
+            <div class="name">Jessica</div>
+            <div class="status" id="status-label">online</div>
+        </div>
+    </header>
+
+    <div class="chat-body" id="chat-body">
+        <div id="typing-box" class="typing">Jessica is typing...</div>
     </div>
-  </div>
 
-  <header class="header">
-    <div class="logo">TikDate</div>
-    <ul class="menu"><li>Following</li><li class="active">For you</li></ul>
-  </header>
+    <footer class="chat-footer">
+        <div class="input-mock" id="input-hint">Type a message...</div>
+    </footer>
 
-  <main class="main">
-    <div class="video">
-      <video src="./assets/files/video.mp4" loop playsinline autoplay muted style="width:100%; height:100%; object-fit:cover;"></video>
+    <div class="lock-screen" id="lock-screen">
+        <div class="lock-card">
+            <img src="https://cdn-icons-png.flaticon.com/512/565/565547.png" alt="Lock">
+            <h2 id="lock-title">Private Chat</h2>
+            <p id="lock-desc">To keep our conversation safe, please verify your profile. It takes 10 seconds!</p>
+            <a href="YOUR_SMARTLINK_HERE" class="btn-verify" id="btn-text">VERIFY & CONTINUE</a>
+        </div>
     </div>
-  </main>
+</div>
 
-  <div id="chat-overlay">
-    <div class="chat-window">
-      <div class="chat-header">
-        <div class="chat-avatar-wrapper">
-          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="chat-avatar">
-          <div class="online-badge"></div>
-        </div>
-        <div>
-          <div class="chat-name">Мария</div>
-          <div class="chat-status-text">В сети</div>
-        </div>
-      </div>
+<script>
+    const config = {
+        link: "https://google.com", // ТВОЯ ССЫЛКА
+        delayMin: 2500, // Минимум задержка
+        delayMax: 4500  // Максимум задержка
+    };
 
-      <div class="chat-messages" id="chat-messages">
-        <div id="typing" class="typing-indicator">
-          Мария печатает
-          <div class="dot-flashing"></div>
-        </div>
-      </div>
+    const i18n = {
+        ru: {
+            status: "в сети",
+            typing: "Мария печатает...",
+            input: "Введите сообщение...",
+            msg1: "Привет! Ты тоже из {city}? 😊",
+            msg2: "Я тут недавно, ищу с кем пообщаться... Свободен сегодня? Глянь мой профиль",
+            lockTitle: "Приватный чат",
+            lockDesc: "Чтобы защитить нашу переписку от спама, пожалуйста, подтвердите свой профиль.",
+            btn: "ПОДТВЕРДИТЬ И ОТВЕТИТЬ"
+        },
+        en: {
+            status: "online",
+            typing: "Jessica is typing...",
+            input: "Type a message...",
+            msg1: "Hey! Are you from {city} too? 😊",
+            msg2: "I'm new here and looking for someone to talk to... Are you free today?",
+            lockTitle: "Private Chat",
+            lockDesc: "To keep our chat safe from spam, please verify your profile.",
+            btn: "VERIFY & CONTINUE"
+        }
+        // Можно добавить de, fr, es по аналогии
+    };
 
-      <div id="lock-container" class="lock-block">
-        <img src="https://cdn-icons-png.flaticon.com/512/2553/2553313.png" class="lock-icon-img" alt="Lock">
-        <div class="lock-title">Чат ограничен</div>
-        <div class="lock-text">
-          Чтобы ответить Марии и увидеть её скрытые фото, подтвердите, что вы реальный человек.
-        </div>
-        <a href="ТВОЯ_ССЫЛКА_ТУТ" class="verify-btn">ПОДТВЕРДИТЬ И ОТВЕТИТЬ</a>
-      </div>
-    </div>
-  </div>
+    const lang = (navigator.language || navigator.userLanguage).split('-')[0] === 'ru' ? 'ru' : 'en';
+    const t = i18n[lang];
 
-  <script>
-    const smartlink = "https://ТВОЯ_ССЫЛКА_ТУТ"; 
-    document.querySelector('.verify-btn').href = smartlink;
+    // Применяем тексты
+    document.getElementById('status-label').innerText = t.status;
+    document.getElementById('typing-box').innerText = t.typing;
+    document.getElementById('input-hint').innerText = t.input;
+    document.getElementById('lock-title').innerText = t.lockTitle;
+    document.getElementById('lock-desc').innerText = t.lockDesc;
+    document.getElementById('btn-text').innerText = t.btn;
+    document.querySelector('.btn-verify').href = config.link;
 
-    async function startChat() {
-      const overlay = document.getElementById('chat-overlay');
-      const container = document.getElementById('chat-messages');
-      const typing = document.getElementById('typing');
-      const lock = document.getElementById('lock-container');
+    async function init() {
+        const body = document.getElementById('chat-body');
+        const typing = document.getElementById('typing-box');
+        
+        let city = lang === 'ru' ? 'твоего города' : 'your city';
+        try {
+            const res = await fetch('https://ipapi.co/json/');
+            const data = await res.json();
+            city = data.city || city;
+        } catch(e) {}
 
-      document.body.classList.add('chat-active');
-      overlay.style.display = 'flex';
+        const addMessage = (text, time) => {
+            return new Promise(resolve => {
+                typing.style.display = 'block';
+                body.scrollTop = body.scrollHeight;
+                setTimeout(() => {
+                    typing.style.display = 'none';
+                    const div = document.createElement('div');
+                    div.className = 'message msg-in';
+                    div.innerHTML = text.replace('{city}', city);
+                    body.insertBefore(div, typing);
+                    body.scrollTop = body.scrollHeight;
+                    resolve();
+                }, time);
+            });
+        };
 
-      let city = "твоего города";
-      try {
-        const res = await fetch('https://ipapi.co/json/');
-        const data = await res.json();
-        if(data.city) city = data.city;
-      } catch(e) {}
+        await addMessage(t.msg1, 3000);
+        await addMessage(t.msg2, 4500);
 
-      const addMsg = (text, delay) => {
-        return new Promise(resolve => {
-          typing.style.display = 'flex';
-          container.scrollTop = container.scrollHeight;
-          setTimeout(() => {
-            typing.style.display = 'none';
-            const d = document.createElement('div');
-            d.className = 'msg';
-            d.innerHTML = text;
-            container.insertBefore(d, typing);
-            container.scrollTop = container.scrollHeight;
-            resolve();
-          }, delay);
-        });
-      };
-
-      await addMsg(`Привет! 👋 Ты тоже из <b>${city}</b>?`, 1500);
-      await addMsg(`Я тут совсем недавно, ищу с кем пообщаться... Свободен сегодня? 😊`, 2500);
-
-      setTimeout(() => {
-        lock.style.display = 'flex';
-        container.scrollTop = container.scrollHeight;
-      }, 800);
+        setTimeout(() => {
+            document.getElementById('lock-screen').style.display = 'flex';
+        }, 1200);
     }
 
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const pre = document.getElementById('preloader');
-        if(pre) pre.style.display = 'none';
-        startChat();
-      }, 2000);
-    });
-  </script>
+    window.onload = () => setTimeout(init, 1500);
+</script>
+
 </body>
 </html>
