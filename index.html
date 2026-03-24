@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chat | TikDate</title>
+    <title>Chat | Klubnicka69</title>
     <audio id="msg-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
     <style>
         :root { --primary: #fe2c55; --online: #4caf50; }
@@ -25,12 +25,14 @@
             box-shadow: 0 25px 50px rgba(0,0,0,0.6); overflow: hidden; position: relative;
         }
 
+        /* Header */
         .header { padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; background: #fff; z-index: 10; }
         .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid var(--primary); }
         .u-name { font-weight: 700; font-size: 17px; color: #161823; }
         .u-status { font-size: 12px; color: #8a8b91; transition: 0.5s; }
         .u-status.online { color: var(--online); font-weight: 800; }
 
+        /* Chat Area */
         .msg-area { 
             flex: 1; padding: 15px; overflow-y: auto; 
             background: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%);
@@ -55,19 +57,23 @@
         @keyframes blink { 0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1.1); } }
         @keyframes pop { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Actions */
         .action-zone { padding: 15px; background: #fff; border-top: 1px solid #eee; text-align: center; }
-        .btn-reply { background: #f1f1f2; border: none; padding: 12px 18px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; color: #161823; margin: 4px; }
+        .btn-reply { background: #f1f1f2; border: none; padding: 12px 18px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; color: #161823; margin: 4px; transition: 0.2s; }
+        .btn-reply:active { background: var(--primary); color: #fff; }
 
+        /* Fake Input */
         .input-bar { padding: 15px; background: #fff; border-top: 1px solid #eee; display: none; align-items: center; gap: 10px; cursor: pointer; }
         .fake-input { flex: 1; background: #f1f1f2; padding: 10px 15px; border-radius: 20px; font-size: 14px; color: #8a8b91; }
 
+        /* Lock Overlay */
         .lock-overlay {
             position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; padding: 30px 20px; 
             border-top-left-radius: 30px; border-top-right-radius: 30px; box-shadow: 0 -15px 40px rgba(0,0,0,0.2); 
-            transform: translateY(105%); transition: 0.5s; z-index: 100; text-align: center;
+            transform: translateY(105%); transition: 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 100; text-align: center;
         }
         .lock-overlay.active { transform: translateY(0); }
-        .btn-reg { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 18px; border-radius: 16px; font-weight: 800; font-size: 18px; }
+        .btn-reg { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 18px; border-radius: 16px; font-weight: 800; font-size: 18px; box-shadow: 0 10px 20px rgba(254, 44, 85, 0.3); }
     </style>
 </head>
 <body>
@@ -79,8 +85,7 @@
 <div id="chat-overlay">
     <div class="chat-card">
         <div class="header">
-            <!-- Фото девушки со спины -->
-            <img src="https://share.google/i7Fm4b8L6NZuqqmrq" class="avatar">
+            <img src="d59057c24d82bac0626a0ae698735742.jpg" class="avatar" alt="Klubnicka69">
             <div>
                 <div class="u-name">Klubnicka69</div>
                 <div class="u-status" id="ui-status">...</div>
@@ -114,7 +119,9 @@
         en: { lastSeen: "Was online 15m ago", online: "Online", instr: "Say Hi:", sent: "Delivered", read: "Read", replies: ["Hey! 👋", "You are hot! 😍", "Let's chat! 😊"], m1: "Hi! 😊", m2: "You're the first person who's decided to write to me in the last month ☺️ I was just about to delete my profile from the site😊", m3: "What's your name? Where are you from? 🥲", input: "Type answer...", lt: "Continue Chat", ld: "Complete quick registration to reply to Klubnicka69 and keep chatting.", lb: "REPLY TO HER" },
         de: { lastSeen: "Vor 15 Min.", online: "Online", instr: "Wähle:", sent: "Zugestellt", read: "Gelesen", replies: ["Hallo! 👋", "Hübsch! 😍", "Chatten? 😊"], m1: "Hallo! 😊", m2: "Du bist der Erste, der mir im letzten Monat geschrieben hat ☺️ Ich wollte mein Profil gerade löschen😊", m3: "Wie heißt du? Woher kommst du? 🥲", input: "Schreiben...", lt: "Weiter chatten", ld: "Registriere dich kurz, um Klubnicka69 zu antworten und den Chat fortzusetzen.", lb: "IHR ANTWORTEN" },
         fr: { lastSeen: "Il y a 15 min", online: "En ligne", instr: "Choisissez :", sent: "Distribué", read: "Lu", replies: ["Salut! 👋", "Belle! 😍", "On discute? 😊"], m1: "Salut! 😊", m2: "Tu es le premier à m'écrire ce mois-ci ☺️ J'allais supprimer mon profil du site😊", m3: "C'est quoi ton nom ? Tu viens d'où ? 🥲", input: "Écrire...", lt: "Continuer", ld: "Inscris-toi vite pour répondre à Klubnicka69 et continuer la discussion.", lb: "LUI RÉPONDRE" },
-        es: { lastSeen: "Hace 15 min", online: "En línea", instr: "Elige:", sent: "Entregado", read: "Leído", replies: ["¡Hola! 👋", "¡Guapa! 😍", "¿Hablamos? 😊"], m1: "¡Hola! 😊", m2: "Eres el primero que me escribe en el último mes ☺️ Estaba a punto de borrar mi perfil del sitio😊", m3: "¿Cómo te llamas? ¿De dónde eres? 🥲", input: "Escribir...", lt: "Continuar", ld: "Regístrate rápido para responder a Klubnicka69 y seguir chateando.", lb: "RESPONDER" }
+        es: { lastSeen: "Hace 15 min", online: "En línea", instr: "Elige:", sent: "Entregado", read: "Leído", replies: ["¡Hola! 👋", "¡Guapa! 😍", "¿Hablamos? 😊"], m1: "¡Hola! 😊", m2: "Eres el primero que me escribe en el último mes ☺️ Estaba a punto de borrar mi perfil del sitio😊", m3: "¿Cómo te llamas? ¿De dónde eres? 🥲", input: "Escribir...", lt: "Continuar", ld: "Regístrate rápido para responder a Klubnicka69 y seguir chateando.", lb: "RESPONDER" },
+        lv: { lastSeen: "Pirms 15 min", online: "Tiešsaistē", instr: "Izvēlies:", sent: "Piegādāts", read: "Izlasīts", replies: ["Sveiki! 👋", "Skaista! 😍", "Iepazīsimies? 😊"], m1: "Sveiki! 😊", m2: "Tu esi pirmais, kas man uzrakstījis pēdējā mēneša laikā ☺️ Es jau gribēju dzēst savu anketu😊", m3: "Kā tevi sauc? No kurienes tu esi? 🥲", input: "Rakstīt...", lt: "Turpināt", ld: "Pabeidziet ātru reģistrāciju, lai atbildētu Klubnicka69.", lb: "ATBILDĒT" },
+        lt: { lastSeen: "Prieš 15 min", online: "Prisijungusi", instr: "Pasirinkite:", sent: "Pristatyta", read: "Perskaityta", replies: ["Labas! 👋", "Gražuolė! 😍", "Susipažinkime? 😊"], m1: "Labas! 😊", m2: "Tu pirmas, parašęs man per pastarąjį mėnesį ☺️ Jau norėjau trinti savo anketą😊", m3: "Kuo tu vardu? Iš kur esi? 🥲", input: "Rašyti...", lt: "Tęsti", ld: "Užsiregistruokite, kad atsakytumėte Klubnicka69.", lb: "ATSAKYTI" }
     };
 
     const getLang = () => {
@@ -144,43 +151,47 @@
     async function startSeq(t) {
         document.getElementById('ui-actions').style.display = 'none';
         const box = document.getElementById('box');
+        
+        // 1. Сообщение пользователя
         const d = document.createElement('div');
         d.className = 'bubble sent';
         d.innerHTML = `${t}<div class="status-ticks" id="tick">${cur.sent}</div>`;
         box.appendChild(d);
         box.scrollTop = box.scrollHeight;
 
-        // Разрыв 4 секунды до ответа
+        // 2. Ждем 2 сек до статуса "Прочитано"
         await new Promise(r => setTimeout(r, 2000));
         document.getElementById('tick').innerText = cur.read;
         document.getElementById('tick').classList.add('read');
         
+        // 3. Смена статуса в шапке
         const st = document.getElementById('ui-status');
         st.innerText = cur.online; st.classList.add('online');
 
-        // Пауза перед первым ответом (суммарно 4 сек после отправки)
+        // 4. Еще 2 сек (итого 4 сек разрыва) перед печатью
         await new Promise(r => setTimeout(r, 2000));
         
-        // m1: Привет (5 сек печатает)
+        // 5. Первое сообщение (печать 5 сек)
         showTyping();
         await new Promise(r => setTimeout(r, 5000));
         hideTyping();
         addMsg(cur.m1);
 
-        // m2: Про анкету (5 сек печатает)
+        // 6. Второе сообщение (печать 5 сек)
         await new Promise(r => setTimeout(r, 2000));
         showTyping();
         await new Promise(r => setTimeout(r, 5000));
         hideTyping();
         addMsg(cur.m2);
 
-        // m3: Как зовут (2 сек печатает)
+        // 7. Третье сообщение (печать 2 сек)
         await new Promise(r => setTimeout(r, 1500));
         showTyping();
         await new Promise(r => setTimeout(r, 2000));
         hideTyping();
         addMsg(cur.m3);
 
+        // 8. Показываем строку ввода
         document.getElementById('ui-input').style.display = 'flex';
     }
 
