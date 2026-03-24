@@ -5,88 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chat | TikDate</title>
     <style>
-        :root { --primary: #fe2c55; --bg: #f0f2f5; --bubble-user: #fe2c55; --bubble-bot: #ffffff; }
+        :root { --primary: #fe2c55; --bg-gradient: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%); }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { background: #000; overflow: hidden; }
 
+        /* Фон видео */
         .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        .video-bg video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
+        .video-bg video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.4); }
 
         #chat-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100; display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         }
 
         .chat-card {
             width: 92%; max-width: 380px; height: 85vh;
-            background: #fff; border-radius: 28px; display: flex; flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden; position: relative;
+            background: #fff; border-radius: 30px; display: flex; flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6); overflow: hidden; position: relative;
         }
 
         /* Header */
-        .header { padding: 12px 16px; border-bottom: 1px solid #eee; display: flex; align-items: center; background: #fff; z-index: 10; }
-        .avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid var(--primary); }
-        .u-name { font-weight: 700; font-size: 16px; color: #161823; }
-        .u-status { font-size: 12px; color: #8a8b91; transition: 0.3s; }
-        .u-status.online { color: #4caf50; font-weight: 600; }
+        .header { padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; background: #fff; z-index: 10; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid var(--primary); }
+        .u-name { font-weight: 700; font-size: 17px; color: #161823; }
+        .u-status { font-size: 12px; color: #8a8b91; transition: 0.5s; }
+        .u-status.online { color: #4caf50; font-weight: 700; }
 
-        /* Messages Area with Cool Wallpaper */
+        /* Сочный цветастый фон чата */
         .msg-area { 
             flex: 1; padding: 15px; overflow-y: auto; 
-            background-color: #e5ddd5;
-            background-image: url("https://www.transparenttextures.com/patterns/cubes.png"); /* Легкий паттерн */
-            display: flex; flex-direction: column; gap: 10px; 
+            background: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%); /* Цветастый градиент */
+            display: flex; flex-direction: column; gap: 12px; 
         }
 
         .bubble { 
-            max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 15px; line-height: 1.4; 
-            position: relative; animation: pop 0.3s ease forwards; opacity: 0;
+            max-width: 85%; padding: 12px 16px; border-radius: 20px; font-size: 15px; line-height: 1.4; 
+            position: relative; animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        .received { background: #fff; color: #000; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .sent { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .received { background: rgba(255, 255, 255, 0.95); color: #000; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .sent { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(254, 44, 85, 0.2); }
 
-        /* Quick Replies */
-        .quick-replies { 
-            padding: 15px; background: #fff; display: flex; flex-wrap: wrap; gap: 8px; 
-            justify-content: center; border-top: 1px solid #eee;
-        }
+        /* Анимация печатания внутри пузырька */
+        .typing-bubble { display: flex; align-items: center; gap: 4px; padding: 15px !important; }
+        .dot { width: 6px; height: 6px; background: #adb5bd; border-radius: 50%; animation: blink 1.4s infinite both; }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes blink { 0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1.1); } }
+        @keyframes pop { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Инструкция и Кнопки */
+        .action-zone { padding: 15px; background: #fff; border-top: 1px solid #eee; text-align: center; }
+        .instruction { font-size: 13px; color: #8a8b91; margin-bottom: 12px; font-weight: 500; }
+        .quick-replies { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
         .btn-reply { 
-            background: #f1f1f2; border: none; padding: 10px 15px; border-radius: 20px; 
+            background: #f1f1f2; border: none; padding: 12px 18px; border-radius: 25px; 
             font-size: 14px; font-weight: 600; cursor: pointer; color: #161823; 
-            transition: 0.2s; border: 1px solid transparent;
+            transition: 0.3s;
         }
-        .btn-reply:hover { background: #fff; border-color: var(--primary); color: var(--primary); }
+        .btn-reply:active { transform: scale(0.95); background: var(--primary); color: #fff; }
 
-        /* Fake Input */
-        .input-bar { 
-            padding: 12px 16px; background: #fff; border-top: 1px solid #eee; 
-            display: flex; align-items: center; gap: 10px; cursor: pointer;
-        }
-        .fake-input { 
-            flex: 1; background: #f1f1f2; padding: 10px 15px; border-radius: 20px; 
-            font-size: 14px; color: #8a8b91; 
-        }
+        /* Фейк ввод */
+        .input-bar { padding: 15px; background: #fff; border-top: 1px solid #eee; display: none; align-items: center; gap: 10px; cursor: pointer; }
+        .fake-input { flex: 1; background: #f1f1f2; padding: 10px 15px; border-radius: 20px; font-size: 14px; color: #8a8b91; }
 
-        /* Lock Overlay (Simplified) */
+        /* Окно регистрации */
         .lock-overlay {
             position: absolute; bottom: 0; left: 0; width: 100%; background: #fff;
-            padding: 25px 20px; border-top-left-radius: 24px; border-top-right-radius: 24px;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.1); transform: translateY(100%);
-            transition: 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 100;
-            text-align: center;
+            padding: 30px 20px; border-top-left-radius: 30px; border-top-right-radius: 30px;
+            box-shadow: 0 -15px 40px rgba(0,0,0,0.2); transform: translateY(105%);
+            transition: 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 100; text-align: center;
         }
         .lock-overlay.active { transform: translateY(0); }
-        .lock-title { font-weight: 800; font-size: 19px; margin-bottom: 10px; }
-        .lock-text { font-size: 14px; color: #616161; margin-bottom: 20px; line-height: 1.4; }
+        .lock-title { font-weight: 800; font-size: 20px; margin-bottom: 10px; color: #161823; }
+        .lock-text { font-size: 15px; color: #5e6066; margin-bottom: 25px; line-height: 1.5; }
         .btn-reg { 
             background: var(--primary); color: #fff; text-decoration: none; display: block;
-            padding: 16px; border-radius: 14px; font-weight: 700; font-size: 16px;
-            box-shadow: 0 8px 20px rgba(254, 44, 85, 0.3);
+            padding: 18px; border-radius: 16px; font-weight: 700; font-size: 16px;
+            box-shadow: 0 10px 25px rgba(254, 44, 85, 0.4); text-transform: uppercase;
         }
-
-        @keyframes pop { from { opacity: 0; transform: translateY(10px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .typing { font-size: 12px; color: var(--primary); font-weight: 600; margin-left: 15px; display: none; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -106,29 +104,28 @@
         </div>
 
         <div class="msg-area" id="box">
-            <div class="bubble received" style="opacity: 1; animation: none;" id="first-msg">
-                Привет! Посмотрела твой профиль, ты мне понравился 😊 Откуда ты?
+            <!-- Сообщения появятся здесь -->
+        </div>
+
+        <!-- Зона первого шага -->
+        <div class="action-zone" id="ui-actions">
+            <div class="instruction" id="ui-instr">Выберите приветствие, чтобы начать чат:</div>
+            <div class="quick-replies">
+                <button class="btn-reply" onclick="startSequence(this)">Привет! 👋</button>
+                <button class="btn-reply" onclick="startSequence(this)">Ты очень красивая! 😍</button>
+                <button class="btn-reply" onclick="startSequence(this)">Познакомимся? 😊</button>
             </div>
         </div>
-        
-        <div class="typing" id="ui-typing">Typing...</div>
 
-        <!-- Кнопки выбора -->
-        <div class="quick-replies" id="ui-replies">
-            <button class="btn-reply" onclick="userReply(this)">Привет! 👋</button>
-            <button class="btn-reply" onclick="userReply(this)">Ты очень красивая! 😍</button>
-            <button class="btn-reply" onclick="userReply(this)">Познакомимся? 😊</button>
-        </div>
-
-        <!-- Поле ввода (фейк) -->
-        <div class="input-bar" onclick="showLock()">
+        <!-- Поле ввода (появится после переписки) -->
+        <div class="input-bar" id="ui-input" onclick="showLock()">
             <div class="fake-input" id="ui-input-text">Write a message...</div>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="#fe2c55"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="#fe2c55"/></svg>
         </div>
 
         <!-- Окно регистрации -->
         <div class="lock-overlay" id="lock-block">
-            <div class="lock-title" id="ui-lock-title">Security Policy</div>
+            <div class="lock-title" id="ui-lock-title">Security Check</div>
             <div class="lock-text" id="ui-lock-desc">To protect our community from spam, please create a profile to continue the conversation.</div>
             <a href="ТВОЯ_ССЫЛКА_ТУТ" class="btn-reg" id="ui-btn">CONTINUE & CHAT</a>
         </div>
@@ -137,34 +134,30 @@
 
 <script>
     const translations = {
-        uk: { name: "Марія", lastSeen: "Була в мережі 15 хв. тому", online: "В мережі", typing: "Марія пише...", 
-              first: "Привіт! Подивилася твій профіль, ти мені сподобався 😊 Звідки ти?",
+        uk: { name: "Марія", lastSeen: "Була в мережі 15 хв. тому", online: "В мережі", instr: "Оберіть вітання, щоб почати чат:",
               m1: "Приємно познайомитись! 👋 Я теж із <b>{city}</b>!", 
-              m2: "Я тут шукаю серйозного чоловіка... Можеш надіслати своє фото? Я відкрию свої у відповідь 😊",
+              m2: "Я тут шукаю серйозну людину для спілкування... Можеш надіслати своє фото? Я відкрию свої у відповідь 😊",
               input: "Написати повідомлення...",
-              lt: "Безпека чату", ld: "Для захисту від ботів, доступ до повідомлень відкривається після швидкої реєстрації.", lb: "ПРОДОВЖИТИ ТА ВІДПОВІСТИ" },
-        ru: { name: "Мария", lastSeen: "Была в сети 15 мин. назад", online: "В сети", typing: "Мария печатает...", 
-              first: "Привет! Посмотрела твой профиль, ты мне понравился 😊 Откуда ты?",
+              lt: "Безпека спільноти", ld: "Для захисту користувачів від спаму, чат доступний лише після швидкої реєстрації.", lb: "ПРОДОВЖИТИ ТА ВІДПОВІСТИ" },
+        ru: { name: "Мария", lastSeen: "Была в сети 15 мин. назад", online: "В сети", instr: "Выберите приветствие, чтобы начать чат:",
               m1: "Приятно познакомиться! 👋 Я тоже из <b>{city}</b>!", 
               m2: "Я тут ищу серьезного мужчину... Можешь прислать свое фото? Я открою свои в ответ 😊",
               input: "Написать сообщение...",
               lt: "Безопасность сообщества", ld: "Для защиты пользователей чат доступен только после бесплатной регистрации.", lb: "ПРОДОЛЖИТЬ И ОТВЕТИТЬ" },
-        en: { name: "Maria", lastSeen: "Was online 15m ago", online: "Online", typing: "Maria is typing...", 
-              first: "Hey! Just saw your profile, I like you 😊 Where are you from?",
+        en: { name: "Maria", lastSeen: "Was online 15m ago", online: "Online", instr: "Choose a greeting to start chat:",
               m1: "Nice to meet you! 👋 I'm also from <b>{city}</b>!", 
               m2: "I'm looking for a serious man here... Can you send your photo? I'll unlock mine too 😊",
               input: "Type a message...",
-              lt: "Security Check", ld: "To protect our members from spam, please register to unlock the full chat.", lb: "REGISTER & REPLY" }
+              lt: "Security Policy", ld: "To protect our members from spam, please register to unlock the full chat.", lb: "REGISTER & REPLY" }
     };
 
     const userLang = navigator.language.split('-')[0] || 'en';
     const lang = translations[userLang] || translations.en;
 
-    // Инициализация текстов
+    // Инициализация
     document.getElementById('ui-name').innerText = lang.name;
     document.getElementById('ui-status').innerText = lang.lastSeen;
-    document.getElementById('ui-typing').innerText = lang.typing;
-    document.getElementById('first-msg').innerText = lang.first;
+    document.getElementById('ui-instr').innerText = lang.instr;
     document.getElementById('ui-input-text').innerText = lang.input;
     document.getElementById('ui-lock-title').innerText = lang.lt;
     document.getElementById('ui-lock-desc').innerText = lang.ld;
@@ -182,30 +175,52 @@
         box.scrollTop = box.scrollHeight;
     }
 
-    async function userReply(btn) {
+    function showTyping() {
+        const box = document.getElementById('box');
+        const d = document.createElement('div');
+        d.className = 'bubble received typing-bubble';
+        d.id = 'temp-typing';
+        d.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+        box.appendChild(d);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function hideTyping() {
+        const t = document.getElementById('temp-typing');
+        if(t) t.remove();
+    }
+
+    async function startSequence(btn) {
         const text = btn.innerText;
-        document.getElementById('ui-replies').style.display = 'none'; // Скрываем кнопки
+        document.getElementById('ui-actions').style.display = 'none'; // Убираем кнопки приветствия
         addMessage(text, 'sent');
 
+        // Пауза перед тем как она "зайдет"
+        await new Promise(r => setTimeout(r, 1500));
+        
         // Меняем статус на Онлайн
         const status = document.getElementById('ui-status');
         status.innerText = lang.online;
         status.classList.add('online');
 
-        const typing = document.getElementById('ui-typing');
-
-        // Девушка отвечает
-        await new Promise(r => setTimeout(r, 1500));
-        typing.style.display = 'block';
+        // Печатает первое сообщение
+        await new Promise(r => setTimeout(r, 800));
+        showTyping();
         await new Promise(r => setTimeout(r, 2000));
-        typing.style.display = 'none';
+        hideTyping();
         addMessage(lang.m1, 'received');
 
-        await new Promise(r => setTimeout(r, 1000));
-        typing.style.display = 'block';
+        // Пауза между сообщениями 2-3 сек
         await new Promise(r => setTimeout(r, 2500));
-        typing.style.display = 'none';
+        
+        // Печатает второе сообщение
+        showTyping();
+        await new Promise(r => setTimeout(r, 3000));
+        hideTyping();
         addMessage(lang.m2, 'received');
+
+        // Показываем строку ввода
+        document.getElementById('ui-input').style.display = 'flex';
     }
 
     function showLock() {
