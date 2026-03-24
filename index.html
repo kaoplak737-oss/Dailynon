@@ -87,9 +87,10 @@
 <div id="chat-overlay">
     <div class="chat-card">
         <div class="header">
-            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=150" class="avatar">
+            <!-- Аватар без лица -->
+            <img src="https://images.unsplash.com/photo-1516062423079-7ca13cdc7f5a?auto=format&fit=crop&w=150&q=80" class="avatar">
             <div>
-                <div class="u-name" id="ui-name">Maria</div>
+                <div class="u-name" id="ui-name">Klubnicka69</div>
                 <div class="u-status" id="ui-status">...</div>
             </div>
         </div>
@@ -98,9 +99,7 @@
 
         <div class="action-zone" id="ui-actions">
             <div class="instruction" id="ui-instr">...</div>
-            <div class="quick-replies" id="replies-container">
-                <!-- Кнопки вставятся через JS -->
-            </div>
+            <div class="quick-replies" id="replies-container"></div>
         </div>
 
         <div class="input-bar" id="ui-input" onclick="showLock()">
@@ -118,55 +117,47 @@
 
 <script>
     const translations = {
-        uk: { name: "Марія", lastSeen: "Була в мережі 15 хв. тому", online: "В мережі", instr: "Оберіть вітання, щоб почати чат:",
+        uk: { name: "Klubnicka69", lastSeen: "Була в мережі 15 хв. тому", online: "В мережі", instr: "Оберіть вітання, щоб почати чат:",
               replies: ["Привіт! 👋", "Ти дуже красива! 😍", "Познайомимося? 😊"],
-              m1: "Приємно познайомитись! 👋 Я теж із <b>{city}</b>!", 
-              m2: "Я тут шукаю серйозного чоловіка... Можеш надіслати своє фото? Я відкрию свої у відповідь 😊",
+              m1: "Привіт! ❤️ Ти перший, хто мені вирішив написати за останній місяць. Я вже хотіла видаляти свою анкету з сайту... Дякую, що написав! 🥰", 
+              m2: "Як тебе звати? Ти звідки? 🌎",
               input: "Написати повідомлення...",
               lt: "Безпека спільноти", ld: "Для захисту користувачів від спаму, чат доступний лише після швидкої реєстрації.", lb: "ПРОДОВЖИТИ ТА ВІДПОВІСТИ" },
-        ru: { name: "Мария", lastSeen: "Была в сети 15 мин. назад", online: "В сети", instr: "Выберите приветствие, чтобы начать чат:",
+        ru: { name: "Klubnicka69", lastSeen: "Была в сети 15 мин. назад", online: "В сети", instr: "Выберите приветствие, чтобы начать чат:",
               replies: ["Привет! 👋", "Ты очень красивая! 😍", "Познакомимся? 😊"],
-              m1: "Приятно познакомиться! 👋 Я тоже из <b>{city}</b>!", 
-              m2: "Я тут ищу серьезного мужчину... Можешь прислать свое фото? Я открою свои в ответ 😊",
+              m1: "Привет! ❤️ Ты первый, кто мне решил написать за последний месяц. Я уже хотела удалять свою анкету с сайта... Спасибо, что написал! 🥰", 
+              m2: "Как тебя зовут? Ты откуда? 🌎",
               input: "Написать сообщение...",
               lt: "Безопасность сообщества", ld: "Для защиты пользователей чат доступен только после бесплатной регистрации.", lb: "ПРОДОЛЖИТЬ И ОТВЕТИТЬ" },
-        en: { name: "Maria", lastSeen: "Was online 15m ago", online: "Online", instr: "Choose a greeting to start:",
+        en: { name: "Klubnicka69", lastSeen: "Was online 15m ago", online: "Online", instr: "Choose a greeting to start:",
               replies: ["Hey there! 👋", "You are gorgeous! 😍", "Let's chat! 😊"],
-              m1: "Nice to meet you! 👋 I'm also from <b>{city}</b>!", 
-              m2: "I'm looking for a serious man here... Can you send your photo? I'll unlock mine too 😊",
+              m1: "Hi! ❤️ You're the first person who's written to me in the last month. I was just about to delete my profile from the site... Thank you for messaging! 🥰", 
+              m2: "What's your name? Where are you from? 🌎",
               input: "Type a message...",
               lt: "Security Policy", ld: "To protect our members from spam, please register to unlock the full chat.", lb: "REGISTER & REPLY" },
-        de: { name: "Maria", lastSeen: "Zuletzt online vor 15 Min.", online: "Online", instr: "Wähle eine Begrüßung:",
+        de: { name: "Klubnicka69", lastSeen: "Zuletzt online vor 15 Min.", online: "Online", instr: "Wähle eine Begrüßung:",
               replies: ["Hallo! 👋", "Du bist wunderschön! 😍", "Lass uns chatten! 😊"],
-              m1: "Schön dich kennenzulernen! 👋 Ich komme auch aus <b>{city}</b>!", 
-              m2: "Ich suche hier einen ernsthaften Mann... Kannst du mir ein Foto schicken? Ich zeige dir meine dann auch 😊",
+              m1: "Hallo! ❤️ Du bist der Erste, der mir im letzten Monat geschrieben hat. Ich wollte mein Profil gerade von der Seite löschen... Danke, dass du mir geschrieben hast! 🥰", 
+              m2: "Wie heißt du? Woher kommst du? 🌎",
               input: "Nachricht schreiben...",
               lt: "Sicherheitshinweis", ld: "Zum Schutz unserer Mitglieder ist der Chat erst nach einer kurzen Registrierung verfügbar.", lb: "REGISTRIEREN & ANTWORTEN" },
-        pl: { name: "Maria", lastSeen: "Była online 15 min temu", online: "Dostępna", instr: "Wybierz powitanie:",
+        pl: { name: "Klubnicka69", lastSeen: "Była online 15 min temu", online: "Dostępna", instr: "Wybierz powitanie:",
               replies: ["Cześć! 👋", "Jesteś bardzo piękna! 😍", "Poznamy się? 😊"],
-              m1: "Miło Cię poznać! 👋 Ja też jestem z <b>{city}</b>!", 
-              m2: "Szukam tutaj kogoś poważnego... Czy możesz wysłać swoje zdjęcie? Ja odblokuję swoje w zamian 😊",
+              m1: "Cześć! ❤️ Jesteś pierwszą osobą, która napisała до mnie w ciągu ostatniego miesiąca. Miałam już usuwać swój profil z tej strony... Dziękuję, że napisałeś! 🥰", 
+              m2: "Jak masz na imię? Skąd jesteś? 🌎",
               input: "Napisz wiadomość...",
               lt: "Bezpieczeństwo", ld: "Aby chronić użytkowników przed spamem, czat jest dostępny po szybkiej rejestracji.", lb: "ZAREJESTRUJ SIĘ" },
-        kk: { name: "Мария", lastSeen: "15 мин бұрын болды", online: "Желіде", instr: "Чатты бастау үшін сәлемдемені таңдаңыз:",
+        kk: { name: "Klubnicka69", lastSeen: "15 мин бұрын болды", online: "Желіде", instr: "Чатты бастау үшін сәлемдемені таңдаңыз:",
               replies: ["Сәлем! 👋", "Сен өте әдемісің! 😍", "Танысайық па? 😊"],
-              m1: "Танысқаныма қуаныштымын! 👋 Мен де <b>{city}</b> тұрамын!", 
-              m2: "Мен мұнда байсалды ер адам іздеп жүрмін... Суретіңді жібере аласың ба? Мен де жауап ретінде жіберемін 😊",
+              m1: "Сәлем! ❤️ Сен соңғы бір айда маған жазған бірінші адамсың. Мен қазір ғана анкетамды сайттан өшірейін деп жатыр едім... Жазғаныңа рақмет! 🥰", 
+              m2: "Есімің кім? Қай жақтансың? 🌎",
               input: "Хабарлама жазу...",
               lt: "Қауіпсіздік", ld: "Пайдаланушыларды спамнан қорғау үшін чат тіркелгеннен кейін ғана ашылады.", lb: "ТІРКЕЛУ ЖӘНЕ ЖАУАП БЕРУ" }
     };
 
-    // Определение языка (нативно и надежно)
-    const getLang = () => {
-        const navLang = navigator.language.split('-')[0];
-        return translations[navLang] ? navLang : 'en';
-    };
-
-    const currentLang = getLang();
+    const currentLang = (translations[navigator.language.split('-')[0]]) ? navigator.language.split('-')[0] : 'en';
     const lang = translations[currentLang];
 
-    // Заполнение интерфейса
-    document.getElementById('ui-name').innerText = lang.name;
     document.getElementById('ui-status').innerText = lang.lastSeen;
     document.getElementById('ui-instr').innerText = lang.instr;
     document.getElementById('ui-input-text').innerText = lang.input;
@@ -174,7 +165,6 @@
     document.getElementById('ui-lock-desc').innerText = lang.ld;
     document.getElementById('ui-btn').innerText = lang.lb;
 
-    // Генерация кнопок приветствия
     const repliesContainer = document.getElementById('replies-container');
     lang.replies.forEach(text => {
         const btn = document.createElement('button');
@@ -184,14 +174,11 @@
         repliesContainer.appendChild(btn);
     });
 
-    let city = "your city";
-    fetch('https://ipapi.co/json/').then(r => r.json()).then(data => { if(data.city) city = data.city; });
-
     function addMessage(text, type) {
         const box = document.getElementById('box');
         const d = document.createElement('div');
         d.className = `bubble ${type}`;
-        d.innerHTML = text.replace('{city}', city);
+        d.innerHTML = text;
         box.appendChild(d);
         box.scrollTop = box.scrollHeight;
     }
@@ -206,34 +193,23 @@
         box.scrollTop = box.scrollHeight;
     }
 
-    function hideTyping() {
-        const t = document.getElementById('temp-typing');
-        if(t) t.remove();
-    }
-
     async function startSequence(userText) {
         document.getElementById('ui-actions').style.display = 'none'; 
         addMessage(userText, 'sent');
-
         await new Promise(r => setTimeout(r, 1200));
-        
         const status = document.getElementById('ui-status');
         status.innerText = lang.online;
         status.classList.add('online');
-
         await new Promise(r => setTimeout(r, 800));
         showTyping();
-        await new Promise(r => setTimeout(r, 2000));
-        hideTyping();
+        await new Promise(r => setTimeout(r, 2200));
+        document.getElementById('temp-typing').remove();
         addMessage(lang.m1, 'received');
-
         await new Promise(r => setTimeout(r, 2500));
-        
         showTyping();
-        await new Promise(r => setTimeout(r, 3000));
-        hideTyping();
+        await new Promise(r => setTimeout(r, 1800));
+        document.getElementById('temp-typing').remove();
         addMessage(lang.m2, 'received');
-
         document.getElementById('ui-input').style.display = 'flex';
     }
 
@@ -241,6 +217,5 @@
         document.getElementById('lock-block').classList.add('active');
     }
 </script>
-
 </body>
 </html>
