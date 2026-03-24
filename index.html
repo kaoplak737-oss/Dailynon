@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chat | TikDate</title>
-    <!-- Звук уведомления (стандартный короткий писк) -->
     <audio id="msg-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
     <style>
         :root { --primary: #fe2c55; --online: #4caf50; }
@@ -17,7 +16,7 @@
         #chat-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100; display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.2); backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.2); backdrop-filter: blur(10px);
         }
 
         .chat-card {
@@ -53,9 +52,6 @@
         .dot:nth-child(2) { animation-delay: 0.2s; }
         .dot:nth-child(3) { animation-delay: 0.4s; }
 
-        /* Блюр фото - секретное оружие конверта */
-        .blur-photo { width: 120px; height: 160px; border-radius: 15px; filter: blur(12px); border: 2px solid #fff; margin-top: 5px; cursor: pointer; }
-
         @keyframes blink { 0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1.1); } }
         @keyframes pop { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -65,17 +61,13 @@
         .input-bar { padding: 15px; background: #fff; border-top: 1px solid #eee; display: none; align-items: center; gap: 10px; cursor: pointer; }
         .fake-input { flex: 1; background: #f1f1f2; padding: 10px 15px; border-radius: 20px; font-size: 14px; color: #8a8b91; }
 
-        /* Окно регистрации с таймером */
         .lock-overlay {
             position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; padding: 30px 20px; 
             border-top-left-radius: 30px; border-top-right-radius: 30px; box-shadow: 0 -15px 40px rgba(0,0,0,0.2); 
             transform: translateY(105%); transition: 0.5s; z-index: 100; text-align: center;
         }
         .lock-overlay.active { transform: translateY(0); }
-        .timer-tag { background: #fff0f3; color: var(--primary); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 15px; display: inline-block; }
-        .btn-reg { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 18px; border-radius: 16px; font-weight: 800; font-size: 18px; animation: pulse 1.5s infinite; }
-        
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+        .btn-reg { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 18px; border-radius: 16px; font-weight: 800; font-size: 18px; }
     </style>
 </head>
 <body>
@@ -87,7 +79,8 @@
 <div id="chat-overlay">
     <div class="chat-card">
         <div class="header">
-            <img src="https://images.unsplash.com/photo-1516062423079-7ca13cdc7f5a?auto=format&fit=crop&w=150&q=80" class="avatar">
+            <!-- Фото девушки со спины -->
+            <img src="https://amiel.club/uploads/posts/2023-03/1679185197_amiel-club-p-kartinki-so-spini-instagram-1.jpg" class="avatar">
             <div>
                 <div class="u-name">Klubnicka69</div>
                 <div class="u-status" id="ui-status">...</div>
@@ -107,7 +100,6 @@
         </div>
 
         <div class="lock-overlay" id="lock-block">
-            <div class="timer-tag" id="ui-timer">Waiting for answer: 04:59</div>
             <div style="font-weight:900; font-size:22px; margin-bottom:10px;" id="ui-lock-title">...</div>
             <div style="font-size:15px; color:#5e6066; margin-bottom:25px; line-height: 1.4;" id="ui-lock-desc">...</div>
             <a href="ТВОЯ_ССЫЛКА_ТУТ" class="btn-reg" id="ui-btn">...</a>
@@ -117,12 +109,12 @@
 
 <script>
     const translations = {
-        ru: { lastSeen: "Была 15 мин. назад", online: "В сети", instr: "Выберите приветствие:", sent: "Доставлено", read: "Прочитано", replies: ["Привет! 👋", "Ты красотка! 😍", "Познакомимся? 😊"], m1: "Привет! ❤️ Ты первый, кто мне решил написать за последний месяц. Я уже хотела удалять свою анкету... 🥰", m2: "Как тебя зовут? Ты откуда? Кстати, хочешь увидеть моё фото? 🤫", input: "Написать ответ...", lt: "Продолжить общение", ld: "Klubnicka69 ждет твой ответ! Создай бесплатный профиль, чтобы увидеть её приватные фото и продолжить чат.", lb: "ОТВЕТИТЬ ЕЙ", timer: "Ждет ответа: " },
-        uk: { lastSeen: "Була 15 хв. тому", online: "В мережі", instr: "Оберіть вітання:", sent: "Доставлено", read: "Прочитано", replies: ["Привіт! 👋", "Ти красуня! 😍", "Познайомимося? 😊"], m1: "Привіт! ❤️ Ти перший, хто мені вирішив написати за останній місяць. Я вже хотіла видаляти свою анкету... 🥰", m2: "Як тебе звати? Ти звідки? До речі, хочеш побачити моє фото? 🤫", input: "Написати...", lt: "Продовжити спілкування", ld: "Klubnicka69 чекає на твою відповідь! Створи безкоштовний профіль, щоб побачити приватні фото та продовжити чат.", lb: "ВІДПОВІСТИ ЇЙ", timer: "Чекає: " },
-        en: { lastSeen: "Was online 15m ago", online: "Online", instr: "Say Hi:", sent: "Delivered", read: "Read", replies: ["Hey! 👋", "You are hot! 😍", "Let's chat! 😊"], m1: "Hi! ❤️ You're the first person who's written to me in the last month. I was just about to delete my profile... 🥰", m2: "What's your name? Where are you from? By the way, want to see my photo? 🤫", input: "Type answer...", lt: "Continue Chat", ld: "Klubnicka69 is waiting for you! Create a free profile to see her private photos and keep chatting.", lb: "REPLY TO HER", timer: "Waiting: " },
-        de: { lastSeen: "Vor 15 Min.", online: "Online", instr: "Wähle:", sent: "Zugestellt", read: "Gelesen", replies: ["Hallo! 👋", "Hübsch! 😍", "Chatten? 😊"], m1: "Hallo! ❤️ Du bist der Erste, der mir im letzten Monat geschrieben hat. Ich wollte mein Profil gerade löschen... 🥰", m2: "Wie heißt du? Woher kommst du? Übrigens, willst du mein Foto sehen? 🤫", input: "Schreiben...", lt: "Weiter chatten", ld: "Klubnicka69 wartet! Erstelle ein Profil, um ihre privaten Fotos zu sehen.", lb: "IHR ANTWORTEN", timer: "Wartet: " },
-        fr: { lastSeen: "Il y a 15 min", online: "En ligne", instr: "Choisissez :", sent: "Distribué", read: "Lu", replies: ["Salut! 👋", "Belle! 😍", "On discute? 😊"], m1: "Salut! ❤️ Tu es la première personne qui m'écrit depuis un mois. J'allais supprimer mon profil... 🥰", m2: "C'est quoi ton nom? Tu viens d'où? Au fait, tu veux voir ma photo? 🤫", input: "Écrire...", lt: "Continuer", ld: "Klubnicka69 attend! Créez un profil pour voir ses photos privées.", lb: "LUI RÉPONDRE", timer: "En attente: " },
-        es: { lastSeen: "Hace 15 min", online: "En línea", instr: "Elige:", sent: "Entregado", read: "Leído", replies: ["¡Hola! 👋", "¡Guapa! 😍", "¿Hablamos? 😊"], m1: "¡Hola! ❤️ Eres el primero que me escribe en el último mes. Estaba a punto de borrar mi perfil... 🥰", m2: "¿Cómo te llamas? ¿De dónde eres? Por cierto, ¿quieres ver mi foto? 🤫", input: "Escribir...", lt: "Continuar", ld: "¡Klubnicka69 te espera! Crea un perfil para ver sus fotos privadas.", lb: "RESPONDER", timer: "Esperando: " }
+        ru: { lastSeen: "Была 15 мин. назад", online: "В сети", instr: "Выберите приветствие:", sent: "Доставлено", read: "Прочитано", replies: ["Привет! 👋", "Ты красотка! 😍", "Познакомимся? 😊"], m1: "Привет! 😊", m2: "Ты первый, кто решил написать мне за последний месяц ☺️ Я уже хотела удалять свою анкету с сайта😊", m3: "Как тебя зовут? Откуда ты? 🥲", input: "Написать ответ...", lt: "Продолжить общение", ld: "Пройди быструю регистрацию, чтобы ответить Klubnicka69 и продолжить ваш чат.", lb: "ОТВЕТИТЬ ЕЙ" },
+        uk: { lastSeen: "Була 15 хв. тому", online: "В мережі", instr: "Оберіть вітання:", sent: "Доставлено", read: "Прочитано", replies: ["Привіт! 👋", "Ти красуня! 😍", "Познайомимося? 😊"], m1: "Привіт! 😊", m2: "Ти перший, хто вирішив написати мені за останній місяць ☺️ Я вже хотіла видаляти свою анкету з сайту😊", m3: "Як тебе звати? Звідки ти? 🥲", input: "Написати...", lt: "Продовжити спілкування", ld: "Пройди швидку реєстрацію, щоб відповісти Klubnicka69 та продовжити ваш чат.", lb: "ВІДПОВІСТИ ЇЙ" },
+        en: { lastSeen: "Was online 15m ago", online: "Online", instr: "Say Hi:", sent: "Delivered", read: "Read", replies: ["Hey! 👋", "You are hot! 😍", "Let's chat! 😊"], m1: "Hi! 😊", m2: "You're the first person who's decided to write to me in the last month ☺️ I was just about to delete my profile from the site😊", m3: "What's your name? Where are you from? 🥲", input: "Type answer...", lt: "Continue Chat", ld: "Complete quick registration to reply to Klubnicka69 and keep chatting.", lb: "REPLY TO HER" },
+        de: { lastSeen: "Vor 15 Min.", online: "Online", instr: "Wähle:", sent: "Zugestellt", read: "Gelesen", replies: ["Hallo! 👋", "Hübsch! 😍", "Chatten? 😊"], m1: "Hallo! 😊", m2: "Du bist der Erste, der mir im letzten Monat geschrieben hat ☺️ Ich wollte mein Profil gerade löschen😊", m3: "Wie heißt du? Woher kommst du? 🥲", input: "Schreiben...", lt: "Weiter chatten", ld: "Registriere dich kurz, um Klubnicka69 zu antworten und den Chat fortzusetzen.", lb: "IHR ANTWORTEN" },
+        fr: { lastSeen: "Il y a 15 min", online: "En ligne", instr: "Choisissez :", sent: "Distribué", read: "Lu", replies: ["Salut! 👋", "Belle! 😍", "On discute? 😊"], m1: "Salut! 😊", m2: "Tu es le premier à m'écrire ce mois-ci ☺️ J'allais supprimer mon profil du site😊", m3: "C'est quoi ton nom ? Tu viens d'où ? 🥲", input: "Écrire...", lt: "Continuer", ld: "Inscris-toi vite pour répondre à Klubnicka69 et continuer la discussion.", lb: "LUI RÉPONDRE" },
+        es: { lastSeen: "Hace 15 min", online: "En línea", instr: "Elige:", sent: "Entregado", read: "Leído", replies: ["¡Hola! 👋", "¡Guapa! 😍", "¿Hablamos? 😊"], m1: "¡Hola! 😊", m2: "Eres el primero que me escribe en el último mes ☺️ Estaba a punto de borrar mi perfil del sitio😊", m3: "¿Cómo te llamas? ¿De dónde eres? 🥲", input: "Escribir...", lt: "Continuar", ld: "Regístrate rápido para responder a Klubnicka69 y seguir chateando.", lb: "RESPONDER" }
     };
 
     const getLang = () => {
@@ -158,6 +150,7 @@
         box.appendChild(d);
         box.scrollTop = box.scrollHeight;
 
+        // Разрыв 4 секунды до ответа
         await new Promise(r => setTimeout(r, 2000));
         document.getElementById('tick').innerText = cur.read;
         document.getElementById('tick').classList.add('read');
@@ -165,28 +158,30 @@
         const st = document.getElementById('ui-status');
         st.innerText = cur.online; st.classList.add('online');
 
-        await new Promise(r => setTimeout(r, 1000));
+        // Пауза перед первым ответом (суммарно 4 сек после отправки)
+        await new Promise(r => setTimeout(r, 2000));
+        
+        // m1: Привет (5 сек печатает)
         showTyping();
         await new Promise(r => setTimeout(r, 5000));
         hideTyping();
         addMsg(cur.m1);
 
+        // m2: Про анкету (5 сек печатает)
         await new Promise(r => setTimeout(r, 2000));
         showTyping();
-        await new Promise(r => setTimeout(r, 2500));
+        await new Promise(r => setTimeout(r, 5000));
         hideTyping();
         addMsg(cur.m2);
-        
-        // Маленький заблюренный подарок (фото)
-        const img = document.createElement('img');
-        img.src = "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=300&q=20";
-        img.className = 'received blur-photo';
-        img.onclick = showLock;
-        box.appendChild(img);
-        box.scrollTop = box.scrollHeight;
+
+        // m3: Как зовут (2 сек печатает)
+        await new Promise(r => setTimeout(r, 1500));
+        showTyping();
+        await new Promise(r => setTimeout(r, 2000));
+        hideTyping();
+        addMsg(cur.m3);
 
         document.getElementById('ui-input').style.display = 'flex';
-        startTimer();
     }
 
     function addMsg(txt) {
@@ -206,16 +201,7 @@
     }
 
     function hideTyping() { if(document.getElementById('tp')) document.getElementById('tp').remove(); }
-    
     function showLock() { document.getElementById('lock-block').classList.add('active'); }
-
-    function startTimer() {
-        let m = 4, s = 59;
-        setInterval(() => {
-            if(s === 0) { m--; s = 59; } else { s--; }
-            document.getElementById('ui-timer').innerText = cur.timer + `0${m}:` + (s < 10 ? '0'+s : s);
-        }, 1000);
-    }
 </script>
 </body>
 </html>
