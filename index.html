@@ -6,61 +6,157 @@
   <link rel="stylesheet" href="./assets/css/config.css">
   <link rel="stylesheet" href="./assets/css/reset.css">  
   <link rel="stylesheet" href="./assets/css/style.css">
-  <title>TikDate</title>
+  <title>TikDate | Чат</title>
   <style>
-    /* Стили чата */
+    :root {
+      --primary-color: #fe2c55;
+      --bg-blur: rgba(255, 255, 255, 0.8);
+    }
+
     #chat-overlay {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85);
-        z-index: 10000;
-        display: none;
-        align-items: center; justify-content: center;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: none;
+      align-items: center; justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
+
     .chat-window {
-        width: 92%; max-width: 360px; 
-        max-height: 85vh; /* Фикс: окно не вылазит за экран */
-        background: #fff; border-radius: 20px; 
-        display: flex; flex-direction: column; 
-        overflow: hidden; position: relative;
-        box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+      width: 92%; max-width: 360px;
+      max-height: 85vh;
+      background: #ffffff;
+      border-radius: 28px;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
+
     .chat-header {
-        padding: 12px 15px; border-bottom: 1px solid #f0f0f0;
-        display: flex; align-items: center; background: #fff;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f1f1f2;
+      display: flex; align-items: center;
+      background: #fff;
     }
-    .chat-avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; object-fit: cover; }
-    .chat-name { font-weight: 700; font-size: 15px; color: #161823; margin-bottom: 2px; }
-    .chat-status { font-size: 12px; color: #4caf50; display: flex; align-items: center; }
-    .chat-status::before { content: ""; width: 7px; height: 7px; background: #4caf50; border-radius: 50%; margin-right: 5px; }
 
-    .chat-messages { 
-        flex: 1; padding: 15px; overflow-y: auto; 
-        background: #f8f8f8; display: flex; flex-direction: column;
+    .chat-avatar-wrapper {
+      position: relative;
+      margin-right: 12px;
     }
-    .msg { 
-        background: #fff; padding: 10px 14px; border-radius: 16px; border-bottom-left-radius: 4px;
-        margin-bottom: 12px; max-width: 85%; font-size: 14px; line-height: 1.4;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05); align-self: flex-start;
-    }
-    .typing-indicator { font-size: 12px; color: #fe2c55; font-weight: 500; margin-bottom: 10px; display: none; }
 
-    /* Исправленная плашка блокировки */
+    .chat-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px var(--primary-color);
+    }
+
+    .online-badge {
+      position: absolute;
+      bottom: 2px; right: 2px;
+      width: 12px; height: 12px;
+      background: #4caf50;
+      border: 2px solid #fff;
+      border-radius: 50%;
+    }
+
+    .chat-name {
+      font-weight: 700; font-size: 17px;
+      color: #161823; margin-bottom: 2px;
+    }
+
+    .chat-status-text {
+      font-size: 13px; color: #4caf50; font-weight: 500;
+    }
+
+    .chat-messages {
+      flex: 1; padding: 20px;
+      overflow-y: auto;
+      background: #f8f8f9;
+      display: flex; flex-direction: column;
+    }
+
+    .msg {
+      background: #fff;
+      padding: 12px 16px;
+      border-radius: 20px;
+      border-bottom-left-radius: 4px;
+      margin-bottom: 14px;
+      max-width: 85%;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #161823;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      align-self: flex-start;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .typing-indicator {
+      font-size: 13px; color: var(--primary-color);
+      font-weight: 600; margin-bottom: 15px;
+      display: none; align-items: center;
+    }
+
+    .dot-flashing {
+      position: relative; width: 6px; height: 6px;
+      border-radius: 50%; background-color: var(--primary-color);
+      margin-left: 10px;
+      animation: dot-flashing 1s infinite linear alternate;
+    }
+
+    @keyframes dot-flashing { from { opacity: 1; } to { opacity: 0.2; } }
+
     .lock-block {
-        background: #fff; border-top: 1px solid #eee;
-        padding: 15px; text-align: center;
-        display: none; flex-direction: column; align-items: center;
+      background: #fff;
+      padding: 24px 20px;
+      text-align: center;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      border-top: 1px solid #f1f1f2;
     }
-    .lock-icon { width: 35px; margin-bottom: 8px; }
-    .lock-title { font-weight: 700; font-size: 16px; margin-bottom: 4px; color: #161823; }
-    .lock-text { font-size: 13px; color: #666; margin-bottom: 15px; line-height: 1.3; padding: 0 10px; }
-    
-    .verify-btn { 
-        background: #fe2c55; color: #fff; width: 100%; 
-        padding: 14px; text-decoration: none; border-radius: 10px; 
-        font-weight: 700; font-size: 15px; display: block;
-        box-shadow: 0 4px 10px rgba(254, 44, 85, 0.2);
+
+    .lock-icon-img { width: 44px; margin-bottom: 12px; }
+
+    .lock-title {
+      font-weight: 800; font-size: 19px;
+      margin-bottom: 8px; color: #161823;
+    }
+
+    .lock-text {
+      font-size: 14px; color: #5e6066;
+      margin-bottom: 20px; line-height: 1.5;
+    }
+
+    .verify-btn {
+      background: var(--primary-color);
+      color: #fff; width: 100%;
+      padding: 16px;
+      text-decoration: none;
+      border-radius: 14px;
+      font-weight: 700; font-size: 16px;
+      display: block;
+      transition: transform 0.2s;
+      box-shadow: 0 8px 20px rgba(254, 44, 85, 0.3);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    /* Скрываем старый контент когда чат активен */
+    .chat-active main, .chat-active aside, .chat-active footer {
+      filter: blur(4px);
     }
   </style>
 </head>
@@ -69,100 +165,103 @@
   <div class="preloader active" id="preloader">
     <div class="preloader__wrapper">
       <img src="./assets/images/preloader/emoji.png" alt="Emoji" class="emoji">
-      <img src="./assets/images/preloader/heart.png" alt="Heart" class="heart heart-1">
-      <img src="./assets/images/preloader/heart.png" alt="Heart" class="heart heart-2">
-      <p class="preloader__text">Поиск профиля . . .</p>
+      <p class="preloader__text">Загрузка профиля...</p>
     </div>
   </div>
 
   <header class="header">
     <div class="logo">TikDate</div>
-    <ul class="menu"><li>Folowing</li><li class="active">For you</li></ul>
+    <ul class="menu"><li>Following</li><li class="active">For you</li></ul>
   </header>
 
   <main class="main">
     <div class="video">
-      <video class="video" src="./assets/files/video.mp4" loop playsinline autoplay muted></video>
+      <video src="./assets/files/video.mp4" loop playsinline autoplay muted style="width:100%; height:100%; object-fit:cover;"></video>
     </div>
   </main>
 
   <div id="chat-overlay">
     <div class="chat-window">
-        <div class="chat-header">
-            <img src="./assets/images/girl.png" alt="" class="chat-avatar">
-            <div>
-                <div class="chat-name">Мария</div>
-                <div class="chat-status">В сети</div>
-            </div>
+      <div class="chat-header">
+        <div class="chat-avatar-wrapper">
+          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=150&q=80" alt="Avatar" class="chat-avatar">
+          <div class="online-badge"></div>
         </div>
-        
-        <div class="chat-messages" id="chat-messages">
-            <div id="typing" class="typing-indicator">Мария печатает...</div>
+        <div>
+          <div class="chat-name">Мария</div>
+          <div class="chat-status-text">В сети</div>
         </div>
+      </div>
 
-        <div id="lock-container" class="lock-block">
-            <img src="https://img.icons8.com/fluency/48/000000/lock.png" class="lock-icon">
-            <div class="lock-title">Чат ограничен</div>
-            <div class="lock-text">Чтобы ответить Марии, подтвердите, что вы реальный человек.</div>
-            <a href="ТВОЯ_ССЫЛКА_ТУТ" class="verify-btn">ПОДТВЕРДИТЬ И ОТВЕТИТЬ</a>
+      <div class="chat-messages" id="chat-messages">
+        <div id="typing" class="typing-indicator">
+          Мария печатает
+          <div class="dot-flashing"></div>
         </div>
+      </div>
+
+      <div id="lock-container" class="lock-block">
+        <img src="https://cdn-icons-png.flaticon.com/512/2553/2553313.png" class="lock-icon-img" alt="Lock">
+        <div class="lock-title">Чат ограничен</div>
+        <div class="lock-text">
+          Чтобы ответить Марии и увидеть её скрытые фото, подтвердите, что вы реальный человек.
+        </div>
+        <a href="ТВОЯ_ССЫЛКА_ТУТ" class="verify-btn">ПОДТВЕРДИТЬ И ОТВЕТИТЬ</a>
+      </div>
     </div>
   </div>
 
   <script>
-    // 1. Укажи свою смартлинку здесь
-    const smartlink = "https://example.com/smartlink"; 
+    const smartlink = "https://ТВОЯ_ССЫЛКА_ТУТ"; 
     document.querySelector('.verify-btn').href = smartlink;
 
-    async function startChatLogic() {
-        const overlay = document.getElementById('chat-overlay');
-        const msgContainer = document.getElementById('chat-messages');
-        const typing = document.getElementById('typing');
-        const lock = document.getElementById('lock-container');
-        
-        overlay.style.display = 'flex';
+    async function startChat() {
+      const overlay = document.getElementById('chat-overlay');
+      const container = document.getElementById('chat-messages');
+      const typing = document.getElementById('typing');
+      const lock = document.getElementById('lock-container');
 
-        // Определяем город
-        let city = "твоего города";
-        try {
-            const res = await fetch('https://ipapi.co/json/');
-            const data = await res.json();
-            if(data.city) city = data.city;
-        } catch(e) {}
+      document.body.classList.add('chat-active');
+      overlay.style.display = 'flex';
 
-        const addMsg = (text, delay) => {
-            return new Promise(resolve => {
-                typing.style.display = 'block';
-                msgContainer.scrollTop = msgContainer.scrollHeight;
-                setTimeout(() => {
-                    typing.style.display = 'none';
-                    const d = document.createElement('div');
-                    d.className = 'msg';
-                    d.innerHTML = text;
-                    msgContainer.insertBefore(d, typing);
-                    msgContainer.scrollTop = msgContainer.scrollHeight;
-                    resolve();
-                }, delay);
-            });
-        };
+      let city = "твоего города";
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+        if(data.city) city = data.city;
+      } catch(e) {}
 
-        // Сценарий чата
-        await addMsg(`Привет! Ты тоже из <b>${city}</b>? 😊`, 1500);
-        await addMsg(`Я тут недавно, ищу с кем пообщаться... Свободен сегодня?`, 2500);
+      const addMsg = (text, delay) => {
+        return new Promise(resolve => {
+          typing.style.display = 'flex';
+          container.scrollTop = container.scrollHeight;
+          setTimeout(() => {
+            typing.style.display = 'none';
+            const d = document.createElement('div');
+            d.className = 'msg';
+            d.innerHTML = text;
+            container.insertBefore(d, typing);
+            container.scrollTop = container.scrollHeight;
+            resolve();
+          }, delay);
+        });
+      };
 
-        // Показываем кнопку регистрации
-        setTimeout(() => {
-            lock.style.display = 'flex';
-            msgContainer.scrollTop = msgContainer.scrollHeight;
-        }, 1000);
+      await addMsg(`Привет! 👋 Ты тоже из <b>${city}</b>?`, 1500);
+      await addMsg(`Я тут совсем недавно, ищу с кем пообщаться... Свободен сегодня? 😊`, 2500);
+
+      setTimeout(() => {
+        lock.style.display = 'flex';
+        container.scrollTop = container.scrollHeight;
+      }, 800);
     }
 
-    // Имитация завершения загрузки
     window.addEventListener('load', () => {
-        setTimeout(() => {
-            document.getElementById('preloader').style.display = 'none';
-            startChatLogic();
-        }, 2000);
+      setTimeout(() => {
+        const pre = document.getElementById('preloader');
+        if(pre) pre.style.display = 'none';
+        startChat();
+      }, 2000);
     });
   </script>
 </body>
