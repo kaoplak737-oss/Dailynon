@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chat | TikDate</title>
+    <!-- Звук уведомления (стандартный короткий писк) -->
+    <audio id="msg-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
     <style>
-        :root { --primary: #fe2c55; }
+        :root { --primary: #fe2c55; --online: #4caf50; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { background: #000; overflow: hidden; }
 
@@ -15,7 +17,7 @@
         #chat-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100; display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.3); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: rgba(0,0,0,0.2); backdrop-filter: blur(8px);
         }
 
         .chat-card {
@@ -28,7 +30,7 @@
         .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid var(--primary); }
         .u-name { font-weight: 700; font-size: 17px; color: #161823; }
         .u-status { font-size: 12px; color: #8a8b91; transition: 0.5s; }
-        .u-status.online { color: #4caf50; font-weight: 700; }
+        .u-status.online { color: var(--online); font-weight: 800; }
 
         .msg-area { 
             flex: 1; padding: 15px; overflow-y: auto; 
@@ -41,41 +43,39 @@
             position: relative; animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
         .received { background: rgba(255, 255, 255, 0.95); color: #000; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .sent { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(254, 44, 85, 0.2); }
+        .sent { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; padding-bottom: 20px; }
+
+        .status-ticks { position: absolute; bottom: 4px; right: 12px; font-size: 10px; color: rgba(255,255,255,0.7); }
+        .status-ticks.read { color: #40c4ff; }
 
         .typing-bubble { display: flex; align-items: center; gap: 4px; padding: 15px !important; }
         .dot { width: 6px; height: 6px; background: #adb5bd; border-radius: 50%; animation: blink 1.4s infinite both; }
         .dot:nth-child(2) { animation-delay: 0.2s; }
         .dot:nth-child(3) { animation-delay: 0.4s; }
 
+        /* Блюр фото - секретное оружие конверта */
+        .blur-photo { width: 120px; height: 160px; border-radius: 15px; filter: blur(12px); border: 2px solid #fff; margin-top: 5px; cursor: pointer; }
+
         @keyframes blink { 0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1.1); } }
         @keyframes pop { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .action-zone { padding: 15px; background: #fff; border-top: 1px solid #eee; text-align: center; }
-        .instruction { font-size: 13px; color: #8a8b91; margin-bottom: 12px; font-weight: 500; }
-        .quick-replies { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .btn-reply { 
-            background: #f1f1f2; border: none; padding: 12px 18px; border-radius: 25px; 
-            font-size: 14px; font-weight: 600; cursor: pointer; color: #161823; 
-        }
+        .btn-reply { background: #f1f1f2; border: none; padding: 12px 18px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; color: #161823; margin: 4px; }
 
         .input-bar { padding: 15px; background: #fff; border-top: 1px solid #eee; display: none; align-items: center; gap: 10px; cursor: pointer; }
         .fake-input { flex: 1; background: #f1f1f2; padding: 10px 15px; border-radius: 20px; font-size: 14px; color: #8a8b91; }
 
+        /* Окно регистрации с таймером */
         .lock-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%; background: #fff;
-            padding: 30px 20px; border-top-left-radius: 30px; border-top-right-radius: 30px;
-            box-shadow: 0 -15px 40px rgba(0,0,0,0.2); transform: translateY(105%);
-            transition: 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 100; text-align: center;
+            position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; padding: 30px 20px; 
+            border-top-left-radius: 30px; border-top-right-radius: 30px; box-shadow: 0 -15px 40px rgba(0,0,0,0.2); 
+            transform: translateY(105%); transition: 0.5s; z-index: 100; text-align: center;
         }
         .lock-overlay.active { transform: translateY(0); }
-        .lock-title { font-weight: 800; font-size: 20px; margin-bottom: 10px; color: #161823; }
-        .lock-text { font-size: 15px; color: #5e6066; margin-bottom: 25px; line-height: 1.5; }
-        .btn-reg { 
-            background: var(--primary); color: #fff; text-decoration: none; display: block;
-            padding: 18px; border-radius: 16px; font-weight: 700; font-size: 16px;
-            box-shadow: 0 10px 25px rgba(254, 44, 85, 0.4); text-transform: uppercase;
-        }
+        .timer-tag { background: #fff0f3; color: var(--primary); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 15px; display: inline-block; }
+        .btn-reg { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 18px; border-radius: 16px; font-weight: 800; font-size: 18px; animation: pulse 1.5s infinite; }
+        
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -87,10 +87,9 @@
 <div id="chat-overlay">
     <div class="chat-card">
         <div class="header">
-            <!-- Аватар без лица -->
             <img src="https://images.unsplash.com/photo-1516062423079-7ca13cdc7f5a?auto=format&fit=crop&w=150&q=80" class="avatar">
             <div>
-                <div class="u-name" id="ui-name">Klubnicka69</div>
+                <div class="u-name">Klubnicka69</div>
                 <div class="u-status" id="ui-status">...</div>
             </div>
         </div>
@@ -98,7 +97,7 @@
         <div class="msg-area" id="box"></div>
 
         <div class="action-zone" id="ui-actions">
-            <div class="instruction" id="ui-instr">...</div>
+            <div id="ui-instr" style="font-size: 13px; color: #8a8b91; margin-bottom: 10px;">...</div>
             <div class="quick-replies" id="replies-container"></div>
         </div>
 
@@ -108,8 +107,9 @@
         </div>
 
         <div class="lock-overlay" id="lock-block">
-            <div class="lock-title" id="ui-lock-title">...</div>
-            <div class="lock-text" id="ui-lock-desc">...</div>
+            <div class="timer-tag" id="ui-timer">Waiting for answer: 04:59</div>
+            <div style="font-weight:900; font-size:22px; margin-bottom:10px;" id="ui-lock-title">...</div>
+            <div style="font-size:15px; color:#5e6066; margin-bottom:25px; line-height: 1.4;" id="ui-lock-desc">...</div>
             <a href="ТВОЯ_ССЫЛКА_ТУТ" class="btn-reg" id="ui-btn">...</a>
         </div>
     </div>
@@ -117,104 +117,104 @@
 
 <script>
     const translations = {
-        uk: { name: "Klubnicka69", lastSeen: "Була в мережі 15 хв. тому", online: "В мережі", instr: "Оберіть вітання, щоб почати чат:",
-              replies: ["Привіт! 👋", "Ти дуже красива! 😍", "Познайомимося? 😊"],
-              m1: "Привіт! ❤️ Ти перший, хто мені вирішив написати за останній місяць. Я вже хотіла видаляти свою анкету з сайту... Дякую, що написав! 🥰", 
-              m2: "Як тебе звати? Ти звідки? 🌎",
-              input: "Написати повідомлення...",
-              lt: "Безпека спільноти", ld: "Для захисту користувачів від спаму, чат доступний лише після швидкої реєстрації.", lb: "ПРОДОВЖИТИ ТА ВІДПОВІСТИ" },
-        ru: { name: "Klubnicka69", lastSeen: "Была в сети 15 мин. назад", online: "В сети", instr: "Выберите приветствие, чтобы начать чат:",
-              replies: ["Привет! 👋", "Ты очень красивая! 😍", "Познакомимся? 😊"],
-              m1: "Привет! ❤️ Ты первый, кто мне решил написать за последний месяц. Я уже хотела удалять свою анкету с сайта... Спасибо, что написал! 🥰", 
-              m2: "Как тебя зовут? Ты откуда? 🌎",
-              input: "Написать сообщение...",
-              lt: "Безопасность сообщества", ld: "Для защиты пользователей чат доступен только после бесплатной регистрации.", lb: "ПРОДОЛЖИТЬ И ОТВЕТИТЬ" },
-        en: { name: "Klubnicka69", lastSeen: "Was online 15m ago", online: "Online", instr: "Choose a greeting to start:",
-              replies: ["Hey there! 👋", "You are gorgeous! 😍", "Let's chat! 😊"],
-              m1: "Hi! ❤️ You're the first person who's written to me in the last month. I was just about to delete my profile from the site... Thank you for messaging! 🥰", 
-              m2: "What's your name? Where are you from? 🌎",
-              input: "Type a message...",
-              lt: "Security Policy", ld: "To protect our members from spam, please register to unlock the full chat.", lb: "REGISTER & REPLY" },
-        de: { name: "Klubnicka69", lastSeen: "Zuletzt online vor 15 Min.", online: "Online", instr: "Wähle eine Begrüßung:",
-              replies: ["Hallo! 👋", "Du bist wunderschön! 😍", "Lass uns chatten! 😊"],
-              m1: "Hallo! ❤️ Du bist der Erste, der mir im letzten Monat geschrieben hat. Ich wollte mein Profil gerade von der Seite löschen... Danke, dass du mir geschrieben hast! 🥰", 
-              m2: "Wie heißt du? Woher kommst du? 🌎",
-              input: "Nachricht schreiben...",
-              lt: "Sicherheitshinweis", ld: "Zum Schutz unserer Mitglieder ist der Chat erst nach einer kurzen Registrierung verfügbar.", lb: "REGISTRIEREN & ANTWORTEN" },
-        pl: { name: "Klubnicka69", lastSeen: "Była online 15 min temu", online: "Dostępna", instr: "Wybierz powitanie:",
-              replies: ["Cześć! 👋", "Jesteś bardzo piękna! 😍", "Poznamy się? 😊"],
-              m1: "Cześć! ❤️ Jesteś pierwszą osobą, która napisała до mnie w ciągu ostatniego miesiąca. Miałam już usuwać swój profil z tej strony... Dziękuję, że napisałeś! 🥰", 
-              m2: "Jak masz na imię? Skąd jesteś? 🌎",
-              input: "Napisz wiadomość...",
-              lt: "Bezpieczeństwo", ld: "Aby chronić użytkowników przed spamem, czat jest dostępny po szybkiej rejestracji.", lb: "ZAREJESTRUJ SIĘ" },
-        kk: { name: "Klubnicka69", lastSeen: "15 мин бұрын болды", online: "Желіде", instr: "Чатты бастау үшін сәлемдемені таңдаңыз:",
-              replies: ["Сәлем! 👋", "Сен өте әдемісің! 😍", "Танысайық па? 😊"],
-              m1: "Сәлем! ❤️ Сен соңғы бір айда маған жазған бірінші адамсың. Мен қазір ғана анкетамды сайттан өшірейін деп жатыр едім... Жазғаныңа рақмет! 🥰", 
-              m2: "Есімің кім? Қай жақтансың? 🌎",
-              input: "Хабарлама жазу...",
-              lt: "Қауіпсіздік", ld: "Пайдаланушыларды спамнан қорғау үшін чат тіркелгеннен кейін ғана ашылады.", lb: "ТІРКЕЛУ ЖӘНЕ ЖАУАП БЕРУ" }
+        ru: { lastSeen: "Была 15 мин. назад", online: "В сети", instr: "Выберите приветствие:", sent: "Доставлено", read: "Прочитано", replies: ["Привет! 👋", "Ты красотка! 😍", "Познакомимся? 😊"], m1: "Привет! ❤️ Ты первый, кто мне решил написать за последний месяц. Я уже хотела удалять свою анкету... 🥰", m2: "Как тебя зовут? Ты откуда? Кстати, хочешь увидеть моё фото? 🤫", input: "Написать ответ...", lt: "Продолжить общение", ld: "Klubnicka69 ждет твой ответ! Создай бесплатный профиль, чтобы увидеть её приватные фото и продолжить чат.", lb: "ОТВЕТИТЬ ЕЙ", timer: "Ждет ответа: " },
+        uk: { lastSeen: "Була 15 хв. тому", online: "В мережі", instr: "Оберіть вітання:", sent: "Доставлено", read: "Прочитано", replies: ["Привіт! 👋", "Ти красуня! 😍", "Познайомимося? 😊"], m1: "Привіт! ❤️ Ти перший, хто мені вирішив написати за останній місяць. Я вже хотіла видаляти свою анкету... 🥰", m2: "Як тебе звати? Ти звідки? До речі, хочеш побачити моє фото? 🤫", input: "Написати...", lt: "Продовжити спілкування", ld: "Klubnicka69 чекає на твою відповідь! Створи безкоштовний профіль, щоб побачити приватні фото та продовжити чат.", lb: "ВІДПОВІСТИ ЇЙ", timer: "Чекає: " },
+        en: { lastSeen: "Was online 15m ago", online: "Online", instr: "Say Hi:", sent: "Delivered", read: "Read", replies: ["Hey! 👋", "You are hot! 😍", "Let's chat! 😊"], m1: "Hi! ❤️ You're the first person who's written to me in the last month. I was just about to delete my profile... 🥰", m2: "What's your name? Where are you from? By the way, want to see my photo? 🤫", input: "Type answer...", lt: "Continue Chat", ld: "Klubnicka69 is waiting for you! Create a free profile to see her private photos and keep chatting.", lb: "REPLY TO HER", timer: "Waiting: " },
+        de: { lastSeen: "Vor 15 Min.", online: "Online", instr: "Wähle:", sent: "Zugestellt", read: "Gelesen", replies: ["Hallo! 👋", "Hübsch! 😍", "Chatten? 😊"], m1: "Hallo! ❤️ Du bist der Erste, der mir im letzten Monat geschrieben hat. Ich wollte mein Profil gerade löschen... 🥰", m2: "Wie heißt du? Woher kommst du? Übrigens, willst du mein Foto sehen? 🤫", input: "Schreiben...", lt: "Weiter chatten", ld: "Klubnicka69 wartet! Erstelle ein Profil, um ihre privaten Fotos zu sehen.", lb: "IHR ANTWORTEN", timer: "Wartet: " },
+        fr: { lastSeen: "Il y a 15 min", online: "En ligne", instr: "Choisissez :", sent: "Distribué", read: "Lu", replies: ["Salut! 👋", "Belle! 😍", "On discute? 😊"], m1: "Salut! ❤️ Tu es la première personne qui m'écrit depuis un mois. J'allais supprimer mon profil... 🥰", m2: "C'est quoi ton nom? Tu viens d'où? Au fait, tu veux voir ma photo? 🤫", input: "Écrire...", lt: "Continuer", ld: "Klubnicka69 attend! Créez un profil pour voir ses photos privées.", lb: "LUI RÉPONDRE", timer: "En attente: " },
+        es: { lastSeen: "Hace 15 min", online: "En línea", instr: "Elige:", sent: "Entregado", read: "Leído", replies: ["¡Hola! 👋", "¡Guapa! 😍", "¿Hablamos? 😊"], m1: "¡Hola! ❤️ Eres el primero que me escribe en el último mes. Estaba a punto de borrar mi perfil... 🥰", m2: "¿Cómo te llamas? ¿De dónde eres? Por cierto, ¿quieres ver mi foto? 🤫", input: "Escribir...", lt: "Continuar", ld: "¡Klubnicka69 te espera! Crea un perfil para ver sus fotos privadas.", lb: "RESPONDER", timer: "Esperando: " }
     };
 
-    const currentLang = (translations[navigator.language.split('-')[0]]) ? navigator.language.split('-')[0] : 'en';
-    const lang = translations[currentLang];
+    const getLang = () => {
+        const n = navigator.language.split('-')[0];
+        return translations[n] ? n : 'en';
+    };
 
-    document.getElementById('ui-status').innerText = lang.lastSeen;
-    document.getElementById('ui-instr').innerText = lang.instr;
-    document.getElementById('ui-input-text').innerText = lang.input;
-    document.getElementById('ui-lock-title').innerText = lang.lt;
-    document.getElementById('ui-lock-desc').innerText = lang.ld;
-    document.getElementById('ui-btn').innerText = lang.lb;
+    const cur = translations[getLang()];
+    const sound = document.getElementById('msg-sound');
 
-    const repliesContainer = document.getElementById('replies-container');
-    lang.replies.forEach(text => {
-        const btn = document.createElement('button');
-        btn.className = 'btn-reply';
-        btn.innerText = text;
-        btn.onclick = () => startSequence(text);
-        repliesContainer.appendChild(btn);
+    // UI Init
+    document.getElementById('ui-status').innerText = cur.lastSeen;
+    document.getElementById('ui-instr').innerText = cur.instr;
+    document.getElementById('ui-input-text').innerText = cur.input;
+    document.getElementById('ui-lock-title').innerText = cur.lt;
+    document.getElementById('ui-lock-desc').innerText = cur.ld;
+    document.getElementById('ui-btn').innerText = cur.lb;
+
+    const cont = document.getElementById('replies-container');
+    cur.replies.forEach(t => {
+        const b = document.createElement('button');
+        b.className = 'btn-reply'; b.innerText = t;
+        b.onclick = () => { sound.play().catch(()=>{}); startSeq(t); };
+        cont.appendChild(b);
     });
 
-    function addMessage(text, type) {
+    async function startSeq(t) {
+        document.getElementById('ui-actions').style.display = 'none';
         const box = document.getElementById('box');
         const d = document.createElement('div');
-        d.className = `bubble ${type}`;
-        d.innerHTML = text;
+        d.className = 'bubble sent';
+        d.innerHTML = `${t}<div class="status-ticks" id="tick">${cur.sent}</div>`;
         box.appendChild(d);
         box.scrollTop = box.scrollHeight;
+
+        await new Promise(r => setTimeout(r, 2000));
+        document.getElementById('tick').innerText = cur.read;
+        document.getElementById('tick').classList.add('read');
+        
+        const st = document.getElementById('ui-status');
+        st.innerText = cur.online; st.classList.add('online');
+
+        await new Promise(r => setTimeout(r, 1000));
+        showTyping();
+        await new Promise(r => setTimeout(r, 5000));
+        hideTyping();
+        addMsg(cur.m1);
+
+        await new Promise(r => setTimeout(r, 2000));
+        showTyping();
+        await new Promise(r => setTimeout(r, 2500));
+        hideTyping();
+        addMsg(cur.m2);
+        
+        // Маленький заблюренный подарок (фото)
+        const img = document.createElement('img');
+        img.src = "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=300&q=20";
+        img.className = 'received blur-photo';
+        img.onclick = showLock;
+        box.appendChild(img);
+        box.scrollTop = box.scrollHeight;
+
+        document.getElementById('ui-input').style.display = 'flex';
+        startTimer();
+    }
+
+    function addMsg(txt) {
+        sound.play().catch(()=>{});
+        const b = document.getElementById('box');
+        const d = document.createElement('div');
+        d.className = 'bubble received'; d.innerHTML = txt;
+        b.appendChild(d); b.scrollTop = b.scrollHeight;
     }
 
     function showTyping() {
-        const box = document.getElementById('box');
+        const b = document.getElementById('box');
         const d = document.createElement('div');
-        d.className = 'bubble received typing-bubble';
-        d.id = 'temp-typing';
+        d.className = 'bubble received typing-bubble'; d.id = 'tp';
         d.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-        box.appendChild(d);
-        box.scrollTop = box.scrollHeight;
+        b.appendChild(d); b.scrollTop = b.scrollHeight;
     }
 
-    async function startSequence(userText) {
-        document.getElementById('ui-actions').style.display = 'none'; 
-        addMessage(userText, 'sent');
-        await new Promise(r => setTimeout(r, 1200));
-        const status = document.getElementById('ui-status');
-        status.innerText = lang.online;
-        status.classList.add('online');
-        await new Promise(r => setTimeout(r, 800));
-        showTyping();
-        await new Promise(r => setTimeout(r, 2200));
-        document.getElementById('temp-typing').remove();
-        addMessage(lang.m1, 'received');
-        await new Promise(r => setTimeout(r, 2500));
-        showTyping();
-        await new Promise(r => setTimeout(r, 1800));
-        document.getElementById('temp-typing').remove();
-        addMessage(lang.m2, 'received');
-        document.getElementById('ui-input').style.display = 'flex';
-    }
+    function hideTyping() { if(document.getElementById('tp')) document.getElementById('tp').remove(); }
+    
+    function showLock() { document.getElementById('lock-block').classList.add('active'); }
 
-    function showLock() {
-        document.getElementById('lock-block').classList.add('active');
+    function startTimer() {
+        let m = 4, s = 59;
+        setInterval(() => {
+            if(s === 0) { m--; s = 59; } else { s--; }
+            document.getElementById('ui-timer').innerText = cur.timer + `0${m}:` + (s < 10 ? '0'+s : s);
+        }, 1000);
     }
 </script>
 </body>
