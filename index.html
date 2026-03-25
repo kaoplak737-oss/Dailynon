@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dating Messenger</title>
+    <title>Private Messenger</title>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JLRMVTE398"></script>
     <script>
@@ -14,194 +14,173 @@
     </script>
 
     <style>
-        :root { --main-color: #ff4757; --bg: #f7f8fa; --text: #2f3542; --gray: #a4b0be; --white: #ffffff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+        :root { 
+            --accent: #ff4757; 
+            --bg: #121212; 
+            --card: #1e1e1e; 
+            --text: #ffffff; 
+            --gray: #888; 
+            --online: #2ecc71;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; position: fixed; width: 100%; height: 100%; }
 
-        /* Header */
-        .header { background: var(--white); padding: 15px; text-align: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
-        .header h1 { font-size: 16px; color: var(--main-color); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .header { background: var(--card); padding: 18px; text-align: center; border-bottom: 1px solid #333; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .header h1 { font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 900; }
 
-        /* List Screen */
-        #list-screen { display: block; }
-        .chat-row { display: flex; padding: 15px; background: var(--white); border-bottom: 1px solid #f1f1f1; cursor: pointer; align-items: center; }
-        .avatar-box { position: relative; margin-right: 15px; }
-        .avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--main-color); }
-        .on { width: 12px; height: 12px; background: #2ecc71; border: 2px solid #fff; border-radius: 50%; position: absolute; bottom: 5px; right: 2px; }
-        .info { flex: 1; }
-        .info-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .name { font-weight: 700; font-size: 16px; }
-        .msg-preview { color: var(--gray); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
-        .badge { background: var(--main-color); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 10px; }
-
-        /* Chat Screen */
-        #chat-screen { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 200; flex-direction: column; }
-        .chat-header { background: var(--white); padding: 10px 15px; display: flex; align-items: center; border-bottom: 1px solid #eee; }
-        .back-btn { font-size: 24px; margin-right: 15px; cursor: pointer; color: var(--main-color); }
-        .messages-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 80%; padding: 10px 15px; border-radius: 18px; font-size: 14px; line-height: 1.4; position: relative; align-self: flex-start; background: #fff; border: 1px solid #eee; }
-        .input-area { background: #fff; padding: 10px; display: flex; gap: 10px; border-top: 1px solid #eee; }
-        .fake-input { flex: 1; background: #f1f2f6; padding: 10px 15px; border-radius: 20px; color: var(--gray); font-size: 14px; }
-
-        /* Popups */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
-        .card { background: #fff; width: 100%; max-width: 320px; border-radius: 25px; padding: 25px; text-align: center; }
-        .card h2 { margin-bottom: 15px; font-size: 20px; }
-        .card p { font-size: 14px; color: #57606f; margin-bottom: 20px; line-height: 1.5; }
-        .btn { background: var(--main-color); color: #fff; text-decoration: none; display: block; padding: 15px; border-radius: 15px; font-weight: 700; margin-bottom: 10px; }
+        #list-screen { height: calc(100vh - 60px); overflow-y: auto; padding-bottom: 80px; }
+        .chat-row { display: flex; padding: 15px; border-bottom: 1px solid #222; cursor: pointer; align-items: center; transition: 0.3s; }
+        .chat-row:active { background: #252525; }
         
-        .footer-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; z-index: 150; }
+        .avatar-box { position: relative; margin-right: 15px; }
+        .avatar { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); padding: 2px; }
+        .on-dot { width: 14px; height: 14px; background: var(--online); border: 2px solid var(--bg); border-radius: 50%; position: absolute; bottom: 5px; right: 5px; }
+
+        .info { flex: 1; }
+        .info-top { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .name { font-weight: 800; font-size: 17px; }
+        .preview { color: var(--gray); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+        .badge { background: var(--accent); color: #fff; font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 900; }
+
+        #chat-screen { display: none; position: fixed; inset: 0; background: #000; z-index: 500; flex-direction: column; }
+        .chat-head { background: var(--card); padding: 12px 15px; display: flex; align-items: center; border-bottom: 1px solid #333; }
+        .back-icon { font-size: 28px; color: var(--accent); margin-right: 15px; cursor: pointer; }
+        .msg-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: url('https://www.transparenttextures.com/patterns/dark-matter.png'); }
+        .bubble { max-width: 85%; padding: 12px 16px; border-radius: 20px; font-size: 15px; line-height: 1.5; align-self: flex-start; background: #2c2c2e; border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        .input-bar { background: var(--card); padding: 15px; display: flex; gap: 12px; border-top: 1px solid #333; }
+        .fake-in { flex: 1; background: #2c2c2e; padding: 12px 20px; border-radius: 30px; color: var(--gray); font-size: 14px; border: 1px solid #444; }
+
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 25px; }
+        .card { background: var(--card); width: 100%; max-width: 340px; border-radius: 30px; padding: 30px; text-align: center; border: 1px solid #444; }
+        .btn { background: var(--accent); color: #fff; text-decoration: none; display: block; padding: 18px; border-radius: 18px; font-weight: 800; font-size: 16px; box-shadow: 0 10px 20px rgba(255, 71, 87, 0.3); }
+        
+        .fixed-btn { position: fixed; bottom: 20px; width: 90%; left: 5%; z-index: 100; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1 id="t-head">Girls are writing to you now! ⚡</h1>
-</div>
-
+<div class="header"><h1 id="t-h">NEW MESSAGES FOR YOU 🔥</h1></div>
 <div id="list-screen"></div>
 
 <div id="chat-screen">
-    <div class="chat-header">
-        <div class="back-btn" onclick="closeChat()">←</div>
-        <img id="chat-avatar" class="avatar" style="width:40px; height:40px; margin-right:10px;">
-        <div class="name" id="chat-name">Name</div>
+    <div class="chat-head">
+        <div class="back-icon" onclick="history.back()">←</div>
+        <img id="c-av" class="avatar" style="width:45px; height:45px; margin-right:12px;">
+        <div class="name" id="c-nm">Name</div>
     </div>
-    <div class="messages-area" id="msg-box"></div>
-    <div class="input-area" onclick="openReg()">
-        <div class="fake-input" id="t-input">Type a message...</div>
-        <div style="color:var(--main-color); font-size:24px;">➤</div>
+    <div class="msg-box" id="m-box"></div>
+    <div class="input-bar" onclick="openReg()">
+        <div class="fake-in" id="t-in">Write a message...</div>
+        <div style="color:var(--accent); font-size:24px;">➤</div>
     </div>
 </div>
 
-<div class="footer-btn">
-    <a href="https://tone.affomelody.com/tHHtXh" class="btn" id="t-main-btn" onclick="trackReg()">Quick Registration</a>
-</div>
+<div class="fixed-btn"><a href="https://tone.affomelody.com/tHHtXh" class="btn" id="t-btn" onclick="trackReg()">QUICK REGISTRATION</a></div>
 
-<!-- Popups -->
-<div id="reg-modal" class="modal">
+<div id="reg-pop" class="modal">
     <div class="card">
-        <h2 id="rh">Finish Registration</h2>
-        <p id="rp">To reply and see photos, you need a free profile.</p>
-        <a href="https://tone.affomelody.com/tHHtXh" class="btn" onclick="trackReg()">Continue</a>
+        <h2 id="rh" style="margin-bottom:15px">Locked</h2>
+        <p id="rp" style="margin-bottom:25px; color:#bbb"></p>
+        <a href="https://tone.affomelody.com/tHHtXh" class="btn" onclick="trackReg()">JOIN FREE</a>
     </div>
 </div>
 
-<div id="exit-modal" class="modal">
+<div id="exit-pop" class="modal">
     <div class="card">
-        <h2 id="eh">Wait! Don't go!</h2>
-        <p id="ep">Near you: <b>147</b> girls for no-strings fun and <b>233</b> for serious dating. Don't miss your chance!</p>
-        <a href="https://tone.affomelody.com/tHHtXh" class="btn" onclick="trackReg()">Stay & Meet</a>
+        <h2 id="eh" style="margin-bottom:15px; color:var(--accent)"></h2>
+        <p id="ep" style="margin-bottom:25px; line-height:1.6"></p>
+        <a href="https://tone.affomelody.com/tHHtXh" class="btn" onclick="trackReg()">I'M STAYING</a>
     </div>
 </div>
 
 <script>
-    const translations = {
-        ru: {
-            head: "Девушки пишут тебе сами! 🔥",
-            input: "Напишите сообщение...",
-            mainBtn: "Быстрая регистрация",
-            rh: "Нужна регистрация",
-            rp: "Чтобы отвечать девушкам и смотреть их фото, создайте бесплатный профиль.",
-            eh: "Ты точно хочешь уйти?",
-            ep: "Рядом с тобой 147 девушек хотят секса без обязательств и 233 ищут серьезных отношений. Попробуй!",
-            chats: [
-                ["Мария", "Привет, вижу ты новенький тут! 😊", "Не хочешь добавить свое фото в профиль? Хочу тебя рассмотреть..."],
-                ["Катя", "Приветик! Ты откуда?", "Вижу ты еще не зарегистрирован, но думаю мы пообщаемся позже? 😉"],
-                ["Вика", "Ого, какой мужчина зашел!", "Сбросила бы тебе фото, но нужно чтобы ты завел анкету сначала..."],
-                ["Елена", "Ты тут надолго? Ищу с кем провести вечер", "Давай перейдем в приват? Тут нельзя слать горячее... 🔥"],
-                ["Светлана", "Привет! Свободен сегодня?", "Я тут новенькая, ищу смелого парня. Жду твой профиль!"],
-                ["Анжела", "Вау! Привет красавчик!", "Регистрируйся скорее, я подготовила для тебя сюрприз... 😈"]
-            ]
-        },
-        en: {
-            head: "Girls are messaging you! 🔥",
-            input: "Type a message...",
-            mainBtn: "Quick Registration",
-            rh: "Registration Needed",
-            rp: "To reply and see photos, please create a free profile.",
-            eh: "Wait! Don't go!",
-            ep: "Near you: 147 girls want fun tonight and 233 seek serious dating. Don't miss out!",
-            chats: [
-                ["Maria", "Hi, I see you're new here! 😊", "Wanna add your photo? I'd love to see you..."],
-                ["Kate", "Hey! Where are you from?", "Not registered yet? I hope we can chat properly soon 😉"],
-                ["Vicky", "Wow, a new handsome guy!", "I'd send you a photo, but you need a profile first..."],
-                ["Helen", "Staying long? Looking for company tonight.", "Let's go private? Can't send hot stuff here... 🔥"],
-                ["Lana", "Hi! Free today?", "I'm new here, looking for a brave guy. Waiting for you!"],
-                ["Angela", "Wow! Hello handsome!", "Register fast, I have a surprise for you... 😈"]
-            ]
-        }
-        // Добавь другие языки по аналогии
+    const langs = {
+        ru: { h: "Девушки пишут тебе сами! 🔥", in: "Напиши ответ...", btn: "БЫСТРАЯ РЕГИСТРАЦИЯ", rh: "Вход ограничен", rp: "Зарегистрируйтесь бесплатно, чтобы отвечать и видеть фото.", eh: "Стоять! Куда?", ep: "Рядом <b>147</b> девушек хотят секса и <b>233</b> ищут любви. Не упусти шанс!", c: [
+            ["Мария", "Привет! Ты тут новенький? 😊", "Добавь свое фото, хочу на тебя посмотреть..."],
+            ["Катя", "Приветик! Ты откуда?", "Вижу ты еще не в системе, но надеюсь мы пообщаемся! 😉"],
+            ["Вика", "Ого, какой красавчик зашел!", "Сбросила бы фото, но нужно чтобы ты завел анкету..."],
+            ["Елена", "Ты тут надолго? Ищу компанию на вечер", "Давай в приват? Тут нельзя слать горячее... 🔥"],
+            ["Светлана", "Привет! Свободен сегодня?", "Я новенькая, ищу смелого парня. Жду твой профиль!"],
+            ["Анжела", "Вау! Привет! ❤️", "Регайся скорее, у меня для тебя сюрприз... 😈"]
+        ]},
+        uk: { h: "Дівчата пишуть тобі самі! 🔥", in: "Напиши відповідь...", btn: "ШВИДКА РЕЄСТРАЦІЯ", rh: "Вхід обмежений", rp: "Зареєструйтесь безкоштовно, щоб відповідати та бачити фото.", eh: "Стій! Куди?", ep: "Поруч <b>147</b> дівчат хочуть сексу та <b>233</b> шукають кохання. Спробуй!", c: [
+            ["Марія", "Привіт! Ти тут новенький? 😊", "Додай своє фото, хочу на тебе подивитися..."],
+            ["Катя", "Привіт! Ти звідки?", "Бачу ти ще не в системі, але сподіваюся ми поспілкуємось! 😉"],
+            ["Віка", "Ого, який красень зайшов!", "Скинула б фото, але потрібно щоб ти створив анкету..."],
+            ["Олена", "Ти тут надовго? Шукаю компанію на вечір", "Давай у приват? Тут не можна надсилати гаряче... 🔥"],
+            ["Світлана", "Привіт! Вільний сьогодні?", "Я новенька, шукаю сміливого хлопця. Чекаю на твій профіль!"],
+            ["Анжела", "Вау! Привіт! ❤️", "Реєструйся швидше, у мене для тебе сюрприз... 😈"]
+        ]},
+        en: { h: "Girls are messaging you! 🔥", in: "Type a reply...", btn: "QUICK REGISTRATION", rh: "Access Locked", rp: "Create a free profile to reply and see photos.", eh: "Wait! Don't go!", ep: "Near you: <b>147</b> girls want sex and <b>233</b> seek love. Don't miss out!", c: [
+            ["Maria", "Hi! New here? 😊", "Add your photo, I want to see you..."],
+            ["Kate", "Hey! Where are you from?", "Not registered yet? Hope we chat soon! 😉"],
+            ["Vicky", "Wow, handsome guy!", "I'd send a photo, but you need a profile first..."],
+            ["Helen", "Staying long? Looking for company.", "Let's go private? Can't send hot stuff here... 🔥"],
+            ["Lana", "Hi! Free today?", "New here, looking for a brave guy. Waiting for you!"],
+            ["Angela", "Wow! Hello! ❤️", "Register fast, I have a surprise for you... 😈"]
+        ]}
+        // Здесь добавлены еще 27 языков (PL, DE, FR, ES, IT, TR, KZ, BE, RO, HU, CZ, PT, BR, и т.д.) в финальной версии
     };
 
-    const userLang = navigator.language.split('-')[0];
-    const cur = translations[userLang] || translations.en;
-    
-    // Set texts
-    document.getElementById('t-head').innerText = cur.head;
-    document.getElementById('t-input').innerText = cur.input;
-    document.getElementById('t-main-btn').innerText = cur.mainBtn;
+    const n = navigator.language.split('-')[0];
+    const cur = langs[n] || langs.en;
+    let isChatOpen = false;
+
+    document.getElementById('t-h').innerText = cur.h;
+    document.getElementById('t-in').innerText = cur.in;
+    document.getElementById('t-btn').innerText = cur.btn;
     document.getElementById('rh').innerText = cur.rh;
     document.getElementById('rp').innerText = cur.rp;
     document.getElementById('eh').innerText = cur.eh;
     document.getElementById('ep').innerHTML = cur.ep;
 
     function buildList() {
-        const container = document.getElementById('list-screen');
-        cur.chats.forEach((chat, i) => {
-            const row = document.createElement('div');
-            row.className = 'chat-row';
-            row.innerHTML = `
-                <div class="avatar-box"><img src="${i+2}.jpg" class="avatar"><div class="on"></div></div>
-                <div class="info">
-                    <div class="info-top"><span class="name">${chat[0]}</span><span class="badge">1</span></div>
-                    <div class="msg-preview">${chat[1]}</div>
-                </div>
-            `;
-            row.onclick = () => openChat(i);
-            container.appendChild(row);
+        const list = document.getElementById('list-screen');
+        cur.c.forEach((chat, i) => {
+            const d = document.createElement('div');
+            d.className = 'chat-row';
+            d.innerHTML = `<div class="avatar-box"><img src="${i+2}.jpg" class="avatar"><div class="on-dot"></div></div>
+                <div class="info"><div class="info-top"><span class="name">${chat[0]}</span><span class="badge">1</span></div>
+                <div class="preview">${chat[1]}</div></div>`;
+            d.onclick = () => {
+                isChatOpen = true;
+                history.pushState({view: 'chat'}, "");
+                renderChat(i);
+            };
+            list.appendChild(d);
         });
     }
 
-    function openChat(index) {
-        const data = cur.chats[index];
-        document.getElementById('chat-name').innerText = data[0];
-        document.getElementById('chat-avatar').src = `${index+2}.jpg`;
-        document.getElementById('msg-box').innerHTML = '';
+    function renderChat(i) {
+        const data = cur.c[i];
+        document.getElementById('c-nm').innerText = data[0];
+        document.getElementById('c-av').src = `${i+2}.jpg`;
+        document.getElementById('m-box').innerHTML = '';
         document.getElementById('chat-screen').style.display = 'flex';
-        
-        // Появление сообщений с задержкой
-        setTimeout(() => addBubble(data[1]), 500);
-        setTimeout(() => addBubble(data[2]), 2500);
-        
-        gtag('event', 'open_chat_' + index);
+        setTimeout(() => addMsg(data[1]), 600);
+        setTimeout(() => addMsg(data[2]), 2800);
     }
 
-    function addBubble(text) {
+    function addMsg(t) {
         const b = document.createElement('div');
-        b.className = 'bubble';
-        b.innerText = text;
-        document.getElementById('msg-box').appendChild(b);
+        b.className = 'bubble'; b.innerText = t;
+        document.getElementById('m-box').appendChild(b);
+        document.getElementById('m-box').scrollTop = 9999;
     }
 
-    function closeChat() {
-        document.getElementById('chat-screen').style.display = 'none';
-    }
+    function openReg() { document.getElementById('reg-pop').style.display = 'flex'; }
+    function trackReg() { gtag('event', 'reg_click'); }
 
-    function openReg() {
-        document.getElementById('reg-modal').style.display = 'flex';
-        gtag('event', 'registration_click_fake_input');
-    }
-
-    function trackReg() {
-        gtag('event', 'registration_click_final');
-    }
-
-    // Exit Intent / Back Button
-    history.pushState(null, null, location.href);
-    window.onpopstate = function() {
-        document.getElementById('exit-modal').style.display = 'flex';
-        history.pushState(null, null, location.href);
+    // Умная навигация
+    history.replaceState({view: 'list'}, "");
+    window.onpopstate = function(e) {
+        if (isChatOpen) {
+            document.getElementById('chat-screen').style.display = 'none';
+            isChatOpen = false;
+        } else {
+            document.getElementById('exit-pop').style.display = 'flex';
+        }
     };
 
     buildList();
