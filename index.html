@@ -23,21 +23,36 @@
         .preview { color: var(--gray); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
         .badge { background: var(--accent); color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: bold; float: right; }
 
+        /* Notification */
+        #push-note { position: fixed; top: -100px; left: 10px; right: 10px; background: rgba(44, 44, 46, 0.98); padding: 12px; border-radius: 18px; display: flex; align-items: center; z-index: 5000; transition: 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28); border: 1px solid #444; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #push-note.show { top: 15px; }
+
         #chat-screen { display: none; position: fixed; inset: 0; background: #000; z-index: 1500; flex-direction: column; }
         .chat-head { background: var(--card); padding: 12px 15px; display: flex; align-items: center; border-bottom: 1px solid #333; }
         .back { font-size: 30px; color: var(--accent); margin-right: 15px; cursor: pointer; }
         .msg-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
         .bubble { max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 15px; align-self: flex-start; background: #262629; line-height: 1.4; }
+        
+        /* Video Circle */
+        .video-circle { width: 120px; height: 120px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent); position: relative; overflow: hidden; margin-top: 10px; }
+        .video-circle::after { content: '▶'; color: white; font-size: 30px; z-index: 2; opacity: 0.8; }
+        .video-circle img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.4; filter: blur(2px); }
+
         .input-bar { background: var(--card); padding: 15px; display: flex; gap: 10px; border-top: 1px solid #333; }
         .fake-in { flex: 1; background: #2c2c2e; padding: 12px 18px; border-radius: 25px; color: var(--gray); font-size: 14px; }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .card { background: var(--card); width: 100%; max-width: 320px; border-radius: 25px; padding: 30px; text-align: center; border: 1px solid #444; }
-        .btn { background: var(--accent); color: #fff; text-decoration: none; display: block; padding: 16px; border-radius: 15px; font-weight: 800; font-size: 16px; margin-top: 15px; box-shadow: 0 8px 15px rgba(255, 45, 85, 0.4); }
+        .btn { background: var(--accent); color: #fff; text-decoration: none; display: block; padding: 16px; border-radius: 15px; font-weight: 800; margin-top: 15px; }
         .fixed-reg { position: fixed; bottom: 20px; width: 90%; left: 5%; z-index: 100; }
     </style>
 </head>
 <body>
+
+<div id="push-note" onclick="openReg()">
+    <img id="p-img" src="8.jpg" style="width:45px; height:45px; border-radius:50%; margin-right:12px; object-fit:cover; border: 1px solid var(--accent);">
+    <div style="flex:1"><b id="p-name" style="font-size:14px; color: var(--accent);">Mila</b><p id="p-msg" style="font-size:13px; color:#fff; margin-top:2px;">Wanna see something hot? 🔥</p></div>
+</div>
 
 <div class="header"><h1 id="t-h">MESSENGER</h1></div>
 <div id="list-screen"></div>
@@ -65,51 +80,36 @@
 <script>
     const config = {
         ru: {
-            h: "ДЕВУШКИ ОНЛАЙН 🔥", in: "Напиши ответ...", btn: "РЕГИСТРАЦИЯ", eh: "УХОДИШЬ?", 
-            ep: "Рядом 147 девушек хотят секса и 233 ищут отношений. Останься!",
-            names: ["Мария", "Катя", "Вика", "Лена", "Света", "Анжела"],
-            msgs: [["Привет! Ты новенький? 😊", "Добавь фото, хочу тебя увидеть..."], ["Приветик! Ты откуда?", "Вижу ты не регался еще, пообщаемся позже? 😉"], ["Ого, какой красавчик!", "Скинула бы фото, но заведи сначала профиль..."]]
+            h: "ДЕВУШКИ РЯДОМ 🔥", in: "Напиши ответ...", btn: "РЕГИСТРАЦИЯ", eh: "УХОДИШЬ?", ep: "Рядом 147 девушек хотят секса. Не упусти шанс!",
+            names: ["Мария", "Катя", "Вика", "Лена", "Света", "Анжела", "Милана", "Кристина"],
+            msgs: [["Привет! Ты новенький? 😊", "Добавь фото, хочу тебя увидеть..."], ["Приветик! Ты откуда?", "Вижу ты не регался еще, пообщаемся? 😉"], ["Ого, какой красавчик!", "Скинула бы фото, но заведи сначала профиль..."]],
+            push: ["Смотри что у меня есть... 🔥", "Ты тут? Ответь мне! 😘", "Хочешь в приват?"]
         },
         ua: {
-            h: "ДІВЧАТА ОНЛАЙН 🔥", in: "Напиши відповідь...", btn: "РЕЄСТРАЦІЯ", eh: "ЙДЕШ?", 
-            ep: "Поруч 147 дівчат хочуть сексу та 233 шукають кохання. Залишайся!",
-            names: ["Оксана", "Юля", "Настя", "Ірина", "Марина", "Олена"],
-            msgs: [["Привіт! Ти новенький? 😊", "Додай фото, хочу тебе побачити..."], ["Привіт! Ти звідки?", "Бачу ти ще не в системі, поспілкуємось? 😉"], ["Ого, який красень!", "Скинула б фото, але спочатку зроби профіль..."]]
+            h: "ДІВЧАТА ПОРУЧ 🔥", in: "Напиши відповідь...", btn: "РЕЄСТРАЦІЯ", eh: "ЙДЕШ?", ep: "Поруч 147 дівчат хочуть сексу. Не проґав шанс!",
+            names: ["Оксана", "Юля", "Настя", "Ірина", "Марина", "Олена", "Тетяна", "Софія"],
+            msgs: [["Привіт! Ти новенький? 😊", "Додай фото, хочу тебе побачити..."], ["Привіт! Ти звідки?", "Бачу ти ще не в системі, поспілкуємось? 😉"], ["Ого, який красень!", "Скинула б фото, але спочатку зроби профіль..."]],
+            push: ["Дивись що в мене є... 🔥", "Ти тут? Відповідай! 😘", "Хочеш у приват?"]
         },
         es: {
-            h: "CHICAS EN LÍNEA 🔥", in: "Escribe algo...", btn: "REGISTRO", eh: "¿TE VAS?", 
-            ep: "147 chicas cerca quieren sexo y 233 buscan amor. ¡Quédate!",
-            names: ["Lucía", "Martina", "Sofía", "Valeria", "Alba", "Julia"],
-            msgs: [["¡Hola! ¿Eres nuevo? 😊", "Sube tu foto, quiero verte bien..."], ["¡Buenas! ¿De dónde eres?", "¿Aún sin registro? ¡Hablemos luego! 😉"], ["¡Vaya, qué guapo!", "Te enviaría fotos, pero necesitas un perfil..."]]
-        },
-        de: {
-            h: "FRAUEN ONLINE 🔥", in: "Schreib etwas...", btn: "REGISTRIERUNG", eh: "WARTE!", 
-            ep: "147 Frauen wollen Sex und 233 suchen Liebe. Bleib hier!",
-            names: ["Hanna", "Leni", "Mia", "Emma", "Lara", "Sofia"],
-            msgs: [["Hallo! Neu hier? 😊", "Lad ein Foto hoch, ich will dich sehen..."], ["Hey! Woher kommst du?", "Noch nicht registriert? Schreib mir später! 😉"], ["Wow, hübscher Kerl!", "Ich schick dir Fotos, wenn du ein Profil hast..."]]
-        },
-        pl: {
-            h: "DZIEWCZYNY ONLINE 🔥", in: "Napisz wiadomość...", btn: "REJESTRACJA", eh: "CZEKAJ!", 
-            ep: "147 dziewczyn chce seksu, a 233 szuka miłości. Zostań z nami!",
-            names: ["Zuzanna", "Julia", "Maja", "Zofia", "Lena", "Amelia"],
-            msgs: [["Cześć! Nowy tutaj? 😊", "Dodaj zdjęcie, chcę Cię zobaczyć..."], ["Hej! Skąd jesteś?", "Nie masz profilu? Pogadamy jak się zarejestrujesz! 😉"], ["Ojej, przystojniak!", "Wysłałabym fotkę, ale zrób najpierw profil..."]]
+            h: "CHICAS CERCA 🔥", in: "Escribe...", btn: "REGISTRO", eh: "¿TE VAS?", ep: "147 chicas cerca quieren sexo. ¡No pierdas la oportunidad!",
+            names: ["Lucía", "Martina", "Sofía", "Valeria", "Alba", "Paula", "Carmen", "Elena"],
+            msgs: [["¡Hola! ¿Eres nuevo? 😊", "Sube tu foto, quiero verte..."], ["¡Buenas! ¿De dónde eres?", "¿Aún sin registro? ¡Hablemos! 😉"], ["¡Vaya, qué guapo!", "Te enviaría fotos, pero necesitas un perfil..."]],
+            push: ["Mira lo que tengo... 🔥", "¿Estás ahí? ¡Responde! 😘", "¿Quieres ir al privado?"]
         },
         en: {
-            h: "GIRLS ONLINE 🔥", in: "Type a reply...", btn: "REGISTRATION", eh: "WAIT!", 
-            ep: "147 girls want sex and 233 seek love near you. Don't go!",
-            names: ["Emily", "Chloe", "Megan", "Jessica", "Lily", "Sarah"],
-            msgs: [["Hi! New here? 😊", "Add your photo, I want to see you..."], ["Hey! Where are you from?", "Not registered yet? Let's chat later! 😉"], ["Wow, handsome guy!", "I'd send a photo, but you need a profile first..."]]
+            h: "GIRLS NEARBY 🔥", in: "Type a reply...", btn: "REGISTRATION", eh: "WAIT!", ep: "147 girls want sex near you. Don't miss out!",
+            names: ["Emily", "Chloe", "Megan", "Jessica", "Lily", "Sarah", "Mila", "Bella"],
+            msgs: [["Hi! New here? 😊", "Add your photo, I want to see you..."], ["Hey! Where are you from?", "Not registered yet? Let's chat! 😉"], ["Wow, handsome guy!", "I'd send a photo, but you need a profile first..."]],
+            push: ["Look what I have... 🔥", "Are you there? Answer me! 😘", "Wanna go private?"]
         }
     };
 
-    // МАППИНГ 30+ СТРАН
     const langMap = {
         'ru': ['ru', 'kz', 'be', 'uz', 'az', 'am', 'tj', 'tm', 'kg', 'md'],
         'ua': ['uk'],
         'es': ['es', 'mx', 'ar', 'co', 'cl', 'pe', 've', 'py', 'uy', 'bo', 'ec', 'pa', 'cr', 'do'],
-        'de': ['de', 'at', 'ch'],
-        'pl': ['pl'],
-        'en': ['en', 'us', 'gb', 'ca', 'au', 'fr', 'it', 'lt', 'lv', 'et', 'be', 'nl', 'no', 'se', 'fi', 'dk']
+        'en': ['en', 'us', 'gb', 'ca', 'au', 'fr', 'it', 'lt', 'lv', 'et', 'be', 'nl', 'de', 'pl']
     };
 
     let userLang = 'en';
@@ -118,6 +118,7 @@
     const cur = config[userLang] || config.en;
     let isChat = false;
 
+    // UI Init
     document.getElementById('t-h').innerText = cur.h;
     document.getElementById('t-in').innerText = cur.in;
     document.getElementById('t-btn').innerText = cur.btn;
@@ -126,26 +127,34 @@
 
     function buildList() {
         const list = document.getElementById('list-screen');
-        cur.names.forEach((name, i) => {
+        for (let i = 0; i < 6; i++) {
             const row = document.createElement('div');
             row.className = 'chat-row';
-            const mText = cur.msgs[i] ? cur.msgs[i][0] : cur.msgs[0][0];
             row.innerHTML = `<div class="avatar-box"><img src="${i+2}.jpg" class="avatar"><div class="online"></div></div>
-                <div class="info"><span class="name">${name}</span><div class="preview">${mText}</div></div>
+                <div class="info"><span class="name">${cur.names[i]}</span><div class="preview">${cur.msgs[i % 3][0]}</div></div>
                 <div class="badge">1</div>`;
             row.onclick = () => { isChat = true; history.pushState({v:'c'},""); openChat(i); };
             list.appendChild(row);
-        });
+        }
     }
 
     function openChat(i) {
-        const d = cur.msgs[i] || cur.msgs[0];
+        const d = cur.msgs[i % 3];
         document.getElementById('c-nm').innerText = cur.names[i];
         document.getElementById('c-av').src = `${i+2}.jpg`;
         document.getElementById('m-box').innerHTML = '';
         document.getElementById('chat-screen').style.display = 'flex';
-        setTimeout(() => addM(d[0]), 400);
-        setTimeout(() => addM(d[1]), 2200);
+        setTimeout(() => addM(d[0]), 500);
+        setTimeout(() => addM(d[1]), 2500);
+        // Перчинка: кружочек видео
+        setTimeout(() => {
+            const v = document.createElement('div');
+            v.className = 'video-circle';
+            v.onclick = openReg;
+            v.innerHTML = `<img src="${i+2}.jpg">`;
+            document.getElementById('m-box').appendChild(v);
+            document.getElementById('m-box').scrollTop = 9999;
+        }, 4500);
     }
 
     function addM(t) {
@@ -154,7 +163,20 @@
         document.getElementById('m-box').scrollTop = 9999;
     }
 
+    function showPush() {
+        const p = document.getElementById('push-note');
+        const randIdx = Math.floor(Math.random() * 2) + 6;
+        document.getElementById('p-name').innerText = cur.names[randIdx];
+        document.getElementById('p-msg').innerText = cur.push[Math.floor(Math.random() * cur.push.length)];
+        document.getElementById('p-img').src = `${randIdx+1}.jpg`;
+        p.classList.add('show');
+        setTimeout(() => p.classList.remove('show'), 5000);
+    }
+
     function openReg() { window.location.href = "https://tone.affomelody.com/tHHtXh"; }
+
+    setInterval(() => { if(!isChat) showPush(); }, 12000);
+    setTimeout(showPush, 4000);
 
     history.replaceState({v:'l'}, "");
     window.onpopstate = function() {
