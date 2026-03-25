@@ -3,39 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Private Chat</title>
+    <title>Private Message</title>
     <audio id="msg-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
     <style>
         :root { --primary: #fe2c55; --online: #4caf50; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background: #000; overflow: hidden; }
+        
+        /* Начальный экран для активации клика */
+        #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 500; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; color: #fff; cursor: pointer; }
+        .start-btn { background: var(--primary); padding: 15px 40px; border-radius: 30px; font-weight: 800; font-size: 18px; margin-top: 20px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
         .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        .video-bg video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.4); }
-        #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.1); backdrop-filter: blur(8px); }
-        .chat-card { width: 92%; max-width: 380px; height: 80vh; background: #fff; border-radius: 30px; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0,0,0,0.6); overflow: hidden; position: relative; }
-        .header { padding: 12px 20px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; background: #fff; z-index: 10; }
-        .avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid var(--primary); }
-        .u-name { font-weight: 700; font-size: 16px; color: #161823; }
-        .u-status { font-size: 12px; color: var(--online); font-weight: 700; }
-        .msg-area { flex: 1; padding: 15px; overflow-y: auto; background: #f8f8f8; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 85%; padding: 12px 16px; border-radius: 20px; font-size: 15px; line-height: 1.4; animation: pop 0.3s ease-out forwards; position: relative; }
-        .received { background: #fff; color: #000; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        @keyframes pop { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        .typing-bubble { display: flex; align-items: center; gap: 4px; padding: 12px !important; width: 60px; }
-        .dot { width: 5px; height: 5px; background: #adb5bd; border-radius: 50%; animation: blink 1.4s infinite; }
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
+        .video-bg video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
+        #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; display: flex; align-items: center; justify-content: center; }
+        .chat-card { width: 92%; max-width: 380px; height: 82vh; background: #fff; border-radius: 25px; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.5); overflow: hidden; position: relative; }
+        .header { padding: 12px 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 2px solid var(--primary); }
+        .u-name { font-weight: 700; font-size: 15px; }
+        .u-status { font-size: 11px; color: var(--online); font-weight: 700; }
+        .msg-area { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 8px; }
+        .bubble { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; animation: pop 0.3s ease; }
+        .received { background: #fff; border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        @keyframes pop { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .typing { display: flex; gap: 3px; padding: 10px !important; width: 50px; }
+        .dot { width: 4px; height: 4px; background: #999; border-radius: 50%; animation: blink 1.4s infinite; }
         @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        .input-bar { padding: 15px; background: #fff; border-top: 1px solid #eee; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .fake-input { flex: 1; background: #f1f1f2; padding: 10px 15px; border-radius: 20px; font-size: 14px; color: #8a8b91; }
-        .lock-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; padding: 25px 20px; border-top-left-radius: 25px; border-top-right-radius: 25px; box-shadow: 0 -10px 30px rgba(0,0,0,0.15); transform: translateY(110%); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; text-align: center; }
-        .lock-overlay.active { transform: translateY(0); }
-        .btn-reg { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 17px; margin-top: 15px; }
-        #exit-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; }
-        .exit-card { width: 85%; max-width: 320px; background: #fff; border-radius: 20px; padding: 25px; text-align: center; }
+        .input-bar { padding: 12px; border-top: 1px solid #eee; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .fake-in { flex: 1; background: #f0f2f5; padding: 8px 15px; border-radius: 20px; font-size: 13px; color: #888; }
+        .lock { position: absolute; bottom: 0; width: 100%; background: #fff; padding: 20px; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); transform: translateY(110%); transition: 0.4s; z-index: 200; text-align: center; }
+        .lock.active { transform: translateY(0); }
+        .btn-go { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 14px; border-radius: 10px; font-weight: 700; margin-top: 10px; }
+        #exit-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .exit-card { background: #fff; border-radius: 20px; padding: 25px; text-align: center; width: 100%; max-width: 300px; }
     </style>
 </head>
 <body>
+
+<div id="start-screen" onclick="initChat()">
+    <img src="1.jpg" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--primary);">
+    <h2 style="margin-top:15px;" id="welcome-t">You have 1 new message</h2>
+    <div class="start-btn" id="start-b">OPEN CHAT</div>
+</div>
 
 <div class="video-bg">
     <video src="./assets/files/video.mp4" loop playsinline autoplay muted></video>
@@ -45,79 +55,71 @@
     <div class="chat-card">
         <div class="header">
             <img src="1.jpg" class="avatar">
-            <div>
-                <div class="u-name">Klubnicka69</div>
-                <div class="u-status" id="st">...</div>
-            </div>
+            <div><div class="u-name">Klubnicka69</div><div class="u-status" id="st">...</div></div>
         </div>
         <div class="msg-area" id="box"></div>
-        <div class="input-bar" onclick="showLock()">
-            <div class="fake-input" id="inp-txt">...</div>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="#fe2c55"/></svg>
+        <div class="input-bar" onclick="showL()">
+            <div class="fake-in" id="fi">...</div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#fe2c55"><path d="M2 21L23 12L2 3V10L17 12L2 14V21Z"/></svg>
         </div>
-        <div class="lock-overlay" id="lock">
-            <div style="font-weight:800; font-size:19px;" id="lt">...</div>
-            <div style="font-size:14px; color:#5e6066; margin-top:10px;" id="ld">...</div>
-            <a href="https://tone.affomelody.com/tHHtXh" class="btn-reg" id="lb">...</a>
+        <div class="lock" id="lk">
+            <div style="font-weight:700;" id="lt">...</div>
+            <a href="https://tone.affomelody.com/tHHtXh" class="btn-go" id="lb">...</a>
         </div>
     </div>
 </div>
 
 <div id="exit-popup">
     <div class="exit-card">
-        <h2 style="font-size: 20px; margin-bottom: 10px;">Wait! 💋</h2>
-        <p style="font-size: 15px; color: #666; margin-bottom: 20px;" id="et">...</p>
-        <a href="https://tone.affomelody.com/tHHtXh" class="btn-reg" id="eb">...</a>
-        <div onclick="closeExit()" style="margin-top: 15px; font-size: 13px; color: #999; cursor: pointer;">Maybe later</div>
+        <h3 id="et1">Wait!</h3>
+        <p style="font-size:14px; color:#666; margin:10px 0 20px;" id="et2">...</p>
+        <a href="https://tone.affomelody.com/tHHtXh" class="btn-go" id="eb">...</a>
     </div>
 </div>
 
 <script>
-    const trans = {
-        ru: { on: "В сети", m1: "Привет! 😊", m2: "Я уже хотела удалять анкету, хорошо что ты зашел... ☺️", m3: "Хочешь увидеть мои фото без цензуры? 😈", inp: "Написать ей...", lt: "Продолжить общение", ld: "Зарегистрируйся, чтобы увидеть фото и ответить ей.", lb: "ОТВЕТИТЬ ЕЙ", et: "Подожди! В твоем городе сейчас онлайн 147 девушек, готовых к встрече!", eb: "ПОСМОТРЕТЬ АНКЕТЫ" },
-        uk: { on: "В мережі", m1: "Привіт! 😊", m2: "Я вже хотіла видаляти анкету, добре що ти зайшов... ☺️", m3: "Хочеш побачити мої фото без цензури? 😈", inp: "Написати їй...", lt: "Продовжити спілкування", ld: "Зареєструйся, щоб побачити фото та відповісти їй.", lb: "ВІДПОВІСТИ ЇЙ", et: "Зачекай! У твоєму місті зараз онлайн 147 дівчат, готових до зустрічі!", eb: "ПОДИВИТИСЯ АНКЕТИ" },
-        en: { on: "Online", m1: "Hi there! 😊", m2: "I was just about to delete my profile, glad you came... ☺️", m3: "Do you want to see my private photos? 😈", inp: "Reply to her...", lt: "Continue Chat", ld: "Register to see private photos and reply to her.", lb: "REPLY NOW", et: "Wait! There are 147 girls from your city online and ready to meet right now!", eb: "VIEW GIRLS" },
-        de: { on: "Online", m1: "Hallo! 😊", m2: "Ich wollte gerade mein Profil löschen, gut, dass du da bist... ☺️", m3: "Willst du meine privaten Fotos sehen? 😈", inp: "Antworten...", lt: "Weiter chatten", ld: "Registriere dich, um private Fotos zu sehen.", lb: "JETZT ANTWORTEN", et: "Warten! In deiner Stadt sind gerade 147 Mädchen online!", eb: "MÄDCHEN SEHEN" },
-        fr: { on: "En ligne", m1: "Salut ! 😊", m2: "J'allais supprimer mon profil, contente que tu sois là... ☺️", m3: "Tu veux voir mes photos privées ? 😈", inp: "Lui répondre...", lt: "Continuer", ld: "Inscris-toi pour voir les photos et lui répondre.", lb: "RÉPONDRE MAINTENANT", et: "Attends ! Il y a 147 filles dans ta ville prêtes à se rencontrer !", eb: "VOIR LES FILLES" },
-        es: { on: "En línea", m1: "¡Hola! 😊", m2: "Estaba a punto de borrar mi perfil, me alegra что vinieras... ☺️", m3: "¿Quieres ver mis fotos privadas? 😈", inp: "Responder...", lt: "Continuar chat", ld: "Regístrate para ver mis fotos y responderme.", lb: "RESPONDER AHORA", et: "¡Espera! ¡Hay 147 chicas en tu ciudad listas para quedar ahora!", eb: "VER CHICAS" },
-        it: { on: "Online", m1: "Ciao! 😊", m2: "Stavo per cancellare il mio profilo, meno male che sei arrivato... ☺️", m3: "Vuoi vedere le mie foto private? 😈", inp: "Rispondi...", lt: "Continua la chat", ld: "Registrati per vedere le foto e rispondere.", lb: "RISPONDI ORA", et: "Aspetta! Ci sono 147 ragazze nella tua città pronte a incontrarti!", eb: "VEDI LE RAGAZZE" },
-        pl: { on: "Online", m1: "Cześć! 😊", m2: "Właśnie miałam usuwać konto, dobrze że jesteś... ☺️", m3: "Chcesz zobaczyć moje prywatne zdjęcia? 😈", inp: "Napisz do niej...", lt: "Kontynuuj czat", ld: "Zarejestruj się, aby zobaczyć zdjęcia i odpowiedzieć.", lb: "ODPOWIEDZ TERAZ", et: "Czekaj! W Twoim mieście jest teraz 147 dziewczyn gotowych na spotkanie!", eb: "ZOBACZ DZIEWCZYNY" },
-        tr: { on: "Çevrimiçi", m1: "Selam! 😊", m2: "Profilimi silmek üzereydim, geldiğine sevindim... ☺️", m3: "Özel fotoğraflarımı görmek ister misin? 😈", inp: "Ona cevap ver...", lt: "Sohbete devam et", ld: "Fotoğrafları görmek ve cevap vermek için kayıt ol.", lb: "ŞİMDİ CEVAPLA", et: "Bekle! Şehrinde şu an buluşmaya hazır 147 kız çevrimiçi!", eb: "KIZLARI GÖR" }
+    const data = {
+        ru: { welcome: "У вас 1 новое сообщение", open: "ОТКРЫТЬ ЧАТ", on: "В сети", m1: "Привет! 😊", m2: "Я тут недавно, ищу с кем пообщаться... ☺️", m3: "Как тебя зовут? Ты откуда? ❤️", fi: "Написать ответ...", lt: "Зарегистрируйся, чтобы ответить ей", lb: "ОТВЕТИТЬ", et2: "В твоем городе еще 147 девушек ищут знакомств! Показать?", eb: "СМОТРЕТЬ" },
+        en: { welcome: "You have 1 new message", open: "OPEN CHAT", on: "Online", m1: "Hey! 😊", m2: "I'm new here, looking for someone to talk to... ☺️", m3: "What's your name? Where are you from? ❤️", fi: "Type a message...", lt: "Register to reply to her", lb: "REPLY", et2: "147 more girls in your city are looking for fun! See them?", eb: "VIEW ALL" },
+        uk: { welcome: "У вас 1 нове повідомлення", open: "ВІДКРИТИ ЧАТ", on: "В мережі", m1: "Привіт! 😊", m2: "Я тут нещодавно, шукаю з ким поспілкуватися... ☺️", m3: "Як тебе звати? Ти звідки? ❤️", fi: "Написати...", lt: "Зареєструйся, щоб відповісти їй", lb: "ВІДПОВІСТИ", et2: "У твоєму місті ще 147 дівчат шукають знайомств! Показати?", eb: "ДИВИТИСЬ" },
+        de: { welcome: "1 neue Nachricht", open: "CHAT ÖFFNEN", on: "Online", m1: "Hallo! 😊", m2: "Ich bin neu hier und suche jemanden... ☺️", m3: "Wie heißt du? Woher kommst du? ❤️", fi: "Antworten...", lt: "Registrieren, um zu antworten", lb: "ANTWORTEN", et2: "147 weitere Mädchen in deiner Stadt suchen jemanden!", eb: "ZEIGEN" },
+        es: { welcome: "Tienes 1 mensaje nuevo", open: "ABRIR CHAT", on: "En línea", m1: "¡Hola! 😊", m2: "Soy nueva aquí, busco a alguien con quien hablar... ☺️", m3: "¿Cómo te llamas? ¿De dónde eres? ❤️", fi: "Escribir...", lt: "Regístrate para responder", lb: "RESPONDER", et2: "¡147 chicas más en tu ciudad están buscando diversión!", eb: "VER TODAS" }
     };
 
-    const getL = () => { const n = navigator.language.split('-')[0]; return trans[n] ? n : 'en'; };
-    const cur = trans[getL()];
+    const L = data[navigator.language.split('-')[0]] || data.en;
     const sound = document.getElementById('msg-sound');
 
-    window.onload = async () => {
-        document.getElementById('st').innerText = cur.on;
-        document.getElementById('inp-txt').innerText = cur.inp;
-        document.getElementById('lt').innerText = cur.lt;
-        document.getElementById('ld').innerText = cur.ld;
-        document.getElementById('lb').innerText = cur.lb;
-        document.getElementById('et').innerText = cur.et;
-        document.getElementById('eb').innerText = cur.eb;
+    function initChat() {
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('st').innerText = L.on;
+        document.getElementById('fi').innerText = L.fi;
+        document.getElementById('lt').innerText = L.lt;
+        document.getElementById('lb').innerText = L.lb;
+        document.getElementById('et2').innerText = L.et2;
+        document.getElementById('eb').innerText = L.eb;
+        
+        // Перехват кнопки Назад активируется ПОСЛЕ клика
+        history.pushState(null, null, location.href);
+        window.onpopstate = () => { document.getElementById('exit-popup').style.display = 'flex'; history.pushState(null, null, location.href); };
 
-        await new Promise(r => setTimeout(r, 1200));
-        showT(); await new Promise(r => setTimeout(r, 1800)); hideT(); addM(cur.m1);
-        await new Promise(r => setTimeout(r, 1000));
-        showT(); await new Promise(r => setTimeout(r, 2500)); hideT(); addM(cur.m2);
-        await new Promise(r => setTimeout(r, 1000));
-        showT(); await new Promise(r => setTimeout(r, 2200)); hideT(); addM(cur.m3);
-    };
+        runChat();
+    }
+
+    // Заполнение текстов начального экрана
+    document.getElementById('welcome-t').innerText = L.welcome;
+    document.getElementById('start-b').innerText = L.open;
+
+    async function runChat() {
+        await sleep(1000); showT(); await sleep(1500); hideT(); addM(L.m1);
+        await sleep(1200); showT(); await sleep(2500); hideT(); addM(L.m2);
+        await sleep(1000); showT(); await sleep(2000); hideT(); addM(L.m3);
+    }
 
     function addM(t) { sound.play().catch(()=>{}); const b = document.getElementById('box'); const d = document.createElement('div'); d.className = 'bubble received'; d.innerText = t; b.appendChild(d); b.scrollTop = b.scrollHeight; }
-    function showT() { const b = document.getElementById('box'); const d = document.createElement('div'); d.className = 'bubble received typing-bubble'; d.id = 'tp'; d.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>'; b.appendChild(d); b.scrollTop = b.scrollHeight; }
+    function showT() { const b = document.getElementById('box'); const d = document.createElement('div'); d.className = 'bubble received typing'; d.id = 'tp'; d.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>'; b.appendChild(d); b.scrollTop = b.scrollHeight; }
     function hideT() { if(document.getElementById('tp')) document.getElementById('tp').remove(); }
-    function showLock() { document.getElementById('lock').classList.add('active'); }
-
-    // Exit Intent Logic
-    history.pushState(null, null, location.href);
-    window.onpopstate = function () {
-        document.getElementById('exit-popup').style.display = 'flex';
-        history.pushState(null, null, location.href);
-    };
-    function closeExit() { document.getElementById('exit-popup').style.display = 'none'; }
+    function showL() { document.getElementById('lk').classList.add('active'); }
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 </script>
 </body>
 </html>
