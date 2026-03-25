@@ -3,136 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Private Chat</title>
-    <audio id="msg-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
+    <title>Chat | Klubnicka69</title>
     <style>
-        :root { --primary: #fe2c55; --bg: #f0f2f5; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
-        body { background: #000; overflow: hidden; }
+        :root { --primary: #fe2c55; --online: #4caf50; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, Roboto, sans-serif; }
+        body { background: #000; overflow: hidden; position: fixed; width: 100%; }
         
-        /* Start Screen */
-        #start-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #fff; cursor: pointer; }
-        .start-btn { background: var(--primary); padding: 16px 35px; border-radius: 50px; font-weight: 800; margin-top: 20px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-
-        .video-bg { position: fixed; inset: 0; z-index: 1; }
-        .video-bg video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.45); }
+        /* Абстрактный прикольный фон */
+        .bg-layer { position: fixed; inset: 0; background: linear-gradient(45deg, #1a1a1a, #4a148c); z-index: 1; }
         
         #chat-overlay { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; }
-        .chat-card { width: 94%; max-width: 380px; height: 82vh; background: #fff; border-radius: 25px; display: flex; flex-direction: column; overflow: hidden; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .chat-card { width: 92%; max-width: 380px; height: 85vh; background: #fff; border-radius: 25px; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.5); overflow: hidden; position: relative; }
         
-        .header { padding: 12px 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid var(--primary); }
-        .u-status { font-size: 11px; color: #4caf50; font-weight: 700; }
+        .header { padding: 12px 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; background: #fff; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 2px solid var(--primary); }
+        .u-name { font-weight: 700; font-size: 16px; }
+        .u-status { font-size: 11px; color: var(--online); font-weight: bold; }
 
-        .msg-area { flex: 1; padding: 15px; overflow-y: auto; background: var(--bg); display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 85%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; animation: pop 0.3s ease; background: #fff; border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        @keyframes pop { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .msg-area { flex: 1; padding: 15px; overflow-y: auto; background: #f7f8fa; display: flex; flex-direction: column; gap: 8px; }
+        .bubble { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; animation: pop 0.2s ease-out forwards; }
+        .received { background: #fff; color: #000; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .sent { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
 
-        .typing { display: flex; gap: 4px; padding: 10px !important; width: 55px; }
-        .dot { width: 4px; height: 4px; background: #bbb; border-radius: 50%; animation: blink 1.4s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        .input-bar { padding: 12px; border-top: 1px solid #eee; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .fake-in { flex: 1; background: var(--bg); padding: 9px 15px; border-radius: 20px; font-size: 13px; color: #888; }
+        .action-zone { padding: 15px; background: #fff; border-top: 1px solid #eee; text-align: center; }
+        .btn-reply { background: #f1f1f2; border: none; padding: 10px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; margin: 4px; transition: 0.2s; }
+        .btn-reply:active { background: #e2e2e4; }
 
-        .lock { position: absolute; bottom: 0; width: 100%; background: #fff; padding: 25px 20px; border-top: 1px solid #eee; transform: translateY(110%); transition: 0.4s; z-index: 200; text-align: center; border-radius: 25px 25px 0 0; }
-        .lock.active { transform: translateY(0); }
-        .btn-go { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 15px; border-radius: 12px; font-weight: 700; margin-top: 15px; }
+        /* Lock / Reg block */
+        .lock-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; padding: 25px 20px; border-top: 2px solid var(--primary); transform: translateY(105%); transition: 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 200; text-align: center; }
+        .lock-overlay.active { transform: translateY(0); }
+        .btn-reg { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 15px; border-radius: 12px; font-weight: 800; font-size: 18px; box-shadow: 0 4px 15px rgba(254, 44, 85, 0.3); }
 
-        /* Exit Popup with Gallery */
-        #exit-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 15px; }
-        .exit-card { background: #fff; border-radius: 25px; padding: 20px; width: 100%; max-width: 350px; text-align: center; }
-        .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
-        .g-item { position: relative; cursor: pointer; }
-        .g-item img { width: 100%; height: 90px; object-fit: cover; border-radius: 10px; }
-        .g-name { font-size: 10px; font-weight: 700; margin-top: 3px; }
-        .close-btn { margin-top: 15px; font-size: 12px; color: #999; cursor: pointer; text-decoration: underline; }
+        /* EXIT POPUP */
+        #exit-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; color: #fff; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; width: 100%; max-width: 400px; }
+        .grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; border: 1px solid #333; }
+        .btn-exit-go { background: var(--primary); color: #fff; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 18px; }
     </style>
 </head>
 <body>
 
-<div id="start-screen" onclick="initChat()">
-    <img src="1.jpg" style="width:90px; height:90px; border-radius:50%; border:3px solid var(--primary); object-fit: cover;">
-    <h2 style="margin-top:15px; font-size: 18px;" id="wel-t">1 New Message</h2>
-    <div class="start-btn" id="sta-b">READ MESSAGE</div>
-</div>
-
-<div class="video-bg"><video src="./assets/files/video.mp4" loop playsinline autoplay muted></video></div>
+<div class="bg-layer"></div>
 
 <div id="chat-overlay">
     <div class="chat-card">
         <div class="header">
             <img src="1.jpg" class="avatar">
-            <div><div style="font-weight:700; font-size:15px;">Klubnicka69</div><div class="u-status" id="st">...</div></div>
+            <div>
+                <div class="u-name">Klubnicka69</div>
+                <div class="u-status">Online</div>
+            </div>
         </div>
-        <div class="msg-area" id="box"></div>
-        <div class="input-bar" onclick="showL()"><div class="fake-in" id="fi">...</div><svg width="20" height="20" viewBox="0 0 24 24" fill="#fe2c55"><path d="M2 21L23 12L2 3V10L17 12L2 14V21Z"/></svg></div>
-        <div class="lock" id="lk"><div style="font-weight:700; font-size: 16px;" id="lt">...</div><a href="https://tone.affomelody.com/tHHtXh" class="btn-go" id="lb">...</a></div>
+        <div class="msg-area" id="box">
+            <div class="bubble received" id="first-msg">...</div>
+        </div>
+        <div class="action-zone" id="ui-actions">
+            <div class="quick-replies" id="replies-container"></div>
+        </div>
+        <div class="lock-overlay" id="lock-block">
+            <div style="font-weight:900; font-size:20px; margin-bottom:10px;" id="lt">Continue Chat</div>
+            <div style="font-size:14px; color:#666; margin-bottom:20px;" id="ld">Register to reply...</div>
+            <a href="https://tone.affomelody.com/tHHtXh" class="btn-reg" id="lb">REPLY</a>
+        </div>
     </div>
 </div>
 
 <div id="exit-popup">
-    <div class="exit-card">
-        <h3 id="et1">Wait! 💋</h3>
-        <p style="font-size:13px; color:#666; margin-top:5px;" id="et2">...</p>
-        <div class="gallery" id="gal">
-            <div class="g-item" onclick="go()"><img src="2.jpg"><div class="g-name">Marta</div></div>
-            <div class="g-item" onclick="go()"><img src="3.jpg"><div class="g-name">Julia</div></div>
-            <div class="g-item" onclick="go()"><img src="4.jpg"><div class="g-name">Elena</div></div>
-            <div class="g-item" onclick="go()"><img src="5.jpg"><div class="g-name">Sofi</div></div>
-            <div class="g-item" onclick="go()"><img src="6.jpg"><div class="g-name">Bella</div></div>
-            <div class="g-item" onclick="go()"><img src="7.jpg"><div class="g-name">Karina</div></div>
-        </div>
-        <a href="https://tone.affomelody.com/tHHtXh" class="btn-go" id="eb">...</a>
-        <div class="close-btn" onclick="closeExit()" id="ec">Maybe later</div>
+    <h2 id="et1">Don't leave yet!</h2>
+    <p id="et2" style="margin-top:10px; opacity:0.8;">These girls are online near you:</p>
+    <div class="grid">
+        <img src="2.jpg"> <img src="3.jpg"> <img src="4.jpg">
+        <img src="5.jpg"> <img src="6.jpg"> <img src="7.jpg">
     </div>
+    <a href="https://tone.affomelody.com/tHHtXh" class="btn-exit-go" id="eb">SEE ALL PROFILES</a>
+    <p style="margin-top: 20px; font-size: 12px; color: #666;" onclick="location.reload()">Return to chat</p>
 </div>
 
 <script>
-    const data = {
-        ru: { wel: "У вас 1 новое сообщение", sta: "ПРОЧИТАТЬ", on: "В сети", m1: "Привет! 😊", m2: "Ты первый, кто решил написать мне. Хотела уже удалять свою анкету отсюда... ☺️", m3: "Как тебя зовут? Ты откуда? ❤️", fi: "Написать ответ...", lt: "Зарегистрируйся, чтобы ответить", lb: "ОТВЕТИТЬ", et2: "В твоем городе еще 147 девушек ищут знакомств прямо сейчас!", eb: "ПОСМОТРЕТЬ ВСЕХ", ec: "Может позже" },
-        en: { wel: "1 New Message Received", sta: "READ MESSAGE", on: "Online", m1: "Hey! 😊", m2: "You are the first one who decided to write to me. I was about to delete my profile... ☺️", m3: "What's your name? Where are you from? ❤️", fi: "Type a message...", lt: "Register to send a reply", lb: "REPLY NOW", et2: "147 more girls in your city are looking for fun right now!", eb: "VIEW ALL PROFILES", ec: "Maybe later" },
-        uk: { wel: "У вас 1 нове повідомлення", sta: "ПРОЧИТАТИ", on: "В мережі", m1: "Привіт! 😊", m2: "Ти перший, хто вирішив написати мені. Вже хотіла видаляти свою анкету звідси... ☺️", m3: "Як тебе звати? Ти звідки? ❤️", fi: "Написати...", lt: "Зареєструйся, щоб відповісти", lb: "ВІДПОВІСТИ", et2: "У твоєму місті ще 147 дівчат шукають знайомств прямо зараз!", eb: "ПОДИВИТИСЬ УСІХ", ec: "Можливо пізніше" },
-        de: { wel: "1 neue Nachricht", sta: "NACHRICHT LESEN", on: "Online", m1: "Hallo! 😊", m2: "Du bist der Erste, der mir schreibt. Wollte mein Profil schon löschen... ☺️", m3: "Wie heißt du? Woher kommst du? ❤️", fi: "Antworten...", lt: "Registrieren zum Antworten", lb: "JETZT ANTWORTEN", et2: "147 weitere Mädchen in deiner Stadt suchen jemanden!", eb: "ALLE ANZEIGEN", ec: "Vielleicht später" },
-        es: { wel: "Tienes 1 mensaje nuevo", sta: "LEER MENSAJE", on: "En línea", m1: "¡Hola! 😊", m2: "Eres el primero que se anima a escribirme. Iba a borrar mi perfil... ☺️", m3: "¿Cómo te llamas? ¿De dónde eres? ❤️", fi: "Escribir...", lt: "Regístrate para responder", lb: "RESPONDER", et2: "¡147 chicas más en tu ciudad están buscando diversión ahora!", eb: "VER PERFILES", ec: "Quizás más tarde" }
+    const translations = {
+        ru: { m0: "Привет! 😊", r: ["Привет! 👋", "Познакомимся? 😊"], m1: "Ты первый, кто написал мне за месяц... ☺️", m2: "Я уже хотела удалять анкету, но тут ты! Как зовут? Откуда ты? 🥲", lt: "Продолжить чат", ld: "Регистрация нужна, чтобы Klubnicka69 увидела твой ответ.", lb: "ОТВЕТИТЬ ЕЙ", et1: "Уже уходишь?", et2: "Эти девушки сейчас в поиске:", eb: "СМОТРЕТЬ ВСЕХ" },
+        en: { m0: "Hi! 😊", r: ["Hey! 👋", "Let's chat! 😊"], m1: "You're the first one who wrote to me... ☺️", m2: "I was about to delete my profile! What's your name? Where are you from? 🥲", lt: "Continue Chat", ld: "Quick registration needed to reply to her.", lb: "REPLY TO HER", et1: "Wait!", et2: "These girls are active now:", eb: "SEE ALL" }
     };
 
-    const L = data[navigator.language.split('-')[0]] || data.en;
-    const sound = document.getElementById('msg-sound');
+    const L = translations[navigator.language.split('-')[0]] || translations.en;
 
-    function initChat() {
-        document.getElementById('start-screen').style.display = 'none';
-        document.getElementById('st').innerText = L.on;
-        document.getElementById('fi').innerText = L.fi;
-        document.getElementById('lt').innerText = L.lt;
-        document.getElementById('lb').innerText = L.lb;
-        document.getElementById('et2').innerText = L.et2;
-        document.getElementById('eb').innerText = L.eb;
-        document.getElementById('ec').innerText = L.ec;
+    // Инициализация
+    document.getElementById('first-msg').innerText = L.m0;
+    document.getElementById('lt').innerText = L.lt;
+    document.getElementById('ld').innerText = L.ld;
+    document.getElementById('lb').innerText = L.lb;
+    document.getElementById('et1').innerText = L.et1;
+    document.getElementById('et2').innerText = L.et2;
+    document.getElementById('eb').innerText = L.eb;
+
+    const cont = document.getElementById('replies-container');
+    L.r.forEach(t => {
+        const b = document.createElement('button');
+        b.className = 'btn-reply'; b.innerText = t;
+        b.onclick = () => send(t);
+        cont.appendChild(b);
+    });
+
+    function addMsg(txt, type) {
+        const b = document.getElementById('box');
+        const d = document.createElement('div');
+        d.className = `bubble ${type}`;
+        d.innerText = txt;
+        b.appendChild(d);
+        b.scrollTop = b.scrollHeight;
+    }
+
+    async function send(t) {
+        document.getElementById('ui-actions').style.display = 'none';
+        addMsg(t, 'sent');
         
-        history.pushState(null, null, location.href);
-        window.onpopstate = () => { document.getElementById('exit-popup').style.display = 'flex'; history.pushState(null, null, location.href); };
-        runChat();
+        // Быстрая серия сообщений без длинных пауз
+        await sleep(600);
+        addMsg(L.m1, 'received');
+        await sleep(800);
+        addMsg(L.m2, 'received');
+        await sleep(400);
+        document.getElementById('lock-block').classList.add('active');
     }
 
-    document.getElementById('wel-t').innerText = L.wel;
-    document.getElementById('sta-b').innerText = L.sta;
-
-    async function runChat() {
-        await sleep(1000); showT(); await sleep(1500); hideT(); addM(L.m1);
-        await sleep(1500); showT(); await sleep(3500); hideT(); addM(L.m2);
-        await sleep(1200); showT(); await sleep(2500); hideT(); addM(L.m3);
-        document.getElementById('fi').innerText = L.fi;
-    }
-
-    function addM(t) { sound.play().catch(()=>{}); const b = document.getElementById('box'); const d = document.createElement('div'); d.className = 'bubble'; d.innerText = t; b.appendChild(d); b.scrollTop = b.scrollHeight; }
-    function showT() { const b = document.getElementById('box'); const d = document.createElement('div'); d.className = 'bubble typing'; d.id = 'tp'; d.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>'; b.appendChild(d); b.scrollTop = b.scrollHeight; }
-    function hideT() { if(document.getElementById('tp')) document.getElementById('tp').remove(); }
-    function showL() { document.getElementById('lk').classList.add('active'); }
-    function go() { window.location.href = "https://tone.affomelody.com/tHHtXh"; }
-    function closeExit() { document.getElementById('exit-popup').style.display = 'none'; }
     function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    // Трап на кнопку "Назад"
+    history.pushState(null, null, location.href);
+    window.onpopstate = function() {
+        document.getElementById('exit-popup').style.display = 'flex';
+        history.pushState(null, null, location.href);
+    };
 </script>
+
 </body>
 </html>
