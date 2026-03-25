@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Messenger</title>
+    <title>Dating Messenger</title>
     
-    <!-- GA4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JLRMVTE398"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -15,157 +14,197 @@
     </script>
 
     <style>
-        :root { --tg-blue: #24A1DE; --bg: #f0f2f5; --white: #ffffff; --text: #000; --gray: #8e8e93; --online: #4caf50; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background: var(--bg); color: var(--text); user-select: none; -webkit-tap-highlight-color: transparent; }
-        
+        :root { --main-color: #ff4757; --bg: #f7f8fa; --text: #2f3542; --gray: #a4b0be; --white: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+
         /* Header */
-        .app-header { background: var(--white); padding: 15px; border-bottom: 1px solid #dbdbdb; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-        .app-title { font-size: 20px; font-weight: 700; color: var(--tg-blue); }
-        .status-icons { display: flex; gap: 10px; color: var(--gray); }
+        .header { background: var(--white); padding: 15px; text-align: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+        .header h1 { font-size: 16px; color: var(--main-color); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Chat List */
-        .inbox { max-width: 600px; margin: 0 auto; background: var(--white); min-height: 100vh; }
-        .chat-item { display: flex; padding: 12px 15px; border-bottom: 1px solid #f2f2f2; cursor: pointer; transition: background 0.2s; position: relative; text-decoration: none; color: inherit; }
-        .chat-item:active { background: #f0f0f0; }
-        
-        .avatar-container { position: relative; margin-right: 15px; }
-        .avatar { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; }
-        .online-dot { width: 12px; height: 12px; background: var(--online); border: 2px solid #fff; border-radius: 50%; position: absolute; bottom: 3px; right: 3px; }
-
-        .chat-info { flex: 1; min-width: 0; }
-        .chat-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        /* List Screen */
+        #list-screen { display: block; }
+        .chat-row { display: flex; padding: 15px; background: var(--white); border-bottom: 1px solid #f1f1f1; cursor: pointer; align-items: center; }
+        .avatar-box { position: relative; margin-right: 15px; }
+        .avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--main-color); }
+        .on { width: 12px; height: 12px; background: #2ecc71; border: 2px solid #fff; border-radius: 50%; position: absolute; bottom: 5px; right: 2px; }
+        .info { flex: 1; }
+        .info-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
         .name { font-weight: 700; font-size: 16px; }
-        .time { font-size: 12px; color: var(--gray); }
+        .msg-preview { color: var(--gray); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+        .badge { background: var(--main-color); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 10px; }
+
+        /* Chat Screen */
+        #chat-screen { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 200; flex-direction: column; }
+        .chat-header { background: var(--white); padding: 10px 15px; display: flex; align-items: center; border-bottom: 1px solid #eee; }
+        .back-btn { font-size: 24px; margin-right: 15px; cursor: pointer; color: var(--main-color); }
+        .messages-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { max-width: 80%; padding: 10px 15px; border-radius: 18px; font-size: 14px; line-height: 1.4; position: relative; align-self: flex-start; background: #fff; border: 1px solid #eee; }
+        .input-area { background: #fff; padding: 10px; display: flex; gap: 10px; border-top: 1px solid #eee; }
+        .fake-input { flex: 1; background: #f1f2f6; padding: 10px 15px; border-radius: 20px; color: var(--gray); font-size: 14px; }
+
+        /* Popups */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
+        .card { background: #fff; width: 100%; max-width: 320px; border-radius: 25px; padding: 25px; text-align: center; }
+        .card h2 { margin-bottom: 15px; font-size: 20px; }
+        .card p { font-size: 14px; color: #57606f; margin-bottom: 20px; line-height: 1.5; }
+        .btn { background: var(--main-color); color: #fff; text-decoration: none; display: block; padding: 15px; border-radius: 15px; font-weight: 700; margin-bottom: 10px; }
         
-        .preview { font-size: 14px; color: var(--gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px; }
-        .typing { color: var(--tg-blue); font-weight: 500; }
-        .unread-badge { background: var(--tg-blue); color: #fff; font-size: 11px; padding: 2px 7px; border-radius: 10px; min-width: 20px; text-align: center; margin-top: 5px; float: right; }
-
-        /* Popup */
-        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
-        .modal-card { background: #fff; width: 100%; max-width: 320px; border-radius: 20px; padding: 25px; text-align: center; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-icon { font-size: 40px; margin-bottom: 15px; }
-        .modal-h { font-weight: 800; font-size: 18px; margin-bottom: 10px; }
-        .modal-p { font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.4; }
-        .btn-go { background: var(--tg-blue); color: #fff; text-decoration: none; display: block; padding: 15px; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        /* Bottom Nav (for realism) */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #fff; border-top: 1px solid #dbdbdb; display: flex; justify-content: space-around; padding: 10px 0; z-index: 90; }
-        .nav-item { color: var(--gray); font-size: 10px; text-align: center; opacity: 0.6; }
+        .footer-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; z-index: 150; }
     </style>
 </head>
 <body>
 
-<div class="app-header">
-    <div class="app-title" id="t-chats">Chats</div>
-    <div class="status-icons">
-        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+<div class="header">
+    <h1 id="t-head">Girls are writing to you now! ⚡</h1>
+</div>
+
+<div id="list-screen"></div>
+
+<div id="chat-screen">
+    <div class="chat-header">
+        <div class="back-btn" onclick="closeChat()">←</div>
+        <img id="chat-avatar" class="avatar" style="width:40px; height:40px; margin-right:10px;">
+        <div class="name" id="chat-name">Name</div>
+    </div>
+    <div class="messages-area" id="msg-box"></div>
+    <div class="input-area" onclick="openReg()">
+        <div class="fake-input" id="t-input">Type a message...</div>
+        <div style="color:var(--main-color); font-size:24px;">➤</div>
     </div>
 </div>
 
-<div class="inbox" id="chat-list">
-    <!-- Chats will be generated here -->
+<div class="footer-btn">
+    <a href="https://tone.affomelody.com/tHHtXh" class="btn" id="t-main-btn" onclick="trackReg()">Quick Registration</a>
 </div>
 
-<div id="modal">
-    <div class="modal-card">
-        <div class="modal-icon">✉️</div>
-        <div class="modal-h" id="mh">Private Message</div>
-        <div class="modal-p" id="mp">You have new unread messages and photos. Open access to read.</div>
-        <a href="https://tone.affomelody.com/tHHtXh" class="btn-go" id="mb" onclick="trackReg()">Unlock Chat</a>
+<!-- Popups -->
+<div id="reg-modal" class="modal">
+    <div class="card">
+        <h2 id="rh">Finish Registration</h2>
+        <p id="rp">To reply and see photos, you need a free profile.</p>
+        <a href="https://tone.affomelody.com/tHHtXh" class="btn" onclick="trackReg()">Continue</a>
     </div>
 </div>
 
-<div class="bottom-nav">
-    <div class="nav-item">💬<br><span id="b1">Chats</span></div>
-    <div class="nav-item">👤<br><span id="b2">Contacts</span></div>
-    <div class="nav-item">⚙️<br><span id="b3">Settings</span></div>
+<div id="exit-modal" class="modal">
+    <div class="card">
+        <h2 id="eh">Wait! Don't go!</h2>
+        <p id="ep">Near you: <b>147</b> girls for no-strings fun and <b>233</b> for serious dating. Don't miss your chance!</p>
+        <a href="https://tone.affomelody.com/tHHtXh" class="btn" onclick="trackReg()">Stay & Meet</a>
+    </div>
 </div>
 
 <script>
     const translations = {
-        ru: { title: "Чаты", m1: "Привет! Познакомимся?", m2: "Сбросила тебе фото, оценишь? 😉", m3: "Ты тут? Я скучаю...", m4: "Ого, ты классный!", m5: "Посмотришь мое видео?", m6: "Я рядом, заглянешь?", mh: "Приватный доступ", mp: "У вас 6 новых сообщений и 2 фото. Откройте доступ, чтобы прочитать.", mb: "ОТКРЫТЬ", b1: "Чаты", b2: "Контакты", b3: "Настройки", typing: "печатает..." },
-        uk: { title: "Чати", m1: "Привіт! Познайомимося?", m2: "Скинула тобі фото, оціниш? 😉", m3: "Ти тут? Я сумую...", m4: "Ого, ти класний!", m5: "Подивишся моє відео?", m6: "Я поруч, заглянеш?", mh: "Приватний доступ", mp: "У вас 6 нових повідомлень та 2 фото. Відкрийте доступ, щоб прочитати.", mb: "ВІДКРИТИ", b1: "Чати", b2: "Контакти", b3: "Налаштування", typing: "пише..." },
-        en: { title: "Chats", m1: "Hi! Wanna meet?", m2: "Sent you a photo, check it? 😉", m3: "Are you here? I miss you...", m4: "Wow, you look great!", m5: "Wanna see my video?", m6: "I'm nearby, come over?", mh: "Private Access", mp: "You have 6 new messages and 2 photos. Unlock access to read.", mb: "OPEN CHAT", b1: "Chats", b2: "Contacts", b3: "Settings", typing: "typing..." },
-        pl: { title: "Czaty", m1: "Cześć! Poznamy się?", m2: "Wysłałam ci zdjęcie, ocenisz? 😉", m3: "Jesteś? Tęsknię...", m4: "Wow, jesteś super!", m5: "Zobaczysz moje wideo?", m6: "Jestem blisko, wpadniesz?", mh: "Prywatny dostęp", mp: "Masz 6 nowych wiadomości i 2 zdjęcia. Otwórz dostęp, aby przeczytać.", mb: "OTWÓRZ", b1: "Czaty", b2: "Kontakty", b3: "Ustawienia", typing: "pisze..." },
-        de: { title: "Chats", m1: "Hi! Wollen wir uns treffen?", m2: "Habe dir ein Foto geschickt 😉", m3: "Bist du da? Ich vermisse dich...", m4: "Wow, du siehst toll aus!", m5: "Willst du mein Video sehen?", m6: "Ich bin in der Nähe, kommst du?", mh: "Privater Zugang", mp: "Du hast 6 neue Nachrichten und 2 Fotos. Freischalten zum Lesen.", mb: "ÖFFNEN", b1: "Chats", b2: "Kontakte", b3: "Einstellungen", typing: "schreibt..." },
-        fr: { title: "Chats", m1: "Salut ! On se rencontre ?", m2: "Je t'ai envoyé une photo 😉", m3: "Tu es là ? Tu me manques...", m4: "Wow, tu es super !", m5: "Tu veux voir ma vidéo ?", m6: "Je suis tout près, tu viens ?", mh: "Accès Privé", mp: "Vous avez 6 nouveaux messages et 2 photos. Débloquez pour lire.", mb: "OUVRIR", b1: "Chats", b2: "Contacts", b3: "Paramètres", typing: "écrit..." },
-        es: { title: "Chats", m1: "¡Hola! ¿Nos conocemos?", m2: "Te envié una foto, ¿la ves? 😉", m3: "¿Estás ahí? Te extraño...", m4: "¡Vaya, qué guapo!", m5: "¿Quieres ver mi video?", m6: "Estoy cerca, ¿vienes?", mh: "Acceso Privado", mp: "Tienes 6 mensajes nuevos и 2 fotos. Desbloquea para leer.", mb: "ABRIR", b1: "Chats", b2: "Contactos", b3: "Ajustes", typing: "escribiendo..." },
-        tr: { title: "Sohbetler", m1: "Selam! Tanışalım mı?", m2: "Sana bir fotoğraf gönderdim 😉", m3: "Orada mısın? Seni özledim...", m4: "Vay, harikasın!", m5: "Videomu izlemek ister misin?", m6: "Yakındayım, gelir misin?", mh: "Özel Erişim", mp: "6 yeni mesajınız ve 2 fotoğrafınız var. Okumak için erişimi açın.", mb: "AÇ", b1: "Sohbetler", b2: "Kişiler", b3: "Ayarlar", typing: "yazıyor..." }
-        // ... можно добавить еще 25+ языков аналогично
+        ru: {
+            head: "Девушки пишут тебе сами! 🔥",
+            input: "Напишите сообщение...",
+            mainBtn: "Быстрая регистрация",
+            rh: "Нужна регистрация",
+            rp: "Чтобы отвечать девушкам и смотреть их фото, создайте бесплатный профиль.",
+            eh: "Ты точно хочешь уйти?",
+            ep: "Рядом с тобой 147 девушек хотят секса без обязательств и 233 ищут серьезных отношений. Попробуй!",
+            chats: [
+                ["Мария", "Привет, вижу ты новенький тут! 😊", "Не хочешь добавить свое фото в профиль? Хочу тебя рассмотреть..."],
+                ["Катя", "Приветик! Ты откуда?", "Вижу ты еще не зарегистрирован, но думаю мы пообщаемся позже? 😉"],
+                ["Вика", "Ого, какой мужчина зашел!", "Сбросила бы тебе фото, но нужно чтобы ты завел анкету сначала..."],
+                ["Елена", "Ты тут надолго? Ищу с кем провести вечер", "Давай перейдем в приват? Тут нельзя слать горячее... 🔥"],
+                ["Светлана", "Привет! Свободен сегодня?", "Я тут новенькая, ищу смелого парня. Жду твой профиль!"],
+                ["Анжела", "Вау! Привет красавчик!", "Регистрируйся скорее, я подготовила для тебя сюрприз... 😈"]
+            ]
+        },
+        en: {
+            head: "Girls are messaging you! 🔥",
+            input: "Type a message...",
+            mainBtn: "Quick Registration",
+            rh: "Registration Needed",
+            rp: "To reply and see photos, please create a free profile.",
+            eh: "Wait! Don't go!",
+            ep: "Near you: 147 girls want fun tonight and 233 seek serious dating. Don't miss out!",
+            chats: [
+                ["Maria", "Hi, I see you're new here! 😊", "Wanna add your photo? I'd love to see you..."],
+                ["Kate", "Hey! Where are you from?", "Not registered yet? I hope we can chat properly soon 😉"],
+                ["Vicky", "Wow, a new handsome guy!", "I'd send you a photo, but you need a profile first..."],
+                ["Helen", "Staying long? Looking for company tonight.", "Let's go private? Can't send hot stuff here... 🔥"],
+                ["Lana", "Hi! Free today?", "I'm new here, looking for a brave guy. Waiting for you!"],
+                ["Angela", "Wow! Hello handsome!", "Register fast, I have a surprise for you... 😈"]
+            ]
+        }
+        // Добавь другие языки по аналогии
     };
 
-    const names = ["Klubnicka", "Maria", "Svetlana", "Vika", "Elena", "Angela"];
     const userLang = navigator.language.split('-')[0];
     const cur = translations[userLang] || translations.en;
+    
+    // Set texts
+    document.getElementById('t-head').innerText = cur.head;
+    document.getElementById('t-input').innerText = cur.input;
+    document.getElementById('t-main-btn').innerText = cur.mainBtn;
+    document.getElementById('rh').innerText = cur.rh;
+    document.getElementById('rp').innerText = cur.rp;
+    document.getElementById('eh').innerText = cur.eh;
+    document.getElementById('ep').innerHTML = cur.ep;
 
-    // Set Static Text
-    document.getElementById('t-chats').innerText = cur.title;
-    document.getElementById('mh').innerText = cur.mh;
-    document.getElementById('mp').innerText = cur.mp;
-    document.getElementById('mb').innerText = cur.mb;
-    document.getElementById('b1').innerText = cur.b1;
-    document.getElementById('b2').innerText = cur.b2;
-    document.getElementById('b3').innerText = cur.b3;
-
-    function buildInbox() {
-        const list = document.getElementById('chat-list');
-        for (let i = 1; i <= 6; i++) {
-            const chat = document.createElement('div');
-            chat.className = 'chat-item';
-            chat.innerHTML = `
-                <div class="avatar-container">
-                    <img src="${i + 1}.jpg" class="avatar">
-                    <div class="online-dot"></div>
-                </div>
-                <div class="chat-info">
-                    <div class="chat-top">
-                        <span class="name">${names[i-1]}</span>
-                        <span class="time">1${i}:4${i}</span>
-                    </div>
-                    <div class="preview" id="prev-${i}">
-                        ${cur['m' + i]}
-                    </div>
-                    <div class="unread-badge">${Math.floor(Math.random() * 3) + 1}</div>
+    function buildList() {
+        const container = document.getElementById('list-screen');
+        cur.chats.forEach((chat, i) => {
+            const row = document.createElement('div');
+            row.className = 'chat-row';
+            row.innerHTML = `
+                <div class="avatar-box"><img src="${i+2}.jpg" class="avatar"><div class="on"></div></div>
+                <div class="info">
+                    <div class="info-top"><span class="name">${chat[0]}</span><span class="badge">1</span></div>
+                    <div class="msg-preview">${chat[1]}</div>
                 </div>
             `;
-            chat.onclick = openModal;
-            list.appendChild(chat);
-        }
+            row.onclick = () => openChat(i);
+            container.appendChild(row);
+        });
     }
 
-    function openModal() {
-        document.getElementById('modal').style.display = 'flex';
-        gtag('event', 'chat_click', {'event_category': 'engagement'});
+    function openChat(index) {
+        const data = cur.chats[index];
+        document.getElementById('chat-name').innerText = data[0];
+        document.getElementById('chat-avatar').src = `${index+2}.jpg`;
+        document.getElementById('msg-box').innerHTML = '';
+        document.getElementById('chat-screen').style.display = 'flex';
+        
+        // Появление сообщений с задержкой
+        setTimeout(() => addBubble(data[1]), 500);
+        setTimeout(() => addBubble(data[2]), 2500);
+        
+        gtag('event', 'open_chat_' + index);
+    }
+
+    function addBubble(text) {
+        const b = document.createElement('div');
+        b.className = 'bubble';
+        b.innerText = text;
+        document.getElementById('msg-box').appendChild(b);
+    }
+
+    function closeChat() {
+        document.getElementById('chat-screen').style.display = 'none';
+    }
+
+    function openReg() {
+        document.getElementById('reg-modal').style.display = 'flex';
+        gtag('event', 'registration_click_fake_input');
     }
 
     function trackReg() {
-        gtag('event', 'registration_click', {'event_category': 'outbound'});
+        gtag('event', 'registration_click_final');
     }
 
-    // Typing effect for the first girl
-    function startTyping() {
-        const p1 = document.getElementById('prev-1');
-        setTimeout(() => {
-            p1.innerHTML = `<span class="typing">${cur.typing}</span>`;
-            setTimeout(() => {
-                p1.innerText = cur.m1;
-                startTyping();
-            }, 3000);
-        }, 2000);
-    }
-
-    buildInbox();
-    startTyping();
-
-    // Back button capture
+    // Exit Intent / Back Button
     history.pushState(null, null, location.href);
-    window.onpopstate = () => {
-        openModal();
+    window.onpopstate = function() {
+        document.getElementById('exit-modal').style.display = 'flex';
         history.pushState(null, null, location.href);
     };
+
+    buildList();
 </script>
 </body>
 </html>
