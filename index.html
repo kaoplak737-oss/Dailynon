@@ -1,61 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Private Message</title>
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JLRMVTE398"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JLRMVTE398');
+    </script>
+
     <style>
         :root { --primary: #fe2c55; --online: #4caf50; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, Roboto, sans-serif; }
         body { background: #000; overflow: hidden; position: fixed; width: 100%; height: 100%; }
         .bg-layer { position: fixed; inset: 0; background: linear-gradient(135deg, #121212 0%, #1a1a2e 100%); z-index: 1; }
-        
         #chat-overlay { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; }
         .chat-card { width: 92%; max-width: 380px; height: 85vh; background: #fff; border-radius: 25px; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.6); overflow: hidden; position: relative; }
-        
-        /* Header */
         .header { padding: 12px 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; background: #fff; z-index: 10; }
         .avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid var(--primary); }
         .u-name { font-weight: 700; font-size: 16px; color: #000; }
         .u-status { font-size: 11px; color: var(--online); font-weight: 800; }
-
-        /* Chat Area */
-        .msg-area { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 8px; scroll-behavior: smooth; }
+        .msg-area { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 8px; }
         .bubble { max-width: 85%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; animation: pop 0.25s ease-out forwards; position: relative; }
         .received { background: #fff; color: #000; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .sent { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; padding-bottom: 20px; min-width: 90px; }
         .ticks { position: absolute; bottom: 4px; right: 10px; font-size: 9px; opacity: 0.8; }
-        
-        /* Typing Indicator */
         #typing { font-size: 12px; color: #888; margin-left: 5px; display: none; padding: 5px; }
-        @keyframes blink { 0% { opacity: .2; } 20% { opacity: 1; } 100% { opacity: .2; } }
         .typing-dots span { animation: blink 1.4s infinite both; font-weight: bold; }
         .typing-dots span:nth-child(2) { animation-delay: .2s; }
         .typing-dots span:nth-child(3) { animation-delay: .4s; }
-
-        @keyframes pop { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-
-        /* Input Zone */
+        @keyframes blink { 0% { opacity: .2; } 20% { opacity: 1; } 100% { opacity: .2; } }
+        @keyframes pop { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .input-zone { padding: 12px; background: #fff; border-top: 1px solid #eee; display: flex; gap: 10px; align-items: center; }
-        .input-zone input { flex: 1; padding: 12px 18px; border-radius: 25px; border: 1px solid #ddd; outline: none; font-size: 14px; background: #f8f8f8; transition: 0.2s; }
-        .send-btn { background: var(--primary); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
-
-        /* Registration Lock */
-        .lock-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; padding: 30px 20px; border-top: 3px solid var(--primary); transform: translateY(105%); transition: 0.4s cubic-bezier(0.17, 0.84, 0.44, 1); z-index: 200; text-align: center; border-radius: 25px 25px 0 0; }
+        .input-zone input { flex: 1; padding: 12px 18px; border-radius: 25px; border: 1px solid #ddd; outline: none; background: #f8f8f8; font-size: 14px; }
+        .send-btn { background: var(--primary); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .lock-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; padding: 30px 20px; border-top: 3px solid var(--primary); transform: translateY(105%); transition: 0.4s; z-index: 200; text-align: center; border-radius: 25px 25px 0 0; }
         .lock-overlay.active { transform: translateY(0); }
-        .btn-reg { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 18px; border-radius: 15px; font-weight: 800; font-size: 18px; box-shadow: 0 4px 15px rgba(254, 44, 85, 0.4); }
-
-        /* Exit Popup */
-        #exit-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; color: #fff; text-align: center; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 25px 0; width: 100%; max-width: 360px; }
-        .grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; border: 1px solid #333; }
-        .btn-exit-go { background: var(--primary); color: #fff; padding: 16px 40px; border-radius: 50px; text-decoration: none; font-weight: 900; font-size: 18px; }
+        .btn-reg { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 18px; border-radius: 15px; font-weight: 800; font-size: 18px; }
+        #exit-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; width: 100%; max-width: 360px; }
+        .grid img { width: 100%; border-radius: 10px; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
 <div class="bg-layer"></div>
-
 <div id="chat-overlay">
     <div class="chat-card">
         <div class="header">
@@ -66,61 +60,50 @@
             <div class="bubble received" id="m0">...</div>
             <div id="typing">Klubnicka69 <span class="typing-dots"><span>.</span><span>.</span><span>.</span></span></div>
         </div>
-        <div id="ui-actions" class="input-zone">
+        <div class="input-zone">
             <input type="text" id="user-input" placeholder="...">
             <button class="send-btn" onclick="handleSend()"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
         </div>
-        
         <div class="lock-overlay" id="lock-block">
-            <div style="font-weight:900; font-size:20px; margin-bottom:10px; color:#000;" id="lt">...</div>
-            <div style="font-size:14px; color:#666; margin-bottom:25px;" id="ld">...</div>
-            <a href="https://tone.affomelody.com/tHHtXh" class="btn-reg" id="lb">...</a>
+            <div id="lt" style="font-weight:900; font-size:20px; margin-bottom:10px; color:#000;">...</div>
+            <div id="ld" style="font-size:14px; color:#666; margin-bottom:20px;">...</div>
+            <a href="https://tone.affomelody.com/tHHtXh" class="btn-reg" id="lb" onclick="trackReg()">...</a>
         </div>
     </div>
 </div>
 
 <div id="exit-popup">
     <h2 id="et1">Wait! 💋</h2>
-    <p id="et2" style="margin-top:10px; opacity:0.9;">...</p>
-    <div class="grid">
-        <img src="2.jpg"><img src="3.jpg"><img src="4.jpg">
-        <img src="5.jpg"><img src="6.jpg"><img src="7.jpg">
-    </div>
-    <a href="https://tone.affomelody.com/tHHtXh" class="btn-exit-go" id="eb">...</a>
-    <p style="margin-top: 40px; font-size: 14px; color: #888; text-decoration: underline; cursor: pointer;" onclick="location.href='https://google.com'" id="exit-back">Back</p>
+    <p id="et2" style="margin-bottom:15px; opacity:0.8;"></p>
+    <div class="grid"><img src="2.jpg"><img src="3.jpg"><img src="4.jpg"><img src="5.jpg"><img src="6.jpg"><img src="7.jpg"></div>
+    <a href="https://tone.affomelody.com/tHHtXh" class="btn-reg" style="width:250px" id="eb" onclick="trackReg()">...</a>
+    <p onclick="location.href='https://google.com'" style="margin-top:30px; text-decoration:underline; font-size:14px; color:#888;" id="exit-back">Back</p>
 </div>
 
 <script>
     const trans = {
-        ru: { on: "В сети", m0: "Привет! 😊 Ты тут?", ph: "Напиши ей...", m1: "Ого, ты быстро ответил! ☺️", m2: "Я уже хотела удалять анкету, но тут ты! 😊 Как тебя зовут? Откуда ты? 🥲", lt: "Продолжить чат", ld: "Регистрация нужна, чтобы отправить ответ.", lb: "ОТВЕТИТЬ", et2: "Эти девушки сейчас онлайн рядом:", eb: "СМОТРЕТЬ ВСЕХ", read: "Прочитано", back: "Назад", typing: "печатает..." },
-        uk: { on: "В мережі", m0: "Привіт! 😊 Ти тут?", ph: "Напиши їй...", m1: "Ого, ти швидко відповів! ☺️", m2: "Я вже хотіла видаляти анкету, але тут ти! 😊 Як тебе звати? Звідки ти? 🥲", lt: "Продовжити чат", ld: "Потрібна реєстрація, щоб відповісти.", lb: "ВІДПОВІСТИ", et2: "Ці дівчата онлайн поруч:", eb: "ДИВИТИСЬ УСІХ", read: "Прочитано", back: "Назад", typing: "друкує..." },
-        be: { on: "У сетцы", m0: "Прывітанне! 😊 Ты тут?", ph: "Напішы ёй...", m1: "Ого, ты хутка адказаў! ☺️", m2: "Я ўжо хацела выдаляць анкету! 😊 Як цябе клічуць? Адкуль ты? 🥲", lt: "Працягнуць чат", ld: "Рэгістрацыя патрэбна для адказу.", lb: "АДКАЗАЦЬ", et2: "Гэтыя дзяўчаты зараз онлайн:", eb: "ГЛЯДЗЕЦЬ УСІХ", read: "Прачытана", back: "Назад", typing: "піша..." },
-        kz: { on: "Желіде", m0: "Сәлем! 😊 Осындасың ба?", ph: "Оған жаз...", m1: "Ой, тез жауап бердің ғой! ☺️", m2: "Анкетмды өшірейін деп жатыр едім! 😊 Атың кім? Қайдансың? 🥲", lt: "Чатты жалғастыру", ld: "Жауап беру үшін тіркеліңіз.", lb: "ЖАУАП БЕРУ", et2: "Бұл қыздар қазір онлайн:", eb: "БАРЛЫҒЫН КӨРУ", read: "Оқылды", back: "Артқа", typing: "жазып жатыр..." },
-        pl: { on: "Online", m0: "Cześć! 😊 Jesteś?", ph: "Napisz do niej...", m1: "O, szybko odpisałeś! ☺️", m2: "Już miałam usunąć konto! 😊 Jak masz na imię? Skąd jesteś? 🥲", lt: "Kontynuuj czat", ld: "Zarejestruj się, aby wysłać wiadomość.", lb: "ODPOWIEDZ", et2: "Te dziewczyny są teraz online:", eb: "ZOBACZ WSZYSTKIE", read: "Przeczytano", back: "Wstecz", typing: "pisze..." },
-        de: { on: "Online", m0: "Hallo! 😊 Bist du da?", ph: "Schreib ihr...", m1: "Wow, schnelle Antwort! ☺️", m2: "Ich wollte gerade mein Profil löschen! 😊 Wie heißt du? Woher kommst du? 🥲", lt: "Weiter chatten", ld: "Registriere dich, um zu antworten.", lb: "ANTWORTEN", et2: "Diese Mädchen sind online:", eb: "ALLE ANZEIGEN", read: "Gelesen", back: "Zurück", typing: "schreibt..." },
-        es: { on: "En línea", m0: "¡Hola! 😊 ¿Estás?", ph: "Escríbele...", m1: "¡Vaya, qué rápido! ☺️", m2: "¡Estaba por borrar mi cuenta! 😊 ¿Cómo te llamas? ¿De dónde eres? 🥲", lt: "Continuar chat", ld: "Regístrate para responder.", lb: "RESPONDER", et2: "Chicas en línea cerca de ti:", eb: "VER TODAS", read: "Leído", back: "Atrás", typing: "escribiendo..." },
-        ro: { on: "Online", m0: "Bună! 😊 Ești aici?", ph: "Scrie-i...", m1: "Wow, ce repede ai răspuns! ☺️", m2: "Voiam să-mi șterg profilul! 😊 Cum te cheamă? De unde ești? 🥲", lt: "Continuă chatul", ld: "Înregistrează-te pentru a răspunde.", lb: "RĂSPUNDE", et2: "Fete online lângă tine:", eb: "VEZI TOATE", read: "Citit", back: "Înapoi", typing: "scrie..." },
-        en: { on: "Online", m0: "Hi! 😊 Are you here?", ph: "Type message...", m1: "Wow, you replied fast! ☺️", m2: "I was about to delete my profile! 😊 What's your name? Where are you from? 🥲", lt: "Continue Chat", ld: "Register to send your message.", lb: "REPLY", et2: "Girls online near you:", eb: "SEE ALL", read: "Read", back: "Back", typing: "typing..." }
+        ru: { on: "В сети", m0: "Привет! 😊 Ты тут?", ph: "Напиши ей...", m1: "Ого, ты быстро ответил! ☺️", m2: "Я уже хотела удалять анкету, но тут ты! 😊 Как тебя зовут? Откуда ты? 🥲", lt: "Продолжить чат", ld: "Регистрация нужна для ответа.", lb: "ОТВЕТИТЬ", et2: "Эти девушки сейчас онлайн:", eb: "СМОТРЕТЬ ВСЕХ", read: "Прочитано", back: "Назад" },
+        uk: { on: "В мережі", m0: "Привіт! 😊 Ти тут?", ph: "Напиши їй...", m1: "Ого, ти швидко відповів! ☺️", m2: "Я вже хотіла видаляти анкету, але тут ти! 😊 Як тебе звати? Звідки ти? 🥲", lt: "Продовжити чат", ld: "Потрібна реєстрація, щоб відповісти.", lb: "ВІДПОВІСТІ", et2: "Ці дівчата онлайн поруч:", eb: "ДИВИТИСЬ УСІХ", read: "Прочитано", back: "Назад" },
+        be: { on: "У сетцы", m0: "Прывітанне! 😊 Ты тут?", ph: "Напішы ёй...", m1: "Ого, ты хутка адказаў! ☺️", m2: "Я ўжо хацела выдаляць анкету! 😊 Як цябе клічуць? Адкуль ты? 🥲", lt: "Працягнуць чат", ld: "Рэгістрацыя патрэбна для адказу.", lb: "АДКАЗАЦЬ", et2: "Гэтыя дзяўчаты зараз онлайн:", eb: "ГЛЯДЗЕЦЬ УСІХ", read: "Прачытана", back: "Назад" },
+        kz: { on: "Желіде", m0: "Сәлем! 😊 Осындасың ба?", ph: "Оған жаз...", m1: "Ой, тез жауап бердің ғой! ☺️", m2: "Анкетмды өшірейін деп жатыр едім! 😊 Атың кім? Қайдансың? 🥲", lt: "Чатты жалғастыру", ld: "Жауап беру үшін тіркеліңіз.", lb: "ЖАУАП БЕРУ", et2: "Бұл қыздар қазір онлайн:", eb: "БАРЛЫҒЫН КӨРУ", read: "Оқылды", back: "Артқа" },
+        pl: { on: "Online", m0: "Cześć! 😊 Jesteś?", ph: "Napisz do niej...", m1: "O, szybko odpisałeś! ☺️", m2: "Już miałam usunąć konto! 😊 Jak masz na imię? Skąd jesteś? 🥲", lt: "Kontynuuj czat", ld: "Zarejestruj się, aby wysłaть wiadomość.", lb: "ODPOWIEDZ", et2: "Te dziewczyny są teraz online:", eb: "ZOBACZ WSZYSTKIE", read: "Przeczytano", back: "Wstecz" },
+        de: { on: "Online", m0: "Hallo! 😊 Bist du da?", ph: "Schreib ihr...", m1: "Wow, schnelle Antwort! ☺️", m2: "Ich wollte gerade mein Profil löschen! 😊 Wie heißt du? Woher kommst du? 🥲", lt: "Weiter chatten", ld: "Registriere dich, um zu antworten.", lb: "ANTWORTEN", et2: "Diese Mädchen sind online:", eb: "ALLE ANZEIGEN", read: "Gelesen", back: "Zurück" },
+        es: { on: "En línea", m0: "¡Hola! 😊 ¿Estás?", ph: "Escríbele...", m1: "¡Vaya, qué rápido! ☺️", m2: "¡Estaba por borrar mi cuenta! 😊 ¿Cómo te llamas? ¿De dónde eres? 🥲", lt: "Continuar chat", ld: "Regístrate para responder.", lb: "RESPONDER", et2: "Chicas en línea cerca de ti:", eb: "VER TODAS", read: "Leído", back: "Atrás" },
+        ro: { on: "Online", m0: "Bună! 😊 Ești aici?", ph: "Scrie-i...", m1: "Wow, ce repede ai răspuns! ☺️", m2: "Voiam să-mi șterg profilul! 😊 Cum te cheamă? De unde ești? 🥲", lt: "Continuă chatul", ld: "Înregistrează-te pentru a răspunde.", lb: "RĂSPUNDE", et2: "Fete online lângă tine:", eb: "VEZI TOATE", read: "Citit", back: "Înapoi" },
+        tr: { on: "Çevrimiçi", m0: "Selam! 😊 Burada mısın?", ph: "Ona yaz...", m1: "Vay, çok hızlı cevap verdin! ☺️", m2: "Tam profilimi silecekken sen geldin! 😊 Adın ne? Neredensin? 🥲", lt: "Sohbete Devam Et", ld: "Cevap vermek için kayıt olun.", lb: "CEVAPLA", et2: "Çevrimiçi olan kızlar:", eb: "HEPSİNİ GÖR", read: "Okundu", back: "Geri" },
+        en: { on: "Online", m0: "Hi! 😊 Are you here?", ph: "Type message...", m1: "Wow, fast reply! ☺️", m2: "I was about to delete my profile! 😊 What's your name? Where are you from? 🥲", lt: "Continue Chat", ld: "Register to reply.", lb: "REPLY", et2: "Girls online near you:", eb: "SEE ALL", read: "Read", back: "Back" }
     };
 
-    const getL = () => {
-        const n = navigator.language.split('-')[0];
-        const ruGroup = ['ru','az','am','ka','tg','ky','uz'];
-        if (trans[n]) return trans[n];
-        if (ruGroup.includes(n)) return trans.ru;
-        if (n === 'uk') return trans.uk;
-        if (n === 'be') return trans.be;
-        if (n === 'kk') return trans.kz;
-        return trans.en;
-    };
-    
-    const cur = getL();
+    const n = navigator.language.split('-')[0];
+    const ruGroup = ['ru','az','am','ka','tg','ky','uz'];
+    const cur = trans[n] || (ruGroup.includes(n) ? trans.ru : trans.en);
+
     const inputEl = document.getElementById('user-input');
     const typingEl = document.getElementById('typing');
-    let step = 0;
+    const box = document.getElementById('box');
     let canChat = true;
 
-    // Инициализация текстов
+    // Тексты
     document.getElementById('st-text').innerText = cur.on;
     document.getElementById('m0').innerText = cur.m0;
     inputEl.placeholder = cur.ph;
@@ -131,75 +114,51 @@
     document.getElementById('eb').innerText = cur.eb;
     document.getElementById('exit-back').innerText = cur.back;
 
-    function showLock() {
-        if (!canChat) {
-            document.getElementById('lock-block').classList.add('active');
-            inputEl.blur();
-        }
-    }
-
-    inputEl.addEventListener('click', showLock);
-    inputEl.addEventListener('focus', showLock);
-
     function handleSend() {
         const text = inputEl.value.trim();
         if(!text || !canChat) return;
-        
         inputEl.value = '';
         add(text, 'sent');
-        
-        if(step === 0) {
-            step = 1;
-            runSeq();
-        }
+        runSeq();
     }
 
     async function runSeq() {
-        await sleep(1000);
-        showTyping(true);
-        await sleep(1500);
-        showTyping(false);
+        await sleep(1000); showTyping(true);
+        await sleep(1500); showTyping(false);
         add(cur.m1, 'received');
-        
-        await sleep(1000);
-        showTyping(true);
-        await sleep(2000);
-        showTyping(false);
+        await sleep(1000); showTyping(true);
+        await sleep(2000); showTyping(false);
         add(cur.m2, 'received');
-        
         canChat = false;
         inputEl.readOnly = true;
         inputEl.placeholder = cur.lb;
     }
 
-    function showTyping(show) {
-        typingEl.style.display = show ? 'block' : 'none';
-        const b = document.getElementById('box');
-        b.scrollTop = b.scrollHeight;
-    }
-
     function add(txt, type) {
-        const b = document.getElementById('box');
         const d = document.createElement('div');
         d.className = `bubble ${type}`;
         d.innerText = txt;
         if(type === 'sent') d.innerHTML += `<span class="ticks">✓✓ ${cur.read}</span>`;
-        // Вставляем перед индикатором печати
-        b.insertBefore(d, typingEl);
-        b.scrollTop = b.scrollHeight;
+        box.insertBefore(d, typingEl);
+        box.scrollTop = box.scrollHeight;
     }
 
+    function showTyping(s) { typingEl.style.display = s ? 'block' : 'none'; box.scrollTop = box.scrollHeight; }
     function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-    history.pushState(null, null, location.href);
-    window.onpopstate = () => { 
-        document.getElementById('exit-popup').style.display = 'flex'; 
-        history.pushState(null, null, location.href); 
-    };
+    function trackReg() {
+        gtag('event', 'registration_click', {'event_category': 'outbound', 'event_label': 'offer_link'});
+    }
 
-    inputEl.addEventListener('keypress', (e) => {
-        if(e.key === 'Enter') handleSend();
-    });
+    window.onpopstate = () => {
+        gtag('event', 'exit_popup_view', {'event_category': 'retention'});
+        document.getElementById('exit-popup').style.display = 'flex';
+        history.pushState(null, null, location.href);
+    };
+    history.pushState(null, null, location.href);
+
+    inputEl.addEventListener('click', () => { if(!canChat) document.getElementById('lock-block').classList.add('active'); });
+    inputEl.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSend(); });
 </script>
 </body>
 </html>
