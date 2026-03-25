@@ -8,60 +8,41 @@
         :root { --primary: #fe2c55; --online: #4caf50; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, Roboto, sans-serif; }
         body { background: #000; overflow: hidden; position: fixed; width: 100%; }
-        
-        .bg-layer { position: fixed; inset: 0; background: linear-gradient(135deg, #1a1a1a 0%, #311b92 100%); z-index: 1; }
-        
+        .bg-layer { position: fixed; inset: 0; background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); z-index: 1; }
         #chat-overlay { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; }
         .chat-card { width: 92%; max-width: 380px; height: 85vh; background: #fff; border-radius: 25px; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.5); overflow: hidden; position: relative; }
-        
         .header { padding: 12px 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; background: #fff; }
         .avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid var(--primary); }
         .u-name { font-weight: 700; font-size: 16px; }
         .u-status { font-size: 11px; color: var(--online); font-weight: 800; }
-
         .msg-area { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 8px; }
-        .bubble { max-width: 82%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; animation: pop 0.25s ease-out forwards; }
-        .received { background: #fff; color: #000; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .bubble { max-width: 82%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; animation: pop 0.2s ease-out forwards; }
+        .received { background: #fff; color: #000; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .sent { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
-
-        @keyframes pop { from { opacity: 0; transform: scale(0.95) translateY(5px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
+        @keyframes pop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .action-zone { padding: 15px; background: #fff; border-top: 1px solid #eee; text-align: center; }
-        .btn-reply { background: #f1f1f2; border: none; padding: 10px 18px; border-radius: 22px; font-size: 13px; font-weight: 600; cursor: pointer; margin: 4px; transition: 0.2s; border: 1px solid transparent; }
-        .btn-reply:active { background: #e2e2e4; transform: scale(0.95); }
-
-        .lock-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; padding: 25px 20px; border-top: 2px solid var(--primary); transform: translateY(105%); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; text-align: center; border-radius: 25px 25px 0 0; }
+        .btn-reply { background: #f1f1f2; border: none; padding: 10px 18px; border-radius: 22px; font-size: 13px; font-weight: 600; cursor: pointer; margin: 4px; }
+        .lock-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; padding: 25px 20px; border-top: 2px solid var(--primary); transform: translateY(105%); transition: 0.3s ease-out; z-index: 200; text-align: center; border-radius: 25px 25px 0 0; }
         .lock-overlay.active { transform: translateY(0); }
-        .btn-reg { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 18px; box-shadow: 0 4px 15px rgba(254, 44, 85, 0.3); }
-
-        #exit-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; color: #fff; text-align: center; }
+        .btn-reg { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 18px; }
+        #exit-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; color: #fff; text-align: center; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 25px 0; width: 100%; max-width: 360px; }
-        .grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1); }
-        .btn-exit-go { background: var(--primary); color: #fff; padding: 16px 45px; border-radius: 50px; text-decoration: none; font-weight: 900; font-size: 18px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; }
+        .btn-exit-go { background: var(--primary); color: #fff; padding: 16px 40px; border-radius: 50px; text-decoration: none; font-weight: 900; font-size: 18px; }
     </style>
 </head>
 <body>
-
 <div class="bg-layer"></div>
-
 <div id="chat-overlay">
     <div class="chat-card">
         <div class="header">
             <img src="1.jpg" class="avatar">
-            <div>
-                <div class="u-name">Klubnicka69</div>
-                <div class="u-status" id="st-text">Online</div>
-            </div>
+            <div><div class="u-name">Klubnicka69</div><div class="u-status" id="st-text">Online</div></div>
         </div>
-        <div class="msg-area" id="box">
-            <div class="bubble received" id="m0">...</div>
-        </div>
-        <div class="action-zone" id="ui-actions">
-            <div class="quick-replies" id="replies-container"></div>
-        </div>
+        <div class="msg-area" id="box"><div class="bubble received" id="m0">...</div></div>
+        <div id="ui-actions" class="action-zone"><div class="quick-replies" id="replies-container"></div></div>
         <div class="lock-overlay" id="lock-block">
-            <div style="font-weight:900; font-size:20px; margin-bottom:10px;" id="lt">...</div>
+            <div style="font-weight:900; font-size:19px; margin-bottom:10px;" id="lt">...</div>
             <div style="font-size:14px; color:#666; margin-bottom:20px;" id="ld">...</div>
             <a href="https://tone.affomelody.com/tHHtXh" class="btn-reg" id="lb">...</a>
         </div>
@@ -69,80 +50,75 @@
 </div>
 
 <div id="exit-popup">
-    <h2 id="et1">Wait!</h2>
+    <h2 id="et1">Wait! 💋</h2>
     <p id="et2" style="margin-top:10px; opacity:0.9;">...</p>
-    <div class="grid">
-        <img src="2.jpg"> <img src="3.jpg"> <img src="4.jpg">
-        <img src="5.jpg"> <img src="6.jpg"> <img src="7.jpg">
-    </div>
+    <div class="grid"><img src="2.jpg"><img src="3.jpg"><img src="4.jpg"><img src="5.jpg"><img src="6.jpg"><img src="7.jpg"></div>
     <a href="https://tone.affomelody.com/tHHtXh" class="btn-exit-go" id="eb">...</a>
-    <p style="margin-top: 25px; font-size: 13px; color: #888; text-decoration: underline;" onclick="location.reload()">Return to chat</p>
+    <p style="margin-top: 30px; font-size: 13px; color: #555; text-decoration: underline;" onclick="location.href='https://google.com'">Back</p>
 </div>
 
 <script>
     const trans = {
-        ru: { on: "В сети", m0: "Привет! 😊", r: ["Привет! 👋", "Познакомимся? 😊"], m1: "Ты первый, кто решил написать мне за последний месяц... ☺️", m2: "Я уже хотела удалять свою анкету отсюда, но тут ты! 😊 Как тебя зовут? Ты откуда? 🥲", lt: "Продолжить чат", ld: "Пройди быструю регистрацию, чтобы ответить ей и продолжить общение.", lb: "ОТВЕТИТЬ ЕЙ", et1: "Уже уходишь? 💋", et2: "Эти девушки сейчас онлайн в твоем городе:", eb: "СМОТРЕТЬ ВСЕХ" },
-        uk: { on: "В мережі", m0: "Привіт! 😊", r: ["Привіт! 👋", "Познайомимося? 😊"], m1: "Ти перший, хто вирішив написати мені за останній місяць... ☺️", m2: "Я вже хотіла видаляти свою анкету звідси, але тут ти! 😊 Як тебе звати? Ти звідки? 🥲", lt: "Продовжити чат", ld: "Пройди швидку реєстрацію, щоб відповісти їй.", lb: "ВІДПОВІСТИ ЇЙ", et1: "Вже йдеш? 💋", et2: "Ці дівчата зараз онлайн у твоєму місті:", eb: "ДИВИТИСЬ УСІХ" },
-        en: { on: "Online", m0: "Hi there! 😊", r: ["Hey! 👋", "Let's chat! 😊"], m1: "You're the first person who decided to write to me this month... ☺️", m2: "I was just about to delete my profile! 😊 What's your name? Where are you from? 🥲", lt: "Continue Chat", ld: "Complete quick registration to reply to her and keep chatting.", lb: "REPLY TO HER", et1: "Wait! 💋", et2: "These girls are online near you right now:", eb: "SEE ALL PROFILES" },
-        de: { on: "Online", m0: "Hallo! 😊", r: ["Hallo! 👋", "Chatten? 😊"], m1: "Du bist der Erste, der mir diesen Monat schreibt... ☺️", m2: "Ich wollte gerade mein Profil löschen! 😊 Wie heißt du? Woher kommst du? 🥲", lt: "Weiter chatten", ld: "Registriere dich kurz, um ihr zu antworten.", lb: "JETZT ANTWORTEN", et1: "Wartest du? 💋", et2: "Diese Mädchen sind gerade in deiner Nähe online:", eb: "ALLE ANZEIGEN" },
-        es: { on: "En línea", m0: "¡Hola! 😊", r: ["¡Hola! 👋", "¿Hablamos? 😊"], m1: "Eres el primero que se anima a escribirme este mes... ☺️", m2: "¡Estaba a punto de borrar mi perfil! 😊 ¿Cómo te llamas? ¿De dónde eres? 🥲", lt: "Continuar chat", ld: "Regístrate rápido para responderle.", lb: "RESPONDER", et1: "¿Ya te vas? 💋", et2: "Estas chicas están en línea cerca de ti:", eb: "VER TODAS" },
-        fr: { on: "En ligne", m0: "Salut ! 😊", r: ["Salut ! 👋", "On discute ? 😊"], m1: "Tu es le premier à m'écrire ce mois-ci... ☺️", m2: "J'allais supprimer mon profil ! 😊 C'est quoi ton nom ? Tu viens d'où ? 🥲", lt: "Continuer le chat", ld: "Inscris-toi vite pour lui répondre.", lb: "RÉPONDRE", et1: "Déjà parti ? 💋", et2: "Ces filles sont en ligne près de chez toi :", eb: "VOIR TOUT" },
-        it: { on: "Online", m0: "Ciao! 😊", r: ["Ciao! 👋", "Conosciamoci? 😊"], m1: "Sei il primo a scrivermi questo mese... ☺️", m2: "Stavo per cancellare il mio profilo! 😊 Come ti chiami? Di dove sei? 🥲", lt: "Continua la chat", ld: "Registrati velocemente per risponderle.", lb: "RISPONDI", et1: "Te ne vai? 💋", et2: "Queste ragazze sono online vicino a te:", eb: "VEDI TUTTE" },
-        tr: { on: "Çevrimiçi", m0: "Selam! 😊", r: ["Selam! 👋", "Tanışalım mı? 😊"], m1: "Bu ay bana yazan ilk kişisin... ☺️", m2: "Profilimi silmek üzereydim! 😊 Adın ne? Nerelisin? 🥲", lt: "Sohbete devam et", ld: "Ona cevap vermek için hızlıca kayıt ol.", lb: "CEVAP VER", et1: "Gidiyor musun? 💋", et2: "Bu kızlar şu an senin bölgende çevrimiçi:", eb: "HEPSİNİ GÖR" },
-        pl: { on: "Online", m0: "Cześć! 😊", r: ["Cześć! 👋", "Poznajmy się? 😊"], m1: "Jesteś pierwszą osobą, która napisała do mnie w tym miesiącu... ☺️", m2: "Właśnie miałam usunąć konto! 😊 Jak masz na imię? Skąd jesteś? 🥲", lt: "Kontynuuj czat", ld: "Zarejestruj się, aby jej odpowiedzieć.", lb: "ODPOWIEDZ", et1: "Już idziesz? 💋", et2: "Te dziewczyny są teraz online w Twojej okolicy:", eb: "ZOBACZ WSZYSTKIE" }
+        ru: { on: "В сети", m0: "Привет! 😊", r: ["Привет! 👋", "Познакомимся? 😊"], m1: "Ты первый написал мне за месяц... ☺️", m2: "Я уже хотела удалять анкету, но тут ты! 😊 Как зовут? Откуда ты? 🥲", lt: "Продолжить чат", ld: "Зарегистрируйся, чтобы ответить ей.", lb: "ОТВЕТИТЬ", et2: "Эти девушки сейчас онлайн рядом:", eb: "СМОТРЕТЬ ВСЕХ" },
+        uk: { on: "В мережі", m0: "Привіт! 😊", r: ["Привіт! 👋", "Познайомимося? 😊"], m1: "Ти перший написав мені за місяць... ☺️", m2: "Я вже хотіла видаляти анкету, але тут ти! 😊 Як звати? Звідки ти? 🥲", lt: "Продовжити чат", ld: "Зареєструйся, щоб відповісти їй.", lb: "ВІДПОВІСТИ", et2: "Ці дівчата зараз онлайн поруч:", eb: "ДИВИТИСЬ УСІХ" },
+        be: { on: "У сетцы", m0: "Прывітанне! 😊", r: ["Прывітанне! 👋", "Пазнаёмімся? 😊"], m1: "Ты першы напісаў мне за месяц... ☺️", m2: "Я ўжо хацела выдаляць анкету, але тут ты! 😊 Як клічуць? Адкуль ты? 🥲", lt: "Працягнуць чат", ld: "Зарэгіструйся, каб адказаць ёй.", lb: "АДКАЗАЦЬ", et2: "Гэтыя дзяўчаты зараз онлайн побач:", eb: "ГЛЯДЗЕЦЬ УСІХ" },
+        kz: { on: "Желіде", m0: "Сәлем! 😊", r: ["Сәлем! 👋", "Танысайық па? 😊"], m1: "Осы айда маған бірінші болып жаздың... ☺️", m2: "Анкетамды өшірейін деп жатыр едім! 😊 Атың кім? Қайдансың? 🥲", lt: "Чатты жалғастыру", ld: "Жауап беру үшін тіркеліңіз.", lb: "ЖАУАП БЕРУ", et2: "Бұл қыздар қазір желіде:", eb: "БАРЛЫҒЫН КӨРУ" },
+        ro: { on: "Online", m0: "Bună! 😊", r: ["Bună! 👋", "Ne cunoaștem? 😊"], m1: "Ești prima persoană care mi-a scris luna asta... ☺️", m2: "Voiam să-mi șterg profilul, dar ai apărut tu! 😊 Cum te cheamă? De unde ești? 🥲", lt: "Continuă chatul", ld: "Înregistrează-te pentru a-i răspunde.", lb: "RĂSPUNDE", et2: "Aceste fete sunt online lângă tine:", eb: "VEZI TOATE" },
+        lv: { on: "Tiešsaistē", m0: "Sveiki! 😊", r: ["Sveiki! 👋", "Iepazīsimies? 😊"], m1: "Tu esi pirmais, kas man uzrakstījis pēdējā mēnesī... ☺️", m2: "Es jau gribēju dzēst savu profilu, bet tad parādījies tu! 😊 Kā tevi sauc? No kurienes esi? 🥲", lt: "Turpināt tērzēšanu", ld: "Reģistrējieties, lai viņai atbildētu.", lb: "ATBILDĒT", et2: "Šīs meitenes pašlaik ir tiešsaistē:", eb: "SKATĪT VISAS" },
+        lt: { on: "Prisijungusi", m0: "Labas! 😊", r: ["Labas! 👋", "Susipažinkime? 😊"], m1: "Tu pirmas parašęs man per pastarąjį mėnesį... ☺️", m2: "Jau norėjau trinti anketą, bet tada atsiradai tu! 😊 Kuo tu vardu? Iš kur esi? 🥲", lt: "Tęsti pokalbį", ld: "Užsiregistruokite, kad jai atsakytumėte.", lb: "ATSAKYTI", et2: "Šios merginos dabar prisijungusios:", eb: "ŽIŪRĖTI VISAS" },
+        et: { on: "Sees", m0: "Tere! 😊", r: ["Tere! 👋", "Saame tuttavaks? 😊"], m1: "Sa oled esimene, kes mulle sel kuul kirjutas... ☺️", m2: "Tahtsin juba konto kustutada, aga siis tulid sina! 😊 Mis su nimi on? Kust sa pärit oled? 🥲", lt: "Jätka vestlust", ld: "Registreeru, et talle vastata.", lb: "VASTA", et2: "Need tüdrukud on praegu saadaval:", eb: "VAATA KÕIKI" },
+        pl: { on: "Online", m0: "Cześć! 😊", r: ["Cześć! 👋", "Poznajmy się? 😊"], m1: "Jesteś pierwszą osobą, która napisała... ☺️", m2: "Już miałam usunąć konto! 😊 Jak masz na imię? Skąd jesteś? 🥲", lt: "Kontynuuj czat", ld: "Zarejestruj się, aby odpowiedzieć.", lb: "ODPOWIEDZ", et2: "Te dziewczyny są teraz online:", eb: "ZOBACZ WSZYSTKIE" },
+        tr: { on: "Çevrimiçi", m0: "Selam! 😊", r: ["Selam! 👋", "Tanışalım mı? 😊"], m1: "Bu ay bana yazan ilk kişisin... ☺️", m2: "Profilimi silmek üzereydim! 😊 Adın ne? Nerelisin? 🥲", lt: "Sohbete devam et", ld: "Ona cevap vermek için kayıt ol.", lb: "CEVAP VER", et2: "Bu kızlar şu an çevrimiçi:", eb: "HEPSİNİ GÖR" },
+        es: { on: "En línea", m0: "¡Hola! 😊", r: ["¡Hola! 👋", "¿Hablamos? 😊"], m1: "Eres el primero que me escribe este mes... ☺️", m2: "¡Estaba a punto de borrar mi perfil! 😊 ¿Cómo te llamas? ¿De dónde eres? 🥲", lt: "Continuar chat", ld: "Regístrate para responderle.", lb: "RESPONDER", et2: "Chicas en línea cerca de ti:", eb: "VER TODAS" },
+        pt: { on: "Online", m0: "Olá! 😊", r: ["Olá! 👋", "Vamos conversar? 😊"], m1: "Você é a primeira pessoa a me escrever este mês... ☺️", m2: "Eu estava prestes a deletar meu perfil! 😊 Qual o seu nome? De onde você é? 🥲", lt: "Continuar chat", ld: "Faça o registro para responder.", lb: "RESPONDER", et2: "Garotas online perto de você:", eb: "VER TODAS" },
+        en: { on: "Online", m0: "Hi! 😊", r: ["Hey! 👋", "Let's chat! 😊"], m1: "You're the first one who wrote to me... ☺️", m2: "I was about to delete my profile! 😊 What's your name? Where are you from? 🥲", lt: "Continue Chat", ld: "Register to reply to her.", lb: "REPLY", et2: "Girls online near you:", eb: "SEE ALL" }
     };
 
-    const getL = () => { const n = navigator.language.split('-')[0]; return trans[n] ? n : 'en'; };
+    const getL = () => {
+        const n = navigator.language.split('-')[0];
+        const cis = ['ru','be','uk','kk','uz','az','am','ka','tg','ky'];
+        if(cis.includes(n)) {
+            if(n === 'uk') return 'uk';
+            if(n === 'be') return 'be';
+            if(n === 'kk') return 'kz';
+            return 'ru';
+        }
+        return trans[n] ? n : 'en';
+    };
     const cur = trans[getL()];
 
-    // Настройка текстов
     document.getElementById('st-text').innerText = cur.on;
     document.getElementById('m0').innerText = cur.m0;
     document.getElementById('lt').innerText = cur.lt;
     document.getElementById('ld').innerText = cur.ld;
     document.getElementById('lb').innerText = cur.lb;
-    document.getElementById('et1').innerText = cur.et1;
     document.getElementById('et2').innerText = cur.et2;
     document.getElementById('eb').innerText = cur.eb;
 
-    const rCont = document.getElementById('replies-container');
-    cur.r.forEach(text => {
-        const btn = document.createElement('button');
-        btn.className = 'btn-reply';
-        btn.innerText = text;
-        btn.onclick = () => start(text);
-        rCont.appendChild(btn);
+    cur.r.forEach(t => {
+        const b = document.createElement('button');
+        b.className = 'btn-reply'; b.innerText = t;
+        b.onclick = () => start(t);
+        document.getElementById('replies-container').appendChild(b);
     });
 
     async function start(t) {
         document.getElementById('ui-actions').style.display = 'none';
-        add(t, 'sent');
-        await sleep(600);
-        add(cur.m1, 'received');
-        await sleep(800);
-        add(cur.m2, 'received');
-        await sleep(400);
+        add(t, 'sent'); await sleep(500);
+        add(cur.m1, 'received'); await sleep(700);
+        add(cur.m2, 'received'); await sleep(300);
         document.getElementById('lock-block').classList.add('active');
     }
 
     function add(txt, type) {
         const b = document.getElementById('box');
-        const d = document.createElement('div');
-        d.className = `bubble ${type}`;
-        d.innerText = txt;
-        b.appendChild(d);
-        b.scrollTop = b.scrollHeight;
+        const d = document.createElement('div'); d.className = `bubble ${type}`; d.innerText = txt;
+        b.appendChild(d); b.scrollTop = b.scrollHeight;
     }
-
     function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-    // Back button trap (Exit Intent)
     history.pushState(null, null, location.href);
-    window.onpopstate = function() {
-        document.getElementById('exit-popup').style.display = 'flex';
-        history.pushState(null, null, location.href);
-    };
+    window.onpopstate = () => { document.getElementById('exit-popup').style.display = 'flex'; history.pushState(null, null, location.href); };
 </script>
-
 </body>
 </html>
