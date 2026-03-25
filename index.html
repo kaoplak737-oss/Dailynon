@@ -31,8 +31,6 @@
         .lock-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; padding: 25px 20px; border-top-left-radius: 25px; border-top-right-radius: 25px; box-shadow: 0 -10px 30px rgba(0,0,0,0.15); transform: translateY(110%); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; text-align: center; }
         .lock-overlay.active { transform: translateY(0); }
         .btn-reg { background: var(--primary); color: #fff; text-decoration: none; display: block; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 17px; margin-top: 15px; }
-        
-        /* Pop-up при попытке выхода */
         #exit-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; }
         .exit-card { width: 85%; max-width: 320px; background: #fff; border-radius: 20px; padding: 25px; text-align: center; }
     </style>
@@ -49,18 +47,18 @@
             <img src="1.jpg" class="avatar">
             <div>
                 <div class="u-name">Klubnicka69</div>
-                <div class="u-status" id="st">Online</div>
+                <div class="u-status" id="st">...</div>
             </div>
         </div>
         <div class="msg-area" id="box"></div>
-        <div class="input-bar" id="ui-input" onclick="showLock()">
-            <div class="fake-input" id="inp-txt">Wait...</div>
+        <div class="input-bar" onclick="showLock()">
+            <div class="fake-input" id="inp-txt">...</div>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="#fe2c55"/></svg>
         </div>
         <div class="lock-overlay" id="lock">
-            <div style="font-weight:800; font-size:19px;" id="lt">Continue Chat</div>
-            <div style="font-size:14px; color:#5e6066; margin-top:10px;" id="ld">Register to see my private photos and reply.</div>
-            <a href="https://tone.affomelody.com/tHHtXh" class="btn-reg" id="lb">REPLY NOW</a>
+            <div style="font-weight:800; font-size:19px;" id="lt">...</div>
+            <div style="font-size:14px; color:#5e6066; margin-top:10px;" id="ld">...</div>
+            <a href="https://tone.affomelody.com/tHHtXh" class="btn-reg" id="lb">...</a>
         </div>
     </div>
 </div>
@@ -68,24 +66,29 @@
 <div id="exit-popup">
     <div class="exit-card">
         <h2 style="font-size: 20px; margin-bottom: 10px;">Wait! 💋</h2>
-        <p style="font-size: 15px; color: #666; margin-bottom: 20px;" id="et">There are 147 more girls from your city looking for fun right now!</p>
-        <a href="https://tone.affomelody.com/tHHtXh" class="btn-reg">VIEW GIRLS NEAR ME</a>
+        <p style="font-size: 15px; color: #666; margin-bottom: 20px;" id="et">...</p>
+        <a href="https://tone.affomelody.com/tHHtXh" class="btn-reg" id="eb">...</a>
         <div onclick="closeExit()" style="margin-top: 15px; font-size: 13px; color: #999; cursor: pointer;">Maybe later</div>
     </div>
 </div>
 
 <script>
     const trans = {
-        ru: { on: "В сети", m1: "Привет! 😊", m2: "Я уже хотела удалять анкету, хорошо что ты зашел... ☺️", m3: "Хочешь увидеть мои фото без цензуры? 😈", inp: "Написать ей...", lt: "Продолжить общение", ld: "Пройди регистрацию, чтобы увидеть фото и ответить ей.", lb: "ОТВЕТИТЬ ЕЙ", et: "Подожди! В твоем городе сейчас онлайн 147 девушек, готовых к встрече прямо сейчас!" },
-        en: { on: "Online", m1: "Hi there! 😊", m2: "I was just about to delete my profile, glad you came... ☺️", m3: "Do you want to see my private photos? 😈", inp: "Reply to her...", lt: "Continue Chat", ld: "Register to see private photos and reply to her.", lb: "REPLY NOW", et: "Wait! There are 147 girls from your city online and ready to meet right now!" },
-        de: { on: "Online", m1: "Hallo! 😊", m2: "Ich wollte gerade mein Profil löschen, gut, dass du da bist... ☺️", m3: "Willst du meine privaten Fotos sehen? 😈", inp: "Antworten...", lt: "Weiter chatten", ld: "Registriere dich, um private Fotos zu sehen.", lb: "JETZT ANTWORTEN", et: "Warten! In deiner Stadt sind gerade 147 Mädchen online!" }
+        ru: { on: "В сети", m1: "Привет! 😊", m2: "Я уже хотела удалять анкету, хорошо что ты зашел... ☺️", m3: "Хочешь увидеть мои фото без цензуры? 😈", inp: "Написать ей...", lt: "Продолжить общение", ld: "Зарегистрируйся, чтобы увидеть фото и ответить ей.", lb: "ОТВЕТИТЬ ЕЙ", et: "Подожди! В твоем городе сейчас онлайн 147 девушек, готовых к встрече!", eb: "ПОСМОТРЕТЬ АНКЕТЫ" },
+        uk: { on: "В мережі", m1: "Привіт! 😊", m2: "Я вже хотіла видаляти анкету, добре що ти зайшов... ☺️", m3: "Хочеш побачити мої фото без цензури? 😈", inp: "Написати їй...", lt: "Продовжити спілкування", ld: "Зареєструйся, щоб побачити фото та відповісти їй.", lb: "ВІДПОВІСТИ ЇЙ", et: "Зачекай! У твоєму місті зараз онлайн 147 дівчат, готових до зустрічі!", eb: "ПОДИВИТИСЯ АНКЕТИ" },
+        en: { on: "Online", m1: "Hi there! 😊", m2: "I was just about to delete my profile, glad you came... ☺️", m3: "Do you want to see my private photos? 😈", inp: "Reply to her...", lt: "Continue Chat", ld: "Register to see private photos and reply to her.", lb: "REPLY NOW", et: "Wait! There are 147 girls from your city online and ready to meet right now!", eb: "VIEW GIRLS" },
+        de: { on: "Online", m1: "Hallo! 😊", m2: "Ich wollte gerade mein Profil löschen, gut, dass du da bist... ☺️", m3: "Willst du meine privaten Fotos sehen? 😈", inp: "Antworten...", lt: "Weiter chatten", ld: "Registriere dich, um private Fotos zu sehen.", lb: "JETZT ANTWORTEN", et: "Warten! In deiner Stadt sind gerade 147 Mädchen online!", eb: "MÄDCHEN SEHEN" },
+        fr: { on: "En ligne", m1: "Salut ! 😊", m2: "J'allais supprimer mon profil, contente que tu sois là... ☺️", m3: "Tu veux voir mes photos privées ? 😈", inp: "Lui répondre...", lt: "Continuer", ld: "Inscris-toi pour voir les photos et lui répondre.", lb: "RÉPONDRE MAINTENANT", et: "Attends ! Il y a 147 filles dans ta ville prêtes à se rencontrer !", eb: "VOIR LES FILLES" },
+        es: { on: "En línea", m1: "¡Hola! 😊", m2: "Estaba a punto de borrar mi perfil, me alegra что vinieras... ☺️", m3: "¿Quieres ver mis fotos privadas? 😈", inp: "Responder...", lt: "Continuar chat", ld: "Regístrate para ver mis fotos y responderme.", lb: "RESPONDER AHORA", et: "¡Espera! ¡Hay 147 chicas en tu ciudad listas para quedar ahora!", eb: "VER CHICAS" },
+        it: { on: "Online", m1: "Ciao! 😊", m2: "Stavo per cancellare il mio profilo, meno male che sei arrivato... ☺️", m3: "Vuoi vedere le mie foto private? 😈", inp: "Rispondi...", lt: "Continua la chat", ld: "Registrati per vedere le foto e rispondere.", lb: "RISPONDI ORA", et: "Aspetta! Ci sono 147 ragazze nella tua città pronte a incontrarti!", eb: "VEDI LE RAGAZZE" },
+        pl: { on: "Online", m1: "Cześć! 😊", m2: "Właśnie miałam usuwać konto, dobrze że jesteś... ☺️", m3: "Chcesz zobaczyć moje prywatne zdjęcia? 😈", inp: "Napisz do niej...", lt: "Kontynuuj czat", ld: "Zarejestruj się, aby zobaczyć zdjęcia i odpowiedzieć.", lb: "ODPOWIEDZ TERAZ", et: "Czekaj! W Twoim mieście jest teraz 147 dziewczyn gotowych na spotkanie!", eb: "ZOBACZ DZIEWCZYNY" },
+        tr: { on: "Çevrimiçi", m1: "Selam! 😊", m2: "Profilimi silmek üzereydim, geldiğine sevindim... ☺️", m3: "Özel fotoğraflarımı görmek ister misin? 😈", inp: "Ona cevap ver...", lt: "Sohbete devam et", ld: "Fotoğrafları görmek ve cevap vermek için kayıt ol.", lb: "ŞİMDİ CEVAPLA", et: "Bekle! Şehrinde şu an buluşmaya hazır 147 kız çevrimiçi!", eb: "KIZLARI GÖR" }
     };
 
     const getL = () => { const n = navigator.language.split('-')[0]; return trans[n] ? n : 'en'; };
     const cur = trans[getL()];
     const sound = document.getElementById('msg-sound');
 
-    // Логика чата
     window.onload = async () => {
         document.getElementById('st').innerText = cur.on;
         document.getElementById('inp-txt').innerText = cur.inp;
@@ -93,13 +96,14 @@
         document.getElementById('ld').innerText = cur.ld;
         document.getElementById('lb').innerText = cur.lb;
         document.getElementById('et').innerText = cur.et;
+        document.getElementById('eb').innerText = cur.eb;
 
-        await new Promise(r => setTimeout(r, 1500));
-        showT(); await new Promise(r => setTimeout(r, 2000)); hideT(); addM(cur.m1);
-        await new Promise(r => setTimeout(r, 1500));
-        showT(); await new Promise(r => setTimeout(r, 3000)); hideT(); addM(cur.m2);
+        await new Promise(r => setTimeout(r, 1200));
+        showT(); await new Promise(r => setTimeout(r, 1800)); hideT(); addM(cur.m1);
         await new Promise(r => setTimeout(r, 1000));
-        showT(); await new Promise(r => setTimeout(r, 2500)); hideT(); addM(cur.m3);
+        showT(); await new Promise(r => setTimeout(r, 2500)); hideT(); addM(cur.m2);
+        await new Promise(r => setTimeout(r, 1000));
+        showT(); await new Promise(r => setTimeout(r, 2200)); hideT(); addM(cur.m3);
     };
 
     function addM(t) { sound.play().catch(()=>{}); const b = document.getElementById('box'); const d = document.createElement('div'); d.className = 'bubble received'; d.innerText = t; b.appendChild(d); b.scrollTop = b.scrollHeight; }
@@ -107,7 +111,7 @@
     function hideT() { if(document.getElementById('tp')) document.getElementById('tp').remove(); }
     function showLock() { document.getElementById('lock').classList.add('active'); }
 
-    // Перехват кнопки Назад
+    // Exit Intent Logic
     history.pushState(null, null, location.href);
     window.onpopstate = function () {
         document.getElementById('exit-popup').style.display = 'flex';
@@ -115,6 +119,5 @@
     };
     function closeExit() { document.getElementById('exit-popup').style.display = 'none'; }
 </script>
-
 </body>
 </html>
