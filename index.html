@@ -15,9 +15,9 @@
         #list-screen { height: 100vh; overflow-y: auto; padding-bottom: 100px; }
         .chat-row { display: flex; padding: 15px; border-bottom: 1px solid #222; align-items: center; cursor: pointer; }
         .avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
-        .info { flex: 1; margin-left: 15px; }
+        .info { flex: 1; margin-left: 15px; overflow: hidden; }
         .name { font-weight: 700; font-size: 16px; margin-bottom: 4px; display: block; }
-        .preview { color: var(--accent); font-size: 13px; font-weight: 500; }
+        .preview { color: var(--accent); font-size: 13px; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .typing { display: none; align-self: flex-start; background: #262629; padding: 12px 16px; border-radius: 20px; margin-bottom: 10px; margin-top: 5px; }
         .dot { height: 6px; width: 6px; background: #bbb; border-radius: 50%; display: inline-block; animation: jump 1.4s infinite; margin-right: 2px; }
@@ -75,21 +75,72 @@
 
 <script>
     const config = {
-        ru: { eh:"УХОДИШЬ?", ep:"Рядом 147 девушек хотят секса. Останься!", ebtn:"ОСТАТЬСЯ", mh:"Доступ ограничен", mp:"Зарегистрируйся, чтобы смотреть видео.", mbtn:"СМОТРЕТЬ", names:["Мария","Катя","Вика","Лена","Света","Анжела"], push:["Привет!","Смотри что у меня есть... 🔥","Ответь мне!"], chat:["Привет! 😉", "Я сегодня скучаю... Хочешь кое-что покажу?"] },
-        ua: { eh:"ЙДЕШ?", ep:"Поруч 147 дівчат хочуть сексу. Залишайся!", ebtn:"ЗАЛИШИТИСЬ", mh:"Доступ обмежено", mp:"Зареєструйся, щоб дивитися відео.", mbtn:"ДИВИТИСЬ", names:["Оксана","Юля","Настя","Іра","Марина","Олена"], push:["Привіт!","Дивись що в мене є... 🔥","Відповідай мені!"], chat:["Привіт! 😉", "Я сьогодні сумую... Хочеш дещо покажу?"] },
-        es: { eh:"¿TE VAS?", ep:"147 chicas cerca quieren sexo. ¡Quédate!", ebtn:"QUEDARME", mh:"Acceso limitado", mp:"Regístrate para ver el video.", mbtn:"VER", names:["Lucía","Martina","Sofía","Valeria","Alba","Paula"], push:["¡Hola!","Mira esto... 🔥","¡Responde!"], chat:["¡Hola! 😉", "Me aburro hoy... ¿Quieres ver algo?"] },
-        en: { eh:"WAIT!", ep:"147 girls want sex nearby. Stay!", ebtn:"STAY", mh:"Limited Access", mp:"Register to watch video.", mbtn:"WATCH", names:["Emily","Chloe","Megan","Jessica","Lily","Sarah"], push:["Hi!","Look at this... 🔥","Answer me!"], chat:["Hi! 😉", "I'm bored today... Wanna see something?"] }
+        ru: {
+            eh: "УХОДИШЬ?", ep: "Рядом 147 девушек хотят секса. Останься!", ebtn: "ОСТАТЬСЯ",
+            mh: "Доступ ограничен", mp: "Зарегистрируйся, чтобы смотреть видео.", mbtn: "СМОТРЕТЬ",
+            names: ["Мария", "Катя", "Вика", "Лена", "Света", "Анжела"],
+            chats: [
+                ["Привет! Ты тут новенький? 😊", "Добавь фото, хочу на тебя посмотреть..."],
+                ["Приветик! Ты откуда? 😉", "Вижу ты еще не в системе, пообщаемся?"],
+                ["Ого, какой красавчик зашел! 😍", "Скинула бы фото, но заведи сначала профиль..."],
+                ["Ты тут надолго? Ищу компанию на вечер", "Давай в приват? Тут нельзя слать горячее... 🔥"],
+                ["Привет! Свободен сегодня? 😘", "Я новенькая, ищу смелого парня. Жду тебя!"],
+                ["Вау! Привет красавчик! ❤️", "Регайся скорее, у меня для тебя сюрприз... 😈"]
+            ],
+            push: ["Смотри что у меня есть... 🔥", "Ты тут? Ответь мне! 😘"]
+        },
+        ua: {
+            eh: "ЙДЕШ?", ep: "Поруч 147 дівчат хочуть сексу. Залишайся!", ebtn: "ЗАЛИШИТИСЬ",
+            mh: "Доступ обмежено", mp: "Зареєструйся, щоб дивитися відео.", mbtn: "ДИВИТИСЬ",
+            names: ["Оксана", "Юля", "Настя", "Іра", "Марина", "Олена"],
+            chats: [
+                ["Привіт! Ти тут новенький? 😊", "Додай фото, хочу на тебе подивитися..."],
+                ["Привіт! Ти звідки? 😉", "Бачу ти ще не в системі, поспілкуємось?"],
+                ["Ого, який красень зайшов! 😍", "Скинула б фото, але зроби спочатку профіль..."],
+                ["Ти тут надовго? Шукаю компанію на вечір", "Давай у приват? Тут не можна слати гаряче... 🔥"],
+                ["Привіт! Вільний сьогодні? 😘", "Я новенька, шукаю сміливого хлопця. Чекаю!"],
+                ["Вау! Привіт красень! ❤️", "Реєструйся швидше, у мене для тебе сюрприз... 😈"]
+            ],
+            push: ["Дивись що в мене є... 🔥", "Ти тут? Відповідай! 😘"]
+        },
+        es: {
+            eh: "¿TE VAS?", ep: "147 chicas cerca quieren sexo. ¡Quédate!", ebtn: "QUEDARME",
+            mh: "Acceso limitado", mp: "Regístrate para ver el video.", mbtn: "VER",
+            names: ["Lucía", "Martina", "Sofía", "Valeria", "Alba", "Paula"],
+            chats: [
+                ["¡Hola! ¿Eres nuevo aquí? 😊", "Sube tu foto, quiero verte..."],
+                ["¡Hola! ¿De dónde eres? 😉", "¿Aún no registrado? ¡Hablemos!"],
+                ["¡Vaya, qué guapo! 😍", "Te enviaría fotos, pero necesitas un perfil..."],
+                ["¿Te quedas mucho tiempo? Busco compañía", "Vamos al privado? Aquí no puedo enviarte nada hot... 🔥"],
+                ["¡Hola! ¿Libre hoy? 😘", "Soy nueva, busco un chico atrevido. ¡Te espero!"],
+                ["¡Wow! ¡Hola bombón! ❤️", "Regístrate ya, tengo una sorpresa para ti... 😈"]
+            ],
+            push: ["Mira lo que tengo... 🔥", "¿Estás ahí? ¡Responde! 😘"]
+        },
+        en: {
+            eh: "WAIT!", ep: "147 girls want sex nearby. Stay!", ebtn: "STAY",
+            mh: "Limited Access", mp: "Register to watch video.", mbtn: "WATCH",
+            names: ["Emily", "Chloe", "Megan", "Jessica", "Lily", "Sarah"],
+            chats: [
+                ["Hi! New here? 😊", "Add your photo, I want to see you..."],
+                ["Hey! Where are you from? 😉", "Not registered yet? Let's chat!"],
+                ["Wow, handsome guy! 😍", "I'd send a photo, but you need a profile first..."],
+                ["Staying long? Looking for company", "Let's go private? Can't send hot stuff here... 🔥"],
+                ["Hi! Free today? 😘", "New here, looking for a brave guy. Waiting for you!"],
+                ["Wow! Hello handsome! ❤️", "Register fast, I have a surprise for you... 😈"]
+            ],
+            push: ["Look at this... 🔥", "Answer me! 😘"]
+        }
     };
 
     const pushPhotos = ["https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=150","https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150"];
-    const langMap = { 'ru':['ru','kz','be','uz'], 'ua':['uk'], 'es':['es','mx','ar'], 'en':['en','us','de','pl'] };
+    const langMap = { 'ru':['ru','kz','be','uz'], 'ua':['uk'], 'es':['es','mx','ar'], 'en':['en','us','de','pl','fr'] };
     let userLang = 'en';
     const navLang = navigator.language.split('-')[0];
     for (let l in langMap) { if (langMap[l].includes(navLang)) userLang = l; }
     const cur = config[userLang] || config.en;
     let isChat = false;
 
-    // UI Apply
     document.getElementById('eh').innerText = cur.eh; document.getElementById('ep').innerText = cur.ep; document.getElementById('ebtn').innerText = cur.ebtn;
     document.getElementById('mh').innerText = cur.mh; document.getElementById('mp').innerText = cur.mp; document.getElementById('mbtn').innerText = cur.mbtn;
 
@@ -97,7 +148,7 @@
         const list = document.getElementById('list-screen');
         cur.names.forEach((n, i) => {
             const row = document.createElement('div'); row.className = 'chat-row';
-            row.innerHTML = `<img src="${i+2}.jpg" class="avatar"><div class="info"><span class="name">${n}</span><div class="preview">${cur.chat[0]}</div></div>`;
+            row.innerHTML = `<img src="${i+2}.jpg" class="avatar"><div class="info"><span class="name">${n}</span><div class="preview">${cur.chats[i][0]}</div></div>`;
             row.onclick = () => { isChat = true; history.pushState({v:'c'},""); openChat(i); };
             list.appendChild(row);
         });
@@ -111,14 +162,11 @@
         mBox.querySelectorAll('.bubble, .video-circle').forEach(e => e.remove());
         document.getElementById('chat-screen').style.display = 'flex';
 
-        // Первое сообщение СРАЗУ
-        addB(cur.chat[0]);
+        addB(cur.chats[i][0]);
+        await wait(1800); tUi.style.display = 'block'; await wait(2500); tUi.style.display = 'none';
+        addB(cur.chats[i][1]);
+        await wait(1500); tUi.style.display = 'block'; await wait(2000); tUi.style.display = 'none';
         
-        // Второе через печатает
-        await wait(1500); tUi.style.display = 'block'; await wait(2500); tUi.style.display = 'none';
-        addB(cur.chat[1]);
-        
-        await wait(1200); tUi.style.display = 'block'; await wait(2000); tUi.style.display = 'none';
         const v = document.createElement('div'); v.className = 'video-circle'; v.style.display = 'flex';
         v.innerHTML = `<img src="${i+2}.jpg">`; v.onclick = () => document.getElementById('reg-modal').style.display = 'flex';
         mBox.appendChild(v); mBox.scrollTop = 9999;
@@ -131,8 +179,9 @@
 
     function showPush() {
         const p = document.getElementById('push-note');
-        document.getElementById('p-name').innerText = cur.names[Math.floor(Math.random()*6)];
-        document.getElementById('p-msg').innerText = cur.push[Math.floor(Math.random()*3)];
+        const rIdx = Math.floor(Math.random()*6);
+        document.getElementById('p-name').innerText = cur.names[rIdx];
+        document.getElementById('p-msg').innerText = cur.push[Math.floor(Math.random()*2)];
         document.getElementById('p-img').src = pushPhotos[Math.floor(Math.random()*2)];
         p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 5000);
     }
@@ -146,7 +195,7 @@
         else { document.getElementById('exit-pop').style.display = 'flex'; }
     };
 
-    setInterval(() => { if(!isChat) showPush(); }, 18000);
+    setInterval(() => { if(!isChat) showPush(); }, 20000);
     setTimeout(showPush, 4000);
     buildList();
 </script>
