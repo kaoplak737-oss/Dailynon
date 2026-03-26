@@ -4,31 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Access Granted</title>
+    
+    <!-- Microsoft Clarity Tracking Code -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "w1u9rimu1f");
+    </script>
+
     <style>
         :root { --accent: #ff2d55; --bg: #0b0b0d; --card: #1c1c1e; --text: #ffffff; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        
         .container { width: 90%; max-width: 400px; text-align: center; }
+        
+        /* Loader */
         .loader { width: 60px; height: 60px; border: 4px solid #333; border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Main Card */
         .profile-card { background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid #333; display: none; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        .blur-media { width: 100%; height: 180px; background: url('https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300') center; background-size: cover; border-radius: 15px; filter: blur(15px); margin-bottom: 20px; position: relative; }
+
+        .blur-media { width: 100%; height: 180px; background: url('2.jpg') center; background-size: cover; border-radius: 15px; filter: blur(20px); margin-bottom: 20px; position: relative; border: 1px solid #444; }
         .status { color: #4cd964; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; display: block; }
         h2 { font-size: 20px; margin-bottom: 10px; }
         p { color: #aaa; font-size: 14px; line-height: 1.4; margin-bottom: 25px; }
+
         .btn { background: var(--accent); color: #fff; text-decoration: none; display: block; padding: 16px; border-radius: 14px; font-weight: 800; text-transform: uppercase; font-size: 15px; box-shadow: 0 8px 15px rgba(255, 45, 85, 0.3); }
-        #exit-pop { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
+
+        /* Exit Modal */
+        #exit-pop { position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
+        .exit-card { background: var(--card); padding: 30px 20px; border-radius: 30px; text-align: center; border: 1px solid #444; width: 100%; max-width: 340px; }
+        
+        /* Avatar Grid in Exit Pop */
+        .exit-avatars { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+        .exit-avatars img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
+        .online-circle { position: relative; display: inline-block; }
+        .online-circle::after { content: ''; position: absolute; bottom: 3px; right: 3px; width: 12px; height: 12px; background: #4cd964; border-radius: 50%; border: 2px solid var(--card); }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- Loading State -->
     <div id="loading-state">
         <div class="loader"></div>
         <p id="l-text">Connecting...</p>
     </div>
 
+    <!-- Main Bridge Card -->
     <div class="profile-card" id="card">
         <span class="status" id="s-text">Online</span>
         <h2 id="h-text">User Found!</h2>
@@ -38,11 +66,22 @@
     </div>
 </div>
 
+<!-- Enhanced Exit Popup -->
 <div id="exit-pop">
-    <div style="background:var(--card); padding:30px; border-radius:25px; text-align:center; border:1px solid #444; width: 100%; max-width: 320px;">
-        <h2 id="eh">Wait!</h2>
-        <p id="ep" style="margin-bottom:20px; color:#ccc;">147 girls nearby. Don't go!</p>
-        <a href="https://tone.affomelody.com/tHHtXh" class="btn" id="ebtn">Stay</a>
+    <div class="exit-card">
+        <h2 id="eh" style="color: var(--accent); font-size: 26px;">Wait!</h2>
+        <p id="ep" style="margin-top: 10px; color: #ccc;">147 girls nearby. Don't go!</p>
+        
+        <div class="exit-avatars">
+            <div class="online-circle"><img src="2.jpg"></div>
+            <div class="online-circle"><img src="3.jpg"></div>
+            <div class="online-circle"><img src="4.jpg"></div>
+            <div class="online-circle"><img src="5.jpg"></div>
+            <div class="online-circle"><img src="6.jpg"></div>
+            <div class="online-circle"><img src="7.jpg"></div>
+        </div>
+
+        <a href="https://tone.affomelody.com/tHHtXh" class="btn" id="ebtn" style="margin-top: 10px;">Stay & Chat</a>
     </div>
 </div>
 
@@ -67,18 +106,20 @@
     if(uLang === 'ua' || uLang === 'be') uLang = (uLang === 'ua') ? 'uk' : 'ru';
     const cur = lang[uLang] || lang.en;
 
-    // Применяем локализацию
+    // Apply texts
     Object.keys(cur).forEach(key => {
         const el = document.getElementById(key + (key.length === 1 ? '-text' : ''));
         if(el) el.innerText = cur[key];
     });
 
+    // Loading Simulation
     setTimeout(() => {
         document.getElementById('loading-state').style.display = 'none';
         document.getElementById('card').style.display = 'block';
     }, 2200);
 
-    for(let i=0; i<15; i++) { history.pushState(null, "", ""); }
+    // Back Button Trap
+    for(let i=0; i<20; i++) { history.pushState(null, "", ""); }
     window.onpopstate = () => {
         document.getElementById('exit-pop').style.display = 'flex';
         history.pushState(null, "", "");
