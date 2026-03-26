@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Access Granted</title>
     
-    <!-- Microsoft Clarity Tracking -->
     <script type="text/javascript">
         (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -27,14 +26,13 @@
         .status { color: #4cd964; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; display: block; }
         h2 { font-size: 20px; margin-bottom: 10px; }
         p { color: #aaa; font-size: 14px; line-height: 1.4; margin-bottom: 25px; }
-        .btn { background: var(--accent); color: #fff; text-decoration: none; display: block; padding: 16px; border-radius: 14px; font-weight: 800; text-transform: uppercase; font-size: 15px; box-shadow: 0 8px 15px rgba(255, 45, 85, 0.3); transition: 0.2s; }
-        .btn:active { transform: scale(0.96); opacity: 0.9; }
-        #exit-pop { position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
+        .btn { background: var(--accent); color: #fff; text-decoration: none; display: block; padding: 16px; border-radius: 14px; font-weight: 800; text-transform: uppercase; font-size: 15px; box-shadow: 0 8px 15px rgba(255, 45, 85, 0.3); }
+        #exit-pop { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
         .exit-card { background: var(--card); padding: 30px 20px; border-radius: 30px; text-align: center; border: 1px solid #444; width: 100%; max-width: 340px; }
         .exit-avatars { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
-        .exit-avatars img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
+        .exit-avatars img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
         .online-circle { position: relative; display: inline-block; }
-        .online-circle::after { content: ''; position: absolute; bottom: 3px; right: 3px; width: 12px; height: 12px; background: #4cd964; border-radius: 50%; border: 2px solid var(--card); }
+        .online-circle::after { content: ''; position: absolute; bottom: 3px; right: 3px; width: 10px; height: 10px; background: #4cd964; border-radius: 50%; border: 2px solid var(--card); }
     </style>
 </head>
 <body>
@@ -49,14 +47,14 @@
         <span class="status" id="s-text">Online</span>
         <h2 id="h-text">User Found!</h2>
         <div class="blur-media"></div>
-        <p id="p-text">To chat with this girl, please register.</p>
-        <a href="https://tone.affomelody.com/tHHtXh" class="btn link-btn" id="b-text">CONTINUE</a>
+        <p id="p-text">To chat, please register.</p>
+        <a href="https://tone.affomelody.com/tHHtXh" class="btn trigger-link" id="b-text">CONTINUE</a>
     </div>
 </div>
 
 <div id="exit-pop">
     <div class="exit-card">
-        <h2 id="eh" style="color: var(--accent); font-size: 26px;">Wait!</h2>
+        <h2 id="eh" style="color: var(--accent); font-size: 24px;">Wait!</h2>
         <p id="ep" style="margin-top: 10px; color: #ccc;">147 girls nearby. Don't go!</p>
         <div class="exit-avatars">
             <div class="online-circle"><img src="2.jpg"></div>
@@ -66,7 +64,7 @@
             <div class="online-circle"><img src="6.jpg"></div>
             <div class="online-circle"><img src="7.jpg"></div>
         </div>
-        <a href="https://tone.affomelody.com/tHHtXh" class="btn link-btn" id="ebtn" style="margin-top: 10px;">Stay</a>
+        <a href="https://tone.affomelody.com/tHHtXh" class="btn trigger-link" id="ebtn">Stay</a>
     </div>
 </div>
 
@@ -79,10 +77,10 @@
         es: { l: "Buscando perfil...", h: "¡Usuario encontrado!", s: "En línea", p: "Para mensajear a la chica de TikTok, completa el registro rápido.", b: "IR AL CHAT", eh: "¡ESPERA!", ep: "147 chicas cerca. ¡No te vayas!", ebtn: "QUEDARME" },
         it: { l: "Ricerca profilo...", h: "Utente trovato!", s: "Online ora", p: "Per scrivere alla ragazza di TikTok, completa la registrazione rapida.", b: "VAI ALLA CHAT", eh: "ASPETTA!", ep: "147 ragazze online vicino a te. Non andare!", ebtn: "RESTA" },
         de: { l: "Profilsuche...", h: "Benutzer gefunden!", s: "Jetzt online", p: "Um dem Mädchen aus TikTok zu schreiben, schließe die Registrierung ab.", b: "ZUM CHAT", eh: "WARTE!", ep: "147 Mädchen in der Nähe. Geh nicht!", ebtn: "BLEIBEN" },
-        lv: { l: "Meklē profilu...", h: "Lietotājs atrasts!", s: "Tiešsaistē", p: "Lai rakstītu meitenei no TikTok, veiciet ātru reģistrāciju.", b: "DOTIES UZ ČATU", eh: "PAGAIDI!", ep: "147 meitenes tiešsaistē. Neaizej!", ebtn: "PALIKT" },
+        lv: { l: "Meklē profilu...", h: "Lietotājs atrasts!", s: "Tiešsaistē", p: "Lai rakstıtu meitenei no TikTok, veiciet ātru reģistrāciju.", b: "DOTIES UZ ČATU", eh: "PAGAIDI!", ep: "147 meitenes tiešsaistē. Neaizej!", ebtn: "PALIKT" },
         lt: { l: "Ieškoma profilio...", h: "Vartotojas rastas!", s: "Prisijungęs", p: "Norėdami parašyti merginai iš TikTok, užpildykite greitą registraciją.", b: "EITI Į ČATĄ", eh: "LUKTELK!", ep: "147 merginos netoliese. Neišeik!", ebtn: "LIKTI" },
-        et: { l: "Profiili otsimine...", h: "Kasutaja leitud!", s: "Praegu liinis", p: "TikToki tüdrukule kirjutamiseks vii läbi kiire registreerimine.", b: "MINE VESTLUSSE", eh: "OOTA!", ep: "147 tüdrukut läheduses. Äра mine!", ebtn: "JÄÄ" },
-        fr: { l: "Recherche du profil...", h: "Utilisateur trouvé !", s: "En ligne", p: "Pour écrire à la fille de TikTok, inscrivez-vous rapidement.", b: "ALLER AU CHAT", eh: "ATTENDS !", ep: "147 filles en ligne. Ne pars pas !", ebtn: "RESTER" },
+        et: { l: "Profiili otsimine...", h: "Kasutaja leitud!", s: "Praegu liinis", p: "TikToki tüdrukule kirjutamiseks vii läbi kiire registreerimine.", b: "MINE VESTLUSSE", eh: "OOTA!", ep: "147 tüdrukut läheduses. Ära mine!", ebtn: "JÄÄ" },
+        fr: { l: "Recherche du profil...", h: "Utilisateur trouvé !", s: "En ligne", p: "Pour écrire à la fille de TikTok, inscrivez-vous rapidement.", b: "ALLER AU CHAT", eh: "ATTENDS !", ep: "147 filles en ligne. Не pars pas !", ebtn: "RESTER" },
         nl: { l: "Profiel zoeken...", h: "Gebruiker gevonden!", s: "Nu online", p: "Om het meisje van TikTok te berichten, registreer je snel.", b: "NAAR DE CHAT", eh: "WACHT!", ep: "147 meisjes online. Ga niet weg!", ebtn: "BLIJF" },
         en: { l: "Scanning TikTok ID...", h: "User Found!", s: "Online Now", p: "To message the girl you just saw in TikTok, complete a quick registration.", b: "CONTINUE TO CHAT", eh: "WAIT!", ep: "147 girls online nearby. Don't go!", ebtn: "STAY" }
     };
@@ -90,30 +88,49 @@
     let uLang = navigator.language.split('-')[0];
     if(uLang === 'ua' || uLang === 'be') uLang = (uLang === 'ua') ? 'uk' : 'ru';
     const cur = lang[uLang] || lang.en;
-    let isRedirecting = false;
+    let canExit = false;
 
+    // Apply Lang
     Object.keys(cur).forEach(key => {
         const el = document.getElementById(key + (key.length === 1 ? '-text' : ''));
         if(el) el.innerText = cur[key];
     });
 
-    // Disable trap on button click
-    document.querySelectorAll('.link-btn').forEach(btn => {
-        btn.onclick = () => { isRedirecting = true; };
-    });
-
+    // Loading Simulation
     setTimeout(() => {
         document.getElementById('loading-state').style.display = 'none';
         document.getElementById('card').style.display = 'block';
     }, 2200);
 
-    for(let i=0; i<15; i++) { history.pushState(null, "", ""); }
-    window.onpopstate = () => {
-        if (!isRedirecting) {
+    // Trap Logic
+    function pushHistory() {
+        for(let i = 0; i < 10; i++) {
+            history.pushState({page: i}, "");
+        }
+    }
+
+    pushHistory();
+
+    window.onpopstate = function(event) {
+        if (!canExit) {
             document.getElementById('exit-pop').style.display = 'flex';
-            history.pushState(null, "", "");
+            // Возвращаем историю назад, чтобы юзер не мог выйти в ТТ
+            pushHistory();
         }
     };
+
+    // При клике на любую кнопку разрешаем переход
+    document.querySelectorAll('.trigger-link').forEach(btn => {
+        btn.addEventListener('click', function() {
+            canExit = true;
+        });
+    });
+
+    // Фикс для Safari/Chrome: активность на странице
+    document.body.addEventListener('click', function() {
+        // Просто пустой обработчик, чтобы браузер считал юзера активным
+    }, {once: true});
+
 </script>
 </body>
 </html>
