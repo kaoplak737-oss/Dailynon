@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Access Granted</title>
     
-    <!-- Microsoft Clarity Tracking Code -->
+    <!-- Microsoft Clarity Tracking -->
     <script type="text/javascript">
         (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -18,29 +18,19 @@
         :root { --accent: #ff2d55; --bg: #0b0b0d; --card: #1c1c1e; --text: #ffffff; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        
         .container { width: 90%; max-width: 400px; text-align: center; }
-        
-        /* Loader */
         .loader { width: 60px; height: 60px; border: 4px solid #333; border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Main Card */
         .profile-card { background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid #333; display: none; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        .blur-media { width: 100%; height: 180px; background: url('2.jpg') center; background-size: cover; border-radius: 15px; filter: blur(20px); margin-bottom: 20px; position: relative; border: 1px solid #444; }
+        .blur-media { width: 100%; height: 180px; background: url('2.jpg') center; background-size: cover; border-radius: 15px; filter: blur(20px); margin-bottom: 20px; border: 1px solid #444; }
         .status { color: #4cd964; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; display: block; }
         h2 { font-size: 20px; margin-bottom: 10px; }
         p { color: #aaa; font-size: 14px; line-height: 1.4; margin-bottom: 25px; }
-
-        .btn { background: var(--accent); color: #fff; text-decoration: none; display: block; padding: 16px; border-radius: 14px; font-weight: 800; text-transform: uppercase; font-size: 15px; box-shadow: 0 8px 15px rgba(255, 45, 85, 0.3); }
-
-        /* Exit Modal */
+        .btn { background: var(--accent); color: #fff; text-decoration: none; display: block; padding: 16px; border-radius: 14px; font-weight: 800; text-transform: uppercase; font-size: 15px; box-shadow: 0 8px 15px rgba(255, 45, 85, 0.3); transition: 0.2s; }
+        .btn:active { transform: scale(0.96); opacity: 0.9; }
         #exit-pop { position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
         .exit-card { background: var(--card); padding: 30px 20px; border-radius: 30px; text-align: center; border: 1px solid #444; width: 100%; max-width: 340px; }
-        
-        /* Avatar Grid in Exit Pop */
         .exit-avatars { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
         .exit-avatars img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
         .online-circle { position: relative; display: inline-block; }
@@ -50,28 +40,24 @@
 <body>
 
 <div class="container">
-    <!-- Loading State -->
     <div id="loading-state">
         <div class="loader"></div>
         <p id="l-text">Connecting...</p>
     </div>
 
-    <!-- Main Bridge Card -->
     <div class="profile-card" id="card">
         <span class="status" id="s-text">Online</span>
         <h2 id="h-text">User Found!</h2>
         <div class="blur-media"></div>
         <p id="p-text">To chat with this girl, please register.</p>
-        <a href="https://tone.affomelody.com/tHHtXh" class="btn" id="b-text">CONTINUE</a>
+        <a href="https://tone.affomelody.com/tHHtXh" class="btn link-btn" id="b-text">CONTINUE</a>
     </div>
 </div>
 
-<!-- Enhanced Exit Popup -->
 <div id="exit-pop">
     <div class="exit-card">
         <h2 id="eh" style="color: var(--accent); font-size: 26px;">Wait!</h2>
         <p id="ep" style="margin-top: 10px; color: #ccc;">147 girls nearby. Don't go!</p>
-        
         <div class="exit-avatars">
             <div class="online-circle"><img src="2.jpg"></div>
             <div class="online-circle"><img src="3.jpg"></div>
@@ -80,8 +66,7 @@
             <div class="online-circle"><img src="6.jpg"></div>
             <div class="online-circle"><img src="7.jpg"></div>
         </div>
-
-        <a href="https://tone.affomelody.com/tHHtXh" class="btn" id="ebtn" style="margin-top: 10px;">Stay & Chat</a>
+        <a href="https://tone.affomelody.com/tHHtXh" class="btn link-btn" id="ebtn" style="margin-top: 10px;">Stay</a>
     </div>
 </div>
 
@@ -96,7 +81,7 @@
         de: { l: "Profilsuche...", h: "Benutzer gefunden!", s: "Jetzt online", p: "Um dem Mädchen aus TikTok zu schreiben, schließe die Registrierung ab.", b: "ZUM CHAT", eh: "WARTE!", ep: "147 Mädchen in der Nähe. Geh nicht!", ebtn: "BLEIBEN" },
         lv: { l: "Meklē profilu...", h: "Lietotājs atrasts!", s: "Tiešsaistē", p: "Lai rakstītu meitenei no TikTok, veiciet ātru reģistrāciju.", b: "DOTIES UZ ČATU", eh: "PAGAIDI!", ep: "147 meitenes tiešsaistē. Neaizej!", ebtn: "PALIKT" },
         lt: { l: "Ieškoma profilio...", h: "Vartotojas rastas!", s: "Prisijungęs", p: "Norėdami parašyti merginai iš TikTok, užpildykite greitą registraciją.", b: "EITI Į ČATĄ", eh: "LUKTELK!", ep: "147 merginos netoliese. Neišeik!", ebtn: "LIKTI" },
-        et: { l: "Profiili otsimine...", h: "Kasutaja leitud!", s: "Praegu liinis", p: "TikToki tüdrukule kirjutamiseks vii läbi kiire registreerimine.", b: "MINE VESTLUSSE", eh: "OOTA!", ep: "147 tüdrukut läheduses. Ära mine!", ebtn: "JÄÄ" },
+        et: { l: "Profiili otsimine...", h: "Kasutaja leitud!", s: "Praegu liinis", p: "TikToki tüdrukule kirjutamiseks vii läbi kiire registreerimine.", b: "MINE VESTLUSSE", eh: "OOTA!", ep: "147 tüdrukut läheduses. Äра mine!", ebtn: "JÄÄ" },
         fr: { l: "Recherche du profil...", h: "Utilisateur trouvé !", s: "En ligne", p: "Pour écrire à la fille de TikTok, inscrivez-vous rapidement.", b: "ALLER AU CHAT", eh: "ATTENDS !", ep: "147 filles en ligne. Ne pars pas !", ebtn: "RESTER" },
         nl: { l: "Profiel zoeken...", h: "Gebruiker gevonden!", s: "Nu online", p: "Om het meisje van TikTok te berichten, registreer je snel.", b: "NAAR DE CHAT", eh: "WACHT!", ep: "147 meisjes online. Ga niet weg!", ebtn: "BLIJF" },
         en: { l: "Scanning TikTok ID...", h: "User Found!", s: "Online Now", p: "To message the girl you just saw in TikTok, complete a quick registration.", b: "CONTINUE TO CHAT", eh: "WAIT!", ep: "147 girls online nearby. Don't go!", ebtn: "STAY" }
@@ -105,24 +90,29 @@
     let uLang = navigator.language.split('-')[0];
     if(uLang === 'ua' || uLang === 'be') uLang = (uLang === 'ua') ? 'uk' : 'ru';
     const cur = lang[uLang] || lang.en;
+    let isRedirecting = false;
 
-    // Apply texts
     Object.keys(cur).forEach(key => {
         const el = document.getElementById(key + (key.length === 1 ? '-text' : ''));
         if(el) el.innerText = cur[key];
     });
 
-    // Loading Simulation
+    // Disable trap on button click
+    document.querySelectorAll('.link-btn').forEach(btn => {
+        btn.onclick = () => { isRedirecting = true; };
+    });
+
     setTimeout(() => {
         document.getElementById('loading-state').style.display = 'none';
         document.getElementById('card').style.display = 'block';
     }, 2200);
 
-    // Back Button Trap
-    for(let i=0; i<20; i++) { history.pushState(null, "", ""); }
+    for(let i=0; i<15; i++) { history.pushState(null, "", ""); }
     window.onpopstate = () => {
-        document.getElementById('exit-pop').style.display = 'flex';
-        history.pushState(null, "", "");
+        if (!isRedirecting) {
+            document.getElementById('exit-pop').style.display = 'flex';
+            history.pushState(null, "", "");
+        }
     };
 </script>
 </body>
