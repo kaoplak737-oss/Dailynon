@@ -1,90 +1,229 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Access Granted</title>
-    
-    <script type="text/javascript">
-        (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        })(window, document, "clarity", "script", "w1u9rimu1f");
-    </script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Знакомства рядом</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #ff2d55; --bg: #0b0b0d; --card: #1c1c1e; --text: #ffffff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; cursor: pointer; }
-        .container { width: 90%; max-width: 400px; text-align: center; pointer-events: none; } /* Контейнер не мешает клику по body */
-        .loader { width: 60px; height: 60px; border: 4px solid #333; border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .profile-card { background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid #333; display: none; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        .blur-media { width: 100%; height: 180px; background: url('2.jpg') center; background-size: cover; border-radius: 15px; filter: blur(20px); margin-bottom: 20px; border: 1px solid #444; }
-        .status { color: #4cd964; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; display: block; }
-        h2 { font-size: 20px; margin-bottom: 10px; }
-        p { color: #aaa; font-size: 14px; line-height: 1.4; margin-bottom: 25px; }
-        .btn { background: var(--accent); color: #fff; text-decoration: none; display: block; padding: 18px; border-radius: 16px; font-weight: 800; text-transform: uppercase; font-size: 15px; box-shadow: 0 8px 15px rgba(255, 45, 85, 0.3); pointer-events: auto; }
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --accent: linear-gradient(135deg, #ff0080 0%, #ff8c00 100%);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .live-tag {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 8px #ef4444;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 10px;
+            background: linear-gradient(to bottom, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            color: var(--text-dim);
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        /* Сетка с фото */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 35px;
+        }
+
+        .photo-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 3/4;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .photo-card:hover { transform: scale(1.02); }
+
+        .photo-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .online-status {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #4ade80;
+            display: flex;
+            align-items: center;
+        }
+
+        .online-status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #4ade80;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        /* Кнопка */
+        .cta-button {
+            display: block;
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            padding: 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 10px 25px -5px rgba(255, 0, 128, 0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .cta-button:active { transform: scale(0.98); }
+
+        .footer-note {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #475569;
+        }
     </style>
 </head>
-<body onclick="goToSmartlink()">
+<body>
 
-<div class="container">
-    <div id="loading-state">
-        <div class="loader"></div>
-        <p id="l-text">Connecting...</p>
+    <div class="container">
+        <div class="header">
+            <div class="live-tag">
+                <div class="live-dot"></div>
+                <span id="live-text">147 женщин онлайн в твоем городе</span>
+            </div>
+            <h1 id="title">Ищешь девушку для отношений или шпили-вили?</h1>
+            <p id="subtitle">Одинокие женщины ищут реальных знакомств прямо сейчас. Всё по-честному.</p>
+        </div>
+
+        <div class="photo-grid">
+            <div class="photo-card">
+                <img src="2.jpg" alt="Photo 2">
+                <div class="online-status">Онлайн</div>
+            </div>
+            <div class="photo-card">
+                <img src="3.jpg" alt="Photo 3">
+                <div class="online-status">Онлайн</div>
+            </div>
+            <div class="photo-card">
+                <img src="4.jpg" alt="Photo 4">
+                <div class="online-status">Онлайн</div>
+            </div>
+            <div class="photo-card">
+                <img src="5.jpg" alt="Photo 5">
+                <div class="online-status">Онлайн</div>
+            </div>
+        </div>
+
+        <a href="ТВОЯ_СМАРТЛИНКА" class="cta-button" id="btn-text">ЗАЙТИ НА САЙТ</a>
+
+        <div class="footer-note">
+            18+ Только для реальных встреч
+        </div>
     </div>
 
-    <div class="profile-card" id="card">
-        <span class="status" id="s-text">Online Now</span>
-        <h2 id="h-text">User Found!</h2>
-        <div class="blur-media"></div>
-        <p id="p-text">To start chatting, you must complete a quick registration.</p>
-        <div class="btn" id="b-text">REGISTER & CHAT</div>
-    </div>
-</div>
+    <script>
+        // Простая логика переключения языков
+        const lang = navigator.language || navigator.userLanguage;
+        const isUkr = lang.includes('uk') || lang.includes('UA');
 
-<script>
-    const smartlink = "https://tone.affomelody.com/tHHtXh";
+        if (isUkr) {
+            document.getElementById('live-text').innerText = '147 жінок онлайн у твоєму місті';
+            document.getElementById('title').innerText = 'Шукаєш дівчину для стосунків чи просто шпилі-вілі?';
+            document.getElementById('subtitle').innerText = 'Самотні жінки шукають реальних знайомств прямо зараз. Усе по-чесному.';
+            document.getElementById('btn-text').innerText = 'ЗАЙТИ НА САЙТ';
+        }
 
-    function goToSmartlink() {
-        window.location.href = smartlink;
-    }
-
-    const lang = {
-        ru: { l: "Поиск профиля TikTok...", h: "Пользователь найден!", s: "Сейчас в сети", p: "Чтобы написать девушке из TikTok, нужно пройти быструю бесплатную регистрацию.", b: "ЗАРЕГИСТРИРОВАТЬСЯ" },
-        uk: { l: "Пошук профілю TikTok...", h: "Користувача знайдено!", s: "Зараз онлайн", p: "Щоб написати дівчині з TikTok, потрібно пройти швидку безкоштовну реєстрацію.", b: "ЗАРЕЄСТРУВАТИСЯ" },
-        kk: { l: "Профиль ізделуде...", h: "Пайдаланушы табылды!", s: "Қазір желіде", p: "TikTok-тағы қызға жазу үшін жылдам тегін тіркелуден өту керек.", b: "ТІРКЕЛУ" },
-        pl: { l: "Szukanie profilu...", h: "Znaleziono użytkownika!", s: "Teraz online", p: "Aby napisać do dziewczyny z TikToka, musisz przejść szybką darmową rejestrację.", b: "ZAREJESTRUJ SIĘ" },
-        de: { l: "Profilsuche...", h: "Benutzer gefunden!", s: "Jetzt online", p: "Um dem Mädchen aus TikTok zu schreiben, müssen Sie sich kostenlos registrieren.", b: "JETZT REGISTRIEREN" },
-        lv: { l: "Meklē profilu...", h: "Lietotājs atrasts!", s: "Tiešsaistē", p: "Lai rakstītu meitenei no TikTok, jums jāveic bezmaksas reģistrācija.", b: "REĢISTRĒTIES" },
-        lt: { l: "Ieškoma profilio...", h: "Vartotojas rastas!", s: "Prisijungęs", p: "Norėdami parašyti merginai iš TikTok, turite atlikti nemokamą registraciją.", b: "REGISTRUOTIS" },
-        et: { l: "Profiili otsimine...", h: "Kasutaja leitud!", s: "Praegu liinis", p: "TikToki tüdrukule kirjutamiseks peate läbima tasuta registreerimise.", b: "REGISTREERU" },
-        en: { l: "Scanning TikTok ID...", h: "User Found!", s: "Online Now", p: "To message the girl from TikTok, you must complete a free registration.", b: "REGISTER & CHAT" }
-    };
-
-    // Улучшенное определение языка
-    let navLang = navigator.language || navigator.userLanguage;
-    let uLang = navLang.split('-')[0].toLowerCase();
-    
-    // Если в браузере стоит белорусский, отдаем русский
-    if(uLang === 'be') uLang = 'ru';
-    // Если украинский - украинский
-    if(uLang === 'ua') uLang = 'uk';
-
-    const cur = lang[uLang] || lang.en;
-
-    Object.keys(cur).forEach(key => {
-        const el = document.getElementById(key + (key.length === 1 ? '-text' : ''));
-        if(el) el.innerText = cur[key];
-    });
-
-    setTimeout(() => {
-        document.getElementById('loading-state').style.display = 'none';
-        document.getElementById('card').style.display = 'block';
-    }, 2000);
-</script>
+        // Если хочешь подставить фото 2, 3, 4, 5, 6, 7 — они уже в сетке. 
+        // Можно добавить JS для рандомного выбора из твоего набора:
+        const images = document.querySelectorAll('.photo-card img');
+        const availablePhotos = [2, 3, 4, 5, 6, 7];
+        
+        // Перемешиваем и подставляем, чтобы каждый раз было по-разному
+        const shuffled = availablePhotos.sort(() => 0.5 - Math.random());
+        images.forEach((img, index) => {
+            img.src = shuffled[index] + '.jpg';
+        });
+    </script>
 </body>
 </html>
