@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Знакомства рядом</title>
+    <title>Chat System</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -33,70 +33,65 @@
             position: relative;
         }
 
-        /* Шапка как в ТГ */
         .header {
             background: var(--tg-bg);
-            padding: 12px 16px;
+            padding: 10px 15px;
             display: flex;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             z-index: 10;
+            border-bottom: 1px solid rgba(0,0,0,0.2);
         }
-        .header-avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; background: url('2.jpg') center/cover; }
-        .header-info h4 { font-size: 16px; font-weight: 700; }
-        .header-info p { font-size: 13px; color: var(--tg-accent); }
+        .header-avatar { width: 35px; height: 35px; border-radius: 50%; margin-right: 12px; background: url('2.jpg') center/cover; }
+        .header-info h4 { font-size: 15px; font-weight: 700; }
+        .header-info p { font-size: 12px; color: var(--tg-accent); }
 
-        /* Фото-лента (Слайдер) */
         .photo-strip {
             display: flex;
             overflow-x: auto;
-            scroll-behavior: smooth;
             padding: 10px 5px;
-            gap: 8px;
+            gap: 6px;
             scrollbar-width: none;
         }
         .photo-strip::-webkit-scrollbar { display: none; }
         .photo-card {
-            min-width: 130px;
-            height: 180px;
-            border-radius: 12px;
+            min-width: 110px;
+            height: 150px;
+            border-radius: 10px;
             background-size: cover;
             background-position: center;
-            border: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* Тело сообщения */
         .message-content {
             flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); /* Легкая текстура фона ТГ */
+            padding: 10px 15px;
+            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
         }
 
         .bubble {
             background: var(--tg-bg);
-            padding: 15px;
-            border-radius: 15px;
-            line-height: 1.5;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
-            border-bottom-left-radius: 5px;
-            position: relative;
+            padding: 12px;
+            border-radius: 12px;
+            line-height: 1.4;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            border-bottom-left-radius: 4px;
         }
 
-        .bubble h2 { font-size: 16px; margin-bottom: 10px; color: #ffab2e; text-transform: uppercase; }
-        .bubble ul { list-style: none; margin-bottom: 15px; }
-        .bubble ul li { margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; }
-        .bubble ul li::before { content: '📍'; margin-right: 10px; font-size: 12px; }
+        .bubble h2 { font-size: 14px; margin-bottom: 8px; color: #ffab2e; text-transform: uppercase; }
+        .bubble ul { list-style: none; margin-bottom: 10px; }
+        .bubble ul li { margin-bottom: 6px; font-size: 14px; display: flex; align-items: center; }
+        .bubble ul li::before { content: '✔'; margin-right: 8px; color: var(--tg-accent); font-size: 12px; }
 
-        .typing { font-size: 13px; color: var(--tg-hint); margin-top: 10px; font-style: italic; }
+        .typing { font-size: 12px; color: var(--tg-hint); margin-top: 8px; font-style: italic; }
 
-        /* Кнопка */
-        .cta-area {
-            padding: 20px;
-            background: #17212b;
-            border-top: 1px solid #232e3c;
+        /* Та самая ПОДНЯТАЯ КНОПКА */
+        .cta-fixed {
+            position: absolute;
+            bottom: 40px; /* Поднята выше */
+            left: 20px;
+            right: 20px;
+            z-index: 20;
         }
 
         .btn-main {
@@ -105,26 +100,19 @@
             background: var(--tg-accent);
             color: white;
             text-align: center;
-            padding: 16px;
-            border-radius: 12px;
+            padding: 18px;
+            border-radius: 14px;
             text-decoration: none;
             font-weight: 700;
-            font-size: 17px;
-            box-shadow: 0 4px 15px rgba(82, 136, 193, 0.3);
+            font-size: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        .footer-tag {
-            text-align: center;
-            font-size: 11px;
-            color: var(--tg-hint);
-            margin-top: 10px;
+            0% { transform: scale(1); box-shadow: 0 4px 10px rgba(82, 136, 193, 0.4); }
+            50% { transform: scale(1.03); box-shadow: 0 8px 25px rgba(82, 136, 193, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 4px 10px rgba(82, 136, 193, 0.4); }
         }
     </style>
 </head>
@@ -134,75 +122,60 @@
     <div class="header">
         <div class="header-avatar"></div>
         <div class="header-info">
-            <h4 id="h-title">Знакомства с женщинами</h4>
-            <p id="h-status">2415 участника онлайн</p>
+            <h4 id="h-title">Dating Service</h4>
+            <p id="h-status">2,415 online</p>
         </div>
     </div>
 
-    <div class="photo-strip" id="slider">
-        <!-- Фото 1-10 добавятся здесь -->
-    </div>
+    <div class="photo-strip" id="slider"></div>
 
     <div class="message-content">
         <div class="bubble">
-            <h2 id="b-head">ЗДЕСЬ ОДИНОКИЕ ЖЕНЩИНЫ ИЩУТ:</h2>
-            <ul id="b-list">
-                <li>Серьезных отношений</li>
-                <li>Общения на пикантные 🍓 темы</li>
-                <li>Встреч без обязательств 👉👌</li>
-            </ul>
-            <p id="b-promo" style="font-weight: 500;">ПРОХОДИ БЫСТРУЮ РЕГИСТРАЦИЮ И ДЕВУШКИ САМИ НАЧНУТ ПИСАТЬ ТЕБЕ 😎</p>
-            <div class="typing" id="typing-text">Катя печатает...</div>
+            <h2 id="b-head">SINGLE WOMEN ARE LOOKING FOR:</h2>
+            <ul id="b-list"></ul>
+            <p id="b-promo" style="font-weight: 500; font-size: 13px;"></p>
+            <div class="typing" id="typing-text">...</div>
         </div>
     </div>
 
-    <div class="cta-area">
-        <a href="ТВОЯ_СМАРТЛИНКА" class="btn-main" id="btn">ПЕРЕЙТИ НА САЙТ</a>
-        <div class="footer-tag">🔞 Содержимое для взрослых</div>
+    <div class="cta-fixed">
+        <a href="ТВОЯ_СМАРТЛИНКА" class="btn-main" id="btn">ENTER SITE</a>
     </div>
 </div>
 
 <script>
     const offerLink = "ТВОЯ_СМАРТЛИНКА";
-    const slider = document.getElementById('slider');
-    const isUkr = (navigator.language || navigator.userLanguage).includes('uk');
 
-    // Текстовка
-    const texts = {
-        ru: {
-            hTitle: "Знакомства с женщинами",
-            hStatus: "2415 участников онлайн",
-            bHead: "ЗДЕСЬ ОДИНОКИЕ ЖЕНЩИНЫ ИЩУТ:",
-            li: ["Серьезных отношений", "Общения на пикантные 🍓 темы", "Встреч без обязательств 👉👌"],
-            promo: "ПРОХОДИ БЫСТРУЮ РЕГИСТРАЦИЮ И ДЕВУШКИ САМИ НАЧНУТ ПИСАТЬ ТЕБЕ 😎",
-            btn: "НАЖМИТЕ ЗДЕСЬ ДЛЯ ВХОДА",
-            typing: ["Катя печатает...", "Алина записывает аудио...", "Марина ищет вас..."]
-        },
-        uk: {
-            hTitle: "Знайомства з жінками",
-            hStatus: "2415 учасників онлайн",
-            bHead: "ТУТ САМОТНІ ЖІНКИ ШУКАЮТЬ:",
-            li: ["Серйозних стосунків", "Спілкування на пікантні 🍓 теми", "Зустрічей без зобов'язань 👉👌"],
-            promo: "ПРОХОДЬ ШВИДКУ РЕЄСТРАЦІЮ І ДІВЧАТА САМІ ПОЧНУТЬ ПИСАТИ ТОБІ 😎",
-            btn: "НАТИСНІТЬ ТУТ ДЛЯ ВХОДУ",
-            typing: ["Катя друкує...", "Аліна записує аудіо...", "Марина шукає вас..."]
-        }
+    const translations = {
+        ru: { hT: "Знакомства с женщинами", hS: "2,415 онлайн", bH: "ЗДЕСЬ ЖЕНЩИНЫ ИЩУТ:", li: ["Серьезных отношений", "Пикантного общения 🍓", "Встреч без обязательств 👉👌"], pr: "ПРОЙДИ РЕГИСТРАЦИЮ И ОНИ НАПИШУТ ТЕБЕ 😎", btn: "ПЕРЕЙТИ НА САЙТ", typ: "Катя печатает..." },
+        uk: { hT: "Знайомства з жінками", hS: "2,415 онлайн", bH: "ТУТ ЖІНКИ ШУКАЮТЬ:", li: ["Серйозних стосунків", "Пікантного спілкування 🍓", "Зустрічей без зобов'язань 👉👌"], pr: "ПРОЙДИ РЕЄСТРАЦІЮ І ВОНИ НАПИШУТЬ ТОБІ 😎", btn: "ПЕРЕЙТИ НА САЙТ", typ: "Катя друкує..." },
+        kz: { hT: "Әйелдермен танысу", hS: "2,415 онлайн", bH: "МҰНДА ӘЙЕЛДЕР ІЗДЕЙДІ:", li: ["Жидді қарым-қатынас", "Пикантты әңгіме 🍓", "Міндеттемесіз кездесулер 👉👌"], pr: "ТІРКЕЛІҢІЗ, ОЛАР СІЗГЕ ЖАЗАДЫ 😎", btn: "САЙТҚА ӨТУ", typ: "Катя жазып жатыр..." },
+        pl: { hT: "Randki z kobietami", hS: "2,415 online", bH: "TUTAJ KOBIETY SZUKAJĄ:", li: ["Poważnych relacji", "Pikantnych rozmów 🍓", "Spotkań bez zobowiązań 👉👌"], pr: "ZAREJESTRUJ SIĘ, A ONE NAPISZĄ 😎", btn: "WEJDŹ NA STRONĘ", typ: "Kasia pisze..." },
+        de: { hT: "Dating mit Frauen", hS: "2,415 online", bH: "HIER SUCHEN FRAUEN:", li: ["Ernste Beziehungen", "Pikante Chats 🍓", "Treffen ohne Verpflichtung 👉👌"], pr: "REGISTRIEREN SIE SICH JETZT 😎", btn: "ZUR WEBSEITE", typ: "Katja schreibt..." },
+        es: { hT: "Citas con mujeres", hS: "2,415 en línea", bH: "AQUÍ LAS MUJERES BUSCAN:", li: ["Relaciones serias", "Charlas picantes 🍓", "Encuentros sin compromiso 👉👌"], pr: "REGÍSTRATE Y TE ESCRIBIRÁN 😎", btn: "ENTRAR AL SITIO", typ: "Elena está escribiendo..." },
+        it: { hT: "Incontri con donne", hS: "2,415 online", bH: "QUI LE DONNE CERCANO:", li: ["Relazioni serie", "Chat piccanti 🍓", "Incontri senza impegno 👉👌"], pr: "REGISTRATI E TI SCRIVERANNO 😎", btn: "ENTRA NEL SITO", typ: "Giulia sta scrivendo..." },
+        ro: { hT: "Întâlniri cu femei", hS: "2,415 online", bH: "AICI FEMEILE CAUTĂ:", li: ["Relații serioase", "Chat-uri picante 🍓", "Întâlniri fără obligații 👉👌"], pr: "ÎNREGISTREAZĂ-TE ȘI ÎȚI VOR SCRIE 😎", btn: "ACCESEAZĂ SITE-UL", typ: "Alina scrie..." },
+        md: { hT: "Întâlniri cu femei", hS: "2,415 online", bH: "AICI FEMEILE CAUTĂ:", li: ["Relații serioase", "Chat-uri picante 🍓", "Întâlniri fără obligații 👉👌"], pr: "ÎNREGISTREAZĂ-TE ȘI ÎȚI VOR SCRIE 😎", btn: "ACCESEAZĂ SITE-UL", typ: "Alina scrie..." },
+        fr: { hT: "Rencontres femmes", hS: "2,415 en ligne", bH: "ICI LES FEMMES CHERCHENT:", li: ["Relations sérieuses", "Discussions coquines 🍓", "Rencontres sans lendemain 👉👌"], pr: "INSCRIVEZ-VOUS ET ELLES ÉCRIRONT 😎", btn: "ACCÉDER AU SITE", typ: "Julie écrit..." },
+        en: { hT: "Dating with women", hS: "2,415 online", bH: "SINGLE WOMEN ARE LOOKING FOR:", li: ["Serious relationships", "Spicy chats 🍓", "Casual hookups 👉👌"], pr: "REGISTER AND THEY WILL WRITE YOU 😎", btn: "ENTER SITE", typ: "Kate is typing..." }
     };
 
-    const t = isUkr ? texts.uk : texts.ru;
+    // Определение языка
+    const userLang = navigator.language.split('-')[0];
+    const t = translations[userLang] || translations['en'];
 
     // Применяем тексты
-    document.getElementById('h-title').innerText = t.hTitle;
-    document.getElementById('h-status').innerText = t.hStatus;
-    document.getElementById('b-head').innerText = t.bHead;
-    document.getElementById('b-promo').innerText = t.promo;
+    document.getElementById('h-title').innerText = t.hT;
+    document.getElementById('h-status').innerText = t.hS;
+    document.getElementById('b-head').innerText = t.bH;
+    document.getElementById('b-promo').innerText = t.pr;
     document.getElementById('btn').innerText = t.btn;
     document.getElementById('btn').href = offerLink;
-    
-    const listHtml = t.li.map(item => `<li>${item}</li>`).join('');
-    document.getElementById('b-list').innerHTML = listHtml;
+    document.getElementById('typing-text').innerText = t.typ;
+    document.getElementById('b-list').innerHTML = t.li.map(i => `<li>${i}</li>`).join('');
 
-    // Генерим 10 фото
+    // Слайдер (10 фото)
+    const slider = document.getElementById('slider');
     for(let i=1; i<=10; i++) {
         const div = document.createElement('div');
         div.className = 'photo-card';
@@ -210,22 +183,13 @@
         slider.appendChild(div);
     }
 
-    // Авто-скролл слайдера
-    let scrollPos = 0;
+    // Авто-скролл
+    let pos = 0;
     setInterval(() => {
-        scrollPos += 140;
-        if (scrollPos > slider.scrollWidth - slider.clientWidth) scrollPos = 0;
-        slider.scrollTo({ left: scrollPos, behavior: 'smooth' });
+        pos += 120;
+        if (pos > slider.scrollWidth - slider.clientWidth) pos = 0;
+        slider.scrollTo({ left: pos, behavior: 'smooth' });
     }, 3000);
-
-    // Смена статуса "печатает"
-    let typeIdx = 0;
-    setInterval(() => {
-        typeIdx = (typeIdx + 1) % t.typing.length;
-        document.getElementById('typing-text').innerText = t.typing[typeIdx];
-    }, 4000);
-
 </script>
-
 </body>
 </html>
