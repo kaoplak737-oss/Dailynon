@@ -2,242 +2,247 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Private Access</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Система поиска контактов</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #090b10;
-            --accent: linear-gradient(135deg, #ff0055 0%, #ff5500 100%);
-            --text-main: #ffffff;
-            --text-dim: #94a3b8;
+            --bg: #05070a;
+            --accent: #00ff41; /* Цвет хакера/матрицы, внушает доверие к системе */
+            --card: #111418;
+            --text: #e0e0e0;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'JetBrains Mono', monospace; }
+
         body {
             background-color: var(--bg);
-            color: var(--text-main);
+            color: var(--text);
             height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             overflow: hidden;
-            position: relative;
+            font-size: 14px;
         }
 
-        /* Атмосферный фон */
-        body::before {
+        /* Шапка системы */
+        .top-bar {
+            padding: 10px 15px;
+            background: #1a1d23;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        /* Лента логов (слева сверху) */
+        .logs {
+            height: 120px;
+            padding: 10px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.3);
+            font-size: 10px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .log-entry { margin-bottom: 4px; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        .log-accent { color: #888; }
+
+        /* Центральный блок */
+        .main-stage {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .radar {
+            width: 150px;
+            height: 150px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            position: relative;
+            margin-bottom: 25px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+        }
+        .radar::after {
             content: '';
             position: absolute;
-            width: 150%; height: 50%;
-            background: radial-gradient(circle, rgba(255, 0, 85, 0.1) 0%, transparent 70%);
-            top: -10%; z-index: 0;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
+            background: conic-gradient(from 0deg, rgba(0,255,65,0.4), transparent);
+            border-radius: 50%;
+            animation: rotate 2s linear infinite;
         }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .main-container {
-            width: 100%;
-            max-width: 420px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            z-index: 1;
-            justify-content: space-between;
-        }
-
-        .header { text-align: center; }
-        .logo { font-size: 18px; font-weight: 900; letter-spacing: 2px; color: #ff0055; margin-bottom: 5px; }
-        
-        .status-bar {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 13px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .online-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; margin-right: 10px; box-shadow: 0 0 10px #4ade80; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-
-        /* Контент */
-        .hero { text-align: center; margin-top: 20px; }
-        h1 { font-size: 28px; font-weight: 900; line-height: 1.1; margin-bottom: 10px; }
-        h1 span { color: #ff0055; }
-        .sub-text { color: var(--text-dim); font-size: 16px; margin-bottom: 20px; }
-
-        /* Карточка с предпросмотром */
-        .preview-box {
-            position: relative;
-            flex: 1;
-            max-height: 40vh;
-            border-radius: 30px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .slider-img {
-            position: absolute; width: 100%; height: 100%;
-            background-size: cover; background-position: center;
-            transition: opacity 1s ease; opacity: 0;
-        }
-        .slider-img.active { opacity: 1; }
-
-        .blur-overlay {
-            position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 10%, transparent 50%);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 20px;
-        }
-
-        .girl-tag {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 5px 12px;
-            border-radius: 10px;
-            font-size: 14px;
+        .target-found {
+            margin-top: 10px;
             font-weight: 700;
-            align-self: flex-start;
-            margin-bottom: 10px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        /* Блок Дожима */
-        .benefit-list { margin: 20px 0; }
-        .benefit-item {
-            display: flex; align-items: center;
-            font-size: 14px; color: #e2e8f0; margin-bottom: 8px;
+        /* Карточка совпадения */
+        .match-card {
+            background: var(--card);
+            width: 100%;
+            max-width: 320px;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #333;
+            display: none; /* Скрыта до конца "поиска" */
+            animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .benefit-item i { color: #4ade80; margin-right: 10px; font-weight: 900; }
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* Кнопка */
+        .girl-photo {
+            width: 100%;
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .status-badge {
+            position: absolute; top: 10px; right: 10px;
+            background: var(--accent); color: #000;
+            padding: 3px 8px; font-size: 10px; font-weight: 900; border-radius: 4px;
+        }
+
+        /* Кнопки */
         .cta-btn {
-            display: flex; align-items: center; justify-content: center;
+            display: block;
+            width: 100%;
             background: var(--accent);
-            height: 70px; border-radius: 24px;
-            font-size: 20px; font-weight: 900; color: #fff;
+            color: #000;
+            padding: 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 900;
             text-decoration: none;
-            box-shadow: 0 15px 35px rgba(255, 0, 85, 0.4);
-            animation: shake 4s infinite;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+        .cta-btn:active { transform: scale(0.95); opacity: 0.8; }
+
+        .footer-info {
+            padding: 15px;
+            font-size: 10px;
+            color: #444;
+            text-align: center;
         }
 
-        @keyframes shake {
-            0%, 90%, 100% { transform: scale(1); }
-            93% { transform: scale(1.03); }
-            96% { transform: scale(0.97); }
-        }
-
-        .footer { text-align: center; font-size: 11px; color: #475569; margin-top: 15px; }
+        /* Скрытие элементов для анимации */
+        #scanning-box { display: block; }
     </style>
 </head>
 <body>
 
-<div class="main-container">
-    <div class="header">
-        <div class="logo">PRIVATE ACCESS</div>
-        <div class="status-bar">
-            <div class="online-dot"></div>
-            <span id="loc-text">Онлайн в твоем городе</span>
+<div class="top-bar">
+    <span>System: active</span>
+    <span id="clock">00:00:00</span>
+</div>
+
+<div class="logs" id="log-container">
+    <!-- Логи добавляются скриптом -->
+</div>
+
+<div class="main-stage">
+    <div id="scanning-box">
+        <div class="radar"></div>
+        <div class="target-found" id="status-text">Сканирование...</div>
+    </div>
+
+    <div class="match-card" id="match-box">
+        <div class="girl-photo" id="photo-div" style="background-image: url('2.jpg');">
+            <div class="status-badge">ONLINE</div>
         </div>
-    </div>
-
-    <div class="hero">
-        <h1 id="title">Хочешь <span>С_E_К_C</span> без обязательств?</h1>
-        <p class="sub-text" id="subtitle">14 одиноких женщин ждут твоего сообщения прямо сейчас.</p>
-    </div>
-
-    <div class="preview-box" id="slider">
-        <!-- Картинки добавятся через JS -->
-        <div class="blur-overlay">
-            <div class="girl-tag" id="girl-name">Катя, 24 года</div>
-            <p style="font-size: 13px; color: #4ade80;">● В 1.2 км от тебя</p>
+        <div style="text-align: left;">
+            <div style="font-size: 18px; font-weight: 700;" id="name-tag">Катя, 24</div>
+            <div style="color: #666; font-size: 12px; margin-top: 5px;">📍 Расстояние: 1.4 км</div>
         </div>
-    </div>
-
-    <div class="benefit-list">
-        <div class="benefit-item"><i>✓</i> <span id="b1">Только реальные анкеты</span></div>
-        <div class="benefit-item"><i>✓</i> <span id="b2">Встреча в течение 1 часа</span></div>
-        <div class="benefit-item"><i>✓</i> <span id="b3">Конфиденциально и анонимно</span></div>
-    </div>
-
-    <div class="cta-area">
-        <a href="ТВОЯ_СМАРТЛИНКА" class="cta-btn" id="btn">СМОТРЕТЬ АНКЕТЫ</a>
-        <div class="footer">Нажми, чтобы пройти быструю верификацию 18+</div>
+        <a href="ТВОЯ_СМАРТЛИНКА" class="cta-btn" id="btn-text">УСТАНОВИТЬ СВЯЗЬ</a>
     </div>
 </div>
 
+<div class="footer-info">
+    Внимание: Все каналы связи защищены сквозным шифрованием. 18+
+</div>
+
 <script>
-    const offerLink = "ТВОЯ_СМАРТЛИНКА";
-    const lang = navigator.language || navigator.userLanguage;
-    const isUkr = lang.includes('uk') || lang.includes('UA');
+    const logContainer = document.getElementById('log-container');
+    const logs = [
+        "Инициализация протокола...",
+        "Определение ГЕО-позиции...",
+        "Поиск активных анкет...",
+        "Пользователь id883 зашел в приват...",
+        "Найдено совпадение в радиусе 2км",
+        "Марина (21) отправила фото...",
+        "Синхронизация с базой данных...",
+        "Алина (27) ищет партнера..."
+    ];
 
-    const ui = {
-        ru: {
-            loc: "Онлайн в {city}",
-            title: "Хочешь <span>С_E_К_C</span> без обязательств?",
-            sub: "14 одиноких женщин ждут твоего сообщения прямо сейчас.",
-            b1: "Только реальные анкеты",
-            b2: "Встреча в течение 1 часа",
-            b3: "Конфиденциально и анонимно",
-            btn: "СМОТРЕТЬ АНКЕТЫ",
-            names: ["Катя, 24", "Алина, 27", "Вика, 31", "Маша, 22"]
-        },
-        uk: {
-            loc: "Онлайн у {city}",
-            title: "Бажаєш <span>С_E_К_C</span> без зобов'язань?",
-            sub: "14 самотніх жінок чекають на твоє повідомлення прямо зараз.",
-            b1: "Тільки реальні анкети",
-            b2: "Зустріч протягом 1 години",
-            b3: "Конфіденційно та анонімно",
-            btn: "ДИВИТИСЯ АНКЕТИ",
-            names: ["Катя, 24", "Аліна, 27", "Віка, 31", "Маша, 22"]
-        }
-    };
+    const lang = (navigator.language || navigator.userLanguage).includes('uk') ? 'uk' : 'ru';
+    const names = ["Катя, 24", "Алина, 27", "Вика, 31", "Маша, 22"];
+    const photos = [2, 3, 4, 5];
 
-    const cur = isUkr ? ui.uk : ui.ru;
-
-    // Заполнение текстов
-    document.getElementById('title').innerHTML = cur.title;
-    document.getElementById('subtitle').innerText = cur.sub;
-    document.getElementById('b1').innerText = cur.b1;
-    document.getElementById('b2').innerText = cur.b2;
-    document.getElementById('b3').innerText = cur.b3;
-    document.getElementById('btn').innerText = cur.btn;
-    document.getElementById('btn').href = offerLink;
-
-    // Город
-    fetch('https://ipapi.co/json/')
-        .then(res => res.json())
-        .then(data => {
-            const city = data.city || (isUkr ? "твоєму місті" : "твоем городе");
-            document.getElementById('loc-text').innerText = cur.loc.replace('{city}', city);
-        })
-        .catch(() => {
-            document.getElementById('loc-text').innerText = isUkr ? "Жінки поруч" : "Женщины рядом";
-        });
-
-    // Слайдер
-    const slider = document.getElementById('slider');
-    const photos = [2, 3, 4, 5]; 
-    photos.forEach((num, idx) => {
-        const div = document.createElement('div');
-        div.className = `slider-img ${idx === 0 ? 'active' : ''}`;
-        div.style.backgroundImage = `url('${num}.jpg')`;
-        slider.prepend(div);
-    });
-
-    let current = 0;
-    const slides = document.querySelectorAll('.slider-img');
-    const nameTag = document.getElementById('girl-name');
-
+    // Часы
     setInterval(() => {
-        slides[current].classList.remove('active');
-        current = (current + 1) % slides.length;
-        slides[current].classList.add('active');
-        nameTag.innerText = cur.names[current] + (isUkr ? " роки" : " года");
-    }, 3500);
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+    }, 1000);
+
+    // Добавление логов
+    let logIdx = 0;
+    function addLog() {
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `<span class="log-accent">[${new Date().toLocaleTimeString()}]</span> ${logs[logIdx % logs.length]}`;
+        logContainer.prepend(entry);
+        logIdx++;
+    }
+    const logInterval = setInterval(addLog, 1500);
+
+    // Симуляция поиска
+    setTimeout(() => {
+        document.getElementById('status-text').innerText = lang === 'uk' ? "ЗНАЙДЕНО!" : "НАЙДЕНО!";
+        document.getElementById('status-text').style.color = "#fff";
+        
+        setTimeout(() => {
+            document.getElementById('scanning-box').style.display = 'none';
+            const matchBox = document.getElementById('match-box');
+            matchBox.style.display = 'block';
+
+            // Если на UA
+            if(lang === 'uk') {
+                document.getElementById('btn-text').innerText = "ВСТАНОВИТИ ЗВ'ЯЗОК";
+                document.getElementById('name-tag').innerText = "Катя, 24";
+            }
+        }, 1000);
+    }, 4000);
+
+    // Смена фото в карточке до клика
+    let photoIdx = 0;
+    setInterval(() => {
+        if(document.getElementById('match-box').style.display === 'block') {
+            photoIdx = (photoIdx + 1) % photos.length;
+            document.getElementById('photo-div').style.backgroundImage = `url('${photos[photoIdx]}.jpg')`;
+            document.getElementById('name-tag').innerText = names[photoIdx];
+        }
+    }, 3000);
 </script>
 
 </body>
