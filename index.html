@@ -2,204 +2,242 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Знакомства</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Private Access</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0b0e14;
-            --accent: linear-gradient(135deg, #f02d66 0%, #ff6b35 100%);
-            --glass: rgba(255, 255, 255, 0.05);
+            --bg: #090b10;
+            --accent: linear-gradient(135deg, #ff0055 0%, #ff5500 100%);
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
         
         body {
-            font-family: 'Inter', sans-serif;
             background-color: var(--bg);
-            color: #fff;
+            color: var(--text-main);
             height: 100vh;
-            overflow: hidden; /* Запрещаем скролл */
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
         }
 
-        .main-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            justify-content: space-between; /* Распределяем элементы по высоте */
+        /* Атмосферный фон */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 150%; height: 50%;
+            background: radial-gradient(circle, rgba(255, 0, 85, 0.1) 0%, transparent 70%);
+            top: -10%; z-index: 0;
         }
 
-        /* Шапка */
-        .header { text-align: center; padding-top: 10px; }
+        .main-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            z-index: 1;
+            justify-content: space-between;
+        }
+
+        .header { text-align: center; }
+        .logo { font-size: 18px; font-weight: 900; letter-spacing: 2px; color: #ff0055; margin-bottom: 5px; }
         
-        .live-status {
+        .status-bar {
             display: inline-flex;
             align-items: center;
-            background: rgba(74, 222, 128, 0.1);
-            color: #4ade80;
-            padding: 5px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px 15px;
             border-radius: 20px;
             font-size: 13px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .online-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; margin-right: 10px; box-shadow: 0 0 10px #4ade80; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* Контент */
+        .hero { text-align: center; margin-top: 20px; }
+        h1 { font-size: 28px; font-weight: 900; line-height: 1.1; margin-bottom: 10px; }
+        h1 span { color: #ff0055; }
+        .sub-text { color: var(--text-dim); font-size: 16px; margin-bottom: 20px; }
+
+        /* Карточка с предпросмотром */
+        .preview-box {
+            position: relative;
+            flex: 1;
+            max-height: 40vh;
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .slider-img {
+            position: absolute; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            transition: opacity 1s ease; opacity: 0;
+        }
+        .slider-img.active { opacity: 1; }
+
+        .blur-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 10%, transparent 50%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+        }
+
+        .girl-tag {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 14px;
             font-weight: 700;
-            border: 1px solid rgba(74, 222, 128, 0.2);
+            align-self: flex-start;
             margin-bottom: 10px;
         }
 
-        .dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; margin-right: 8px; box-shadow: 0 0 10px #4ade80; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
-        h1 { font-size: 22px; font-weight: 900; line-height: 1.1; margin-bottom: 5px; }
-        span.danger { color: #f02d66; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* Слайдер с фото */
-        .slider-container {
-            position: relative;
-            width: 100%;
-            height: 45vh; /* Занимает почти половину экрана */
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
+        /* Блок Дожима */
+        .benefit-list { margin: 20px 0; }
+        .benefit-item {
+            display: flex; align-items: center;
+            font-size: 14px; color: #e2e8f0; margin-bottom: 8px;
         }
-
-        .slide {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.8s ease-in-out;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .slide.active { opacity: 1; }
-
-        .slide-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 20px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-        }
-
-        .girl-info { font-size: 18px; font-weight: 700; }
-
-        /* Блок дожима */
-        .info-block {
-            background: var(--glass);
-            padding: 12px;
-            border-radius: 16px;
-            font-size: 14px;
-            color: #94a3b8;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
+        .benefit-item i { color: #4ade80; margin-right: 10px; font-weight: 900; }
 
         /* Кнопка */
-        .cta-container { padding-bottom: 10px; }
-
-        .cta-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
+        .cta-btn {
+            display: flex; align-items: center; justify-content: center;
             background: var(--accent);
-            height: 65px;
-            border-radius: 20px;
-            font-size: 18px;
-            font-weight: 800;
-            color: #fff;
+            height: 70px; border-radius: 24px;
+            font-size: 20px; font-weight: 900; color: #fff;
             text-decoration: none;
-            box-shadow: 0 15px 30px rgba(240, 45, 102, 0.3);
-            animation: bounce 2s infinite;
+            box-shadow: 0 15px 35px rgba(255, 0, 85, 0.4);
+            animation: shake 4s infinite;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        @keyframes shake {
+            0%, 90%, 100% { transform: scale(1); }
+            93% { transform: scale(1.03); }
+            96% { transform: scale(0.97); }
         }
 
-        .footer-text { font-size: 11px; color: #475569; text-align: center; margin-top: 10px; }
-
+        .footer { text-align: center; font-size: 11px; color: #475569; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-<div class="main-wrapper">
+<div class="main-container">
     <div class="header">
-        <div class="live-status">
-            <div class="dot"></div>
-            <span id="live-count">147 женщин рядом</span>
+        <div class="logo">PRIVATE ACCESS</div>
+        <div class="status-bar">
+            <div class="online-dot"></div>
+            <span id="loc-text">Онлайн в твоем городе</span>
         </div>
-        <h1 id="main-title">Ищешь отношения или <span class="danger">С_E_К_C</span> без обязательств?</h1>
     </div>
 
-    <div class="slider-container" id="slider">
-        <!-- Слайды добавятся через JS -->
+    <div class="hero">
+        <h1 id="title">Хочешь <span>С_E_К_C</span> без обязательств?</h1>
+        <p class="sub-text" id="subtitle">14 одиноких женщин ждут твоего сообщения прямо сейчас.</p>
     </div>
 
-    <div class="info-block">
-        <p id="desc">Все девушки на фото сейчас онлайн в твоем городе. Без ботов и долгой переписки. Выбирай и встречайся.</p>
+    <div class="preview-box" id="slider">
+        <!-- Картинки добавятся через JS -->
+        <div class="blur-overlay">
+            <div class="girl-tag" id="girl-name">Катя, 24 года</div>
+            <p style="font-size: 13px; color: #4ade80;">● В 1.2 км от тебя</p>
+        </div>
     </div>
 
-    <div class="cta-container">
-        <a href="ТВОЯ_СМАРТЛИНКА" class="cta-button" id="btn">ПЕРЕЙТИ К ОБЩЕНИЮ</a>
-        <div class="footer-text">Нажимая кнопку, вы подтверждаете, что вам есть 18 лет</div>
+    <div class="benefit-list">
+        <div class="benefit-item"><i>✓</i> <span id="b1">Только реальные анкеты</span></div>
+        <div class="benefit-item"><i>✓</i> <span id="b2">Встреча в течение 1 часа</span></div>
+        <div class="benefit-item"><i>✓</i> <span id="b3">Конфиденциально и анонимно</span></div>
+    </div>
+
+    <div class="cta-area">
+        <a href="ТВОЯ_СМАРТЛИНКА" class="cta-btn" id="btn">СМОТРЕТЬ АНКЕТЫ</a>
+        <div class="footer">Нажми, чтобы пройти быструю верификацию 18+</div>
     </div>
 </div>
 
 <script>
+    const offerLink = "ТВОЯ_СМАРТЛИНКА";
     const lang = navigator.language || navigator.userLanguage;
     const isUkr = lang.includes('uk') || lang.includes('UA');
 
-    const content = {
+    const ui = {
         ru: {
-            live: "147 женщин рядом",
-            title: 'Ищешь отношения или <span class="danger">С_E_К_C</span> без обязательств?',
-            desc: "Все девушки на фото сейчас онлайн в твоем городе. Без ботов и долгой переписки. Выбирай и встречайся.",
-            btn: "ПЕРЕЙТИ К ОБЩЕНИЮ",
-            names: ["Катя, 24", "Маша, 27", "Алина, 31", "Лена, 22", "Вика, 29", "Оля, 25"]
+            loc: "Онлайн в {city}",
+            title: "Хочешь <span>С_E_К_C</span> без обязательств?",
+            sub: "14 одиноких женщин ждут твоего сообщения прямо сейчас.",
+            b1: "Только реальные анкеты",
+            b2: "Встреча в течение 1 часа",
+            b3: "Конфиденциально и анонимно",
+            btn: "СМОТРЕТЬ АНКЕТЫ",
+            names: ["Катя, 24", "Алина, 27", "Вика, 31", "Маша, 22"]
         },
         uk: {
-            live: "147 жінок поруч",
-            title: 'Шукаєш стосунки чи <span class="danger">С_E_К_C</span> без зобов’язань?',
-            desc: "Усі дівчата на фото зараз онлайн у твоєму місті. Без ботів та довгих переписок. Обирай та зустрічайся.",
-            btn: "ПЕРЕЙТИ ДО СПІЛКУВАННЯ",
-            names: ["Катя, 24", "Маша, 27", "Аліна, 31", "Олена, 22", "Віка, 29", "Оля, 25"]
+            loc: "Онлайн у {city}",
+            title: "Бажаєш <span>С_E_К_C</span> без зобов'язань?",
+            sub: "14 самотніх жінок чекають на твоє повідомлення прямо зараз.",
+            b1: "Тільки реальні анкети",
+            b2: "Зустріч протягом 1 години",
+            b3: "Конфіденційно та анонімно",
+            btn: "ДИВИТИСЯ АНКЕТИ",
+            names: ["Катя, 24", "Аліна, 27", "Віка, 31", "Маша, 22"]
         }
     };
 
-    const cur = isUkr ? content.uk : content.ru;
+    const cur = isUkr ? ui.uk : ui.ru;
 
-    // Применяем тексты
-    document.getElementById('live-count').innerText = cur.live;
-    document.getElementById('main-title').innerHTML = cur.title;
-    document.getElementById('desc').innerText = cur.desc;
+    // Заполнение текстов
+    document.getElementById('title').innerHTML = cur.title;
+    document.getElementById('subtitle').innerText = cur.sub;
+    document.getElementById('b1').innerText = cur.b1;
+    document.getElementById('b2').innerText = cur.b2;
+    document.getElementById('b3').innerText = cur.b3;
     document.getElementById('btn').innerText = cur.btn;
+    document.getElementById('btn').href = offerLink;
+
+    // Город
+    fetch('https://ipapi.co/json/')
+        .then(res => res.json())
+        .then(data => {
+            const city = data.city || (isUkr ? "твоєму місті" : "твоем городе");
+            document.getElementById('loc-text').innerText = cur.loc.replace('{city}', city);
+        })
+        .catch(() => {
+            document.getElementById('loc-text').innerText = isUkr ? "Жінки поруч" : "Женщины рядом";
+        });
 
     // Слайдер
     const slider = document.getElementById('slider');
-    const photos = [2, 3, 4, 5, 6, 7]; // твои фото
-    
+    const photos = [2, 3, 4, 5]; 
     photos.forEach((num, idx) => {
-        const slide = document.createElement('div');
-        slide.className = `slide ${idx === 0 ? 'active' : ''}`;
-        slide.style.backgroundImage = `url('${num}.jpg')`;
-        slide.innerHTML = `<div class="slide-overlay"><div class="girl-info">${cur.names[idx]}</div></div>`;
-        slider.appendChild(slide);
+        const div = document.createElement('div');
+        div.className = `slider-img ${idx === 0 ? 'active' : ''}`;
+        div.style.backgroundImage = `url('${num}.jpg')`;
+        slider.prepend(div);
     });
 
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
+    let current = 0;
+    const slides = document.querySelectorAll('.slider-img');
+    const nameTag = document.getElementById('girl-name');
 
     setInterval(() => {
-        slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
-    }, 3000); // Меняем фото каждые 3 секунды
+        slides[current].classList.remove('active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('active');
+        nameTag.innerText = cur.names[current] + (isUkr ? " роки" : " года");
+    }, 3500);
 </script>
 
 </body>
