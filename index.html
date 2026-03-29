@@ -2,247 +2,229 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Система поиска контактов</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Знакомства рядом</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #05070a;
-            --accent: #00ff41; /* Цвет хакера/матрицы, внушает доверие к системе */
-            --card: #111418;
-            --text: #e0e0e0;
+            --tg-bg: #17212b;
+            --tg-accent: #5288c1;
+            --tg-text: #f5f5f5;
+            --tg-hint: #708499;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'JetBrains Mono', monospace; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body {
-            background-color: var(--bg);
-            color: var(--text);
+            background-color: #0e1621;
+            color: var(--tg-text);
+            font-family: 'Roboto', sans-serif;
             height: 100vh;
             display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            font-size: 14px;
-        }
-
-        /* Шапка системы */
-        .top-bar {
-            padding: 10px 15px;
-            background: #1a1d23;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
-            color: var(--accent);
-            text-transform: uppercase;
-        }
-
-        /* Лента логов (слева сверху) */
-        .logs {
-            height: 120px;
-            padding: 10px;
-            overflow: hidden;
-            background: rgba(0,0,0,0.3);
-            font-size: 10px;
-            color: #666;
-            line-height: 1.4;
-        }
-
-        .log-entry { margin-bottom: 4px; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-        .log-accent { color: #888; }
-
-        /* Центральный блок */
-        .main-stage {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            padding: 20px;
-            text-align: center;
+            overflow: hidden;
         }
 
-        .radar {
-            width: 150px;
-            height: 150px;
-            border: 2px solid var(--accent);
-            border-radius: 50%;
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
             position: relative;
-            margin-bottom: 25px;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
-        }
-        .radar::after {
-            content: '';
-            position: absolute;
-            width: 100%; height: 100%;
-            top: 0; left: 0;
-            background: conic-gradient(from 0deg, rgba(0,255,65,0.4), transparent);
-            border-radius: 50%;
-            animation: rotate 2s linear infinite;
-        }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .target-found {
-            margin-top: 10px;
-            font-weight: 700;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 2px;
         }
 
-        /* Карточка совпадения */
-        .match-card {
-            background: var(--card);
-            width: 100%;
-            max-width: 320px;
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid #333;
-            display: none; /* Скрыта до конца "поиска" */
-            animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* Шапка как в ТГ */
+        .header {
+            background: var(--tg-bg);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
         }
-        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .header-avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; background: url('2.jpg') center/cover; }
+        .header-info h4 { font-size: 16px; font-weight: 700; }
+        .header-info p { font-size: 13px; color: var(--tg-accent); }
 
-        .girl-photo {
-            width: 100%;
+        /* Фото-лента (Слайдер) */
+        .photo-strip {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 10px 5px;
+            gap: 8px;
+            scrollbar-width: none;
+        }
+        .photo-strip::-webkit-scrollbar { display: none; }
+        .photo-card {
+            min-width: 130px;
             height: 180px;
+            border-radius: 12px;
             background-size: cover;
             background-position: center;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+
+        /* Тело сообщения */
+        .message-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); /* Легкая текстура фона ТГ */
+        }
+
+        .bubble {
+            background: var(--tg-bg);
+            padding: 15px;
+            border-radius: 15px;
+            line-height: 1.5;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            border-bottom-left-radius: 5px;
             position: relative;
         }
 
-        .status-badge {
-            position: absolute; top: 10px; right: 10px;
-            background: var(--accent); color: #000;
-            padding: 3px 8px; font-size: 10px; font-weight: 900; border-radius: 4px;
+        .bubble h2 { font-size: 16px; margin-bottom: 10px; color: #ffab2e; text-transform: uppercase; }
+        .bubble ul { list-style: none; margin-bottom: 15px; }
+        .bubble ul li { margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; }
+        .bubble ul li::before { content: '📍'; margin-right: 10px; font-size: 12px; }
+
+        .typing { font-size: 13px; color: var(--tg-hint); margin-top: 10px; font-style: italic; }
+
+        /* Кнопка */
+        .cta-area {
+            padding: 20px;
+            background: #17212b;
+            border-top: 1px solid #232e3c;
         }
 
-        /* Кнопки */
-        .cta-btn {
+        .btn-main {
             display: block;
             width: 100%;
-            background: var(--accent);
-            color: #000;
-            padding: 18px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 900;
-            text-decoration: none;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: 0.3s;
-        }
-        .cta-btn:active { transform: scale(0.95); opacity: 0.8; }
-
-        .footer-info {
-            padding: 15px;
-            font-size: 10px;
-            color: #444;
+            background: var(--tg-accent);
+            color: white;
             text-align: center;
+            padding: 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 17px;
+            box-shadow: 0 4px 15px rgba(82, 136, 193, 0.3);
+            animation: pulse 2s infinite;
         }
 
-        /* Скрытие элементов для анимации */
-        #scanning-box { display: block; }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .footer-tag {
+            text-align: center;
+            font-size: 11px;
+            color: var(--tg-hint);
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
-<div class="top-bar">
-    <span>System: active</span>
-    <span id="clock">00:00:00</span>
-</div>
-
-<div class="logs" id="log-container">
-    <!-- Логи добавляются скриптом -->
-</div>
-
-<div class="main-stage">
-    <div id="scanning-box">
-        <div class="radar"></div>
-        <div class="target-found" id="status-text">Сканирование...</div>
+<div class="app-container">
+    <div class="header">
+        <div class="header-avatar"></div>
+        <div class="header-info">
+            <h4 id="h-title">Знакомства с женщинами</h4>
+            <p id="h-status">2415 участника онлайн</p>
+        </div>
     </div>
 
-    <div class="match-card" id="match-box">
-        <div class="girl-photo" id="photo-div" style="background-image: url('2.jpg');">
-            <div class="status-badge">ONLINE</div>
-        </div>
-        <div style="text-align: left;">
-            <div style="font-size: 18px; font-weight: 700;" id="name-tag">Катя, 24</div>
-            <div style="color: #666; font-size: 12px; margin-top: 5px;">📍 Расстояние: 1.4 км</div>
-        </div>
-        <a href="ТВОЯ_СМАРТЛИНКА" class="cta-btn" id="btn-text">УСТАНОВИТЬ СВЯЗЬ</a>
+    <div class="photo-strip" id="slider">
+        <!-- Фото 1-10 добавятся здесь -->
     </div>
-</div>
 
-<div class="footer-info">
-    Внимание: Все каналы связи защищены сквозным шифрованием. 18+
+    <div class="message-content">
+        <div class="bubble">
+            <h2 id="b-head">ЗДЕСЬ ОДИНОКИЕ ЖЕНЩИНЫ ИЩУТ:</h2>
+            <ul id="b-list">
+                <li>Серьезных отношений</li>
+                <li>Общения на пикантные 🍓 темы</li>
+                <li>Встреч без обязательств 👉👌</li>
+            </ul>
+            <p id="b-promo" style="font-weight: 500;">ПРОХОДИ БЫСТРУЮ РЕГИСТРАЦИЮ И ДЕВУШКИ САМИ НАЧНУТ ПИСАТЬ ТЕБЕ 😎</p>
+            <div class="typing" id="typing-text">Катя печатает...</div>
+        </div>
+    </div>
+
+    <div class="cta-area">
+        <a href="ТВОЯ_СМАРТЛИНКА" class="btn-main" id="btn">ПЕРЕЙТИ НА САЙТ</a>
+        <div class="footer-tag">🔞 Содержимое для взрослых</div>
+    </div>
 </div>
 
 <script>
-    const logContainer = document.getElementById('log-container');
-    const logs = [
-        "Инициализация протокола...",
-        "Определение ГЕО-позиции...",
-        "Поиск активных анкет...",
-        "Пользователь id883 зашел в приват...",
-        "Найдено совпадение в радиусе 2км",
-        "Марина (21) отправила фото...",
-        "Синхронизация с базой данных...",
-        "Алина (27) ищет партнера..."
-    ];
+    const offerLink = "ТВОЯ_СМАРТЛИНКА";
+    const slider = document.getElementById('slider');
+    const isUkr = (navigator.language || navigator.userLanguage).includes('uk');
 
-    const lang = (navigator.language || navigator.userLanguage).includes('uk') ? 'uk' : 'ru';
-    const names = ["Катя, 24", "Алина, 27", "Вика, 31", "Маша, 22"];
-    const photos = [2, 3, 4, 5];
+    // Текстовка
+    const texts = {
+        ru: {
+            hTitle: "Знакомства с женщинами",
+            hStatus: "2415 участников онлайн",
+            bHead: "ЗДЕСЬ ОДИНОКИЕ ЖЕНЩИНЫ ИЩУТ:",
+            li: ["Серьезных отношений", "Общения на пикантные 🍓 темы", "Встреч без обязательств 👉👌"],
+            promo: "ПРОХОДИ БЫСТРУЮ РЕГИСТРАЦИЮ И ДЕВУШКИ САМИ НАЧНУТ ПИСАТЬ ТЕБЕ 😎",
+            btn: "НАЖМИТЕ ЗДЕСЬ ДЛЯ ВХОДА",
+            typing: ["Катя печатает...", "Алина записывает аудио...", "Марина ищет вас..."]
+        },
+        uk: {
+            hTitle: "Знайомства з жінками",
+            hStatus: "2415 учасників онлайн",
+            bHead: "ТУТ САМОТНІ ЖІНКИ ШУКАЮТЬ:",
+            li: ["Серйозних стосунків", "Спілкування на пікантні 🍓 теми", "Зустрічей без зобов'язань 👉👌"],
+            promo: "ПРОХОДЬ ШВИДКУ РЕЄСТРАЦІЮ І ДІВЧАТА САМІ ПОЧНУТЬ ПИСАТИ ТОБІ 😎",
+            btn: "НАТИСНІТЬ ТУТ ДЛЯ ВХОДУ",
+            typing: ["Катя друкує...", "Аліна записує аудіо...", "Марина шукає вас..."]
+        }
+    };
 
-    // Часы
-    setInterval(() => {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-    }, 1000);
+    const t = isUkr ? texts.uk : texts.ru;
 
-    // Добавление логов
-    let logIdx = 0;
-    function addLog() {
-        const entry = document.createElement('div');
-        entry.className = 'log-entry';
-        entry.innerHTML = `<span class="log-accent">[${new Date().toLocaleTimeString()}]</span> ${logs[logIdx % logs.length]}`;
-        logContainer.prepend(entry);
-        logIdx++;
+    // Применяем тексты
+    document.getElementById('h-title').innerText = t.hTitle;
+    document.getElementById('h-status').innerText = t.hStatus;
+    document.getElementById('b-head').innerText = t.bHead;
+    document.getElementById('b-promo').innerText = t.promo;
+    document.getElementById('btn').innerText = t.btn;
+    document.getElementById('btn').href = offerLink;
+    
+    const listHtml = t.li.map(item => `<li>${item}</li>`).join('');
+    document.getElementById('b-list').innerHTML = listHtml;
+
+    // Генерим 10 фото
+    for(let i=1; i<=10; i++) {
+        const div = document.createElement('div');
+        div.className = 'photo-card';
+        div.style.backgroundImage = `url('${i}.jpg')`;
+        slider.appendChild(div);
     }
-    const logInterval = setInterval(addLog, 1500);
 
-    // Симуляция поиска
-    setTimeout(() => {
-        document.getElementById('status-text').innerText = lang === 'uk' ? "ЗНАЙДЕНО!" : "НАЙДЕНО!";
-        document.getElementById('status-text').style.color = "#fff";
-        
-        setTimeout(() => {
-            document.getElementById('scanning-box').style.display = 'none';
-            const matchBox = document.getElementById('match-box');
-            matchBox.style.display = 'block';
+    // Авто-скролл слайдера
+    let scrollPos = 0;
+    setInterval(() => {
+        scrollPos += 140;
+        if (scrollPos > slider.scrollWidth - slider.clientWidth) scrollPos = 0;
+        slider.scrollTo({ left: scrollPos, behavior: 'smooth' });
+    }, 3000);
 
-            // Если на UA
-            if(lang === 'uk') {
-                document.getElementById('btn-text').innerText = "ВСТАНОВИТИ ЗВ'ЯЗОК";
-                document.getElementById('name-tag').innerText = "Катя, 24";
-            }
-        }, 1000);
+    // Смена статуса "печатает"
+    let typeIdx = 0;
+    setInterval(() => {
+        typeIdx = (typeIdx + 1) % t.typing.length;
+        document.getElementById('typing-text').innerText = t.typing[typeIdx];
     }, 4000);
 
-    // Смена фото в карточке до клика
-    let photoIdx = 0;
-    setInterval(() => {
-        if(document.getElementById('match-box').style.display === 'block') {
-            photoIdx = (photoIdx + 1) % photos.length;
-            document.getElementById('photo-div').style.backgroundImage = `url('${photos[photoIdx]}.jpg')`;
-            document.getElementById('name-tag').innerText = names[photoIdx];
-        }
-    }, 3000);
 </script>
 
 </body>
